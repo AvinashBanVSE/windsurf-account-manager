@@ -1,0 +1,715 @@
+import { invoke } from '@tauri-apps/api/core';
+import type { Account, Settings, OperationLog, UpdateSeatsResult, BillingInfo, BatchResult, GlobalTag, SortField, SortDirection, SortConfig, DevinLoginResult, WindsurfOrg, CheckUserLoginMethodResult, LoginMethodSniffResult, EmailStartResponse } from '@/types';
+import type { AnalyticsData } from '@/types/analytics';
+
+// 账号管理API
+export const accountApi = {
+  async addAccount(data: {
+    email: string;
+    password: string;
+    nickname: string;
+    tags: string[];
+    group?: string;
+  }): Promise<Account> {
+    return await invoke('add_account', data);
+  },
+
+  async getAllAccounts(): Promise<Account[]> {
+    return await invoke('get_all_accounts');
+  },
+
+  async getAccount(id: string): Promise<Account> {
+    return await invoke('get_account', { id });
+  },
+
+  async updateAccount(account: Account): Promise<void> {
+    return await invoke('update_account', { account });
+  },
+
+  async deleteAccount(id: string): Promise<void> {
+    return await invoke('delete_account', { id });
+  },
+
+  async deleteAccountsBatch(ids: string[]): Promise<{ success_count: number; failed_ids: string[] }> {
+    return await invoke('delete_accounts_batch', { ids });
+  },
+
+  async searchAccounts(query: string): Promise<Account[]> {
+    return await invoke('search_accounts', { query });
+  },
+
+  async filterAccountsByGroup(group: string): Promise<Account[]> {
+    return await invoke('filter_accounts_by_group', { group });
+  },
+
+  async filterAccountsByTags(tags: string[]): Promise<Account[]> {
+    return await invoke('filter_accounts_by_tags', { tags });
+  }
+};
+
+// API操作
+export const apiService = {
+  async loginAccount(id: string): Promise<{ 
+    success: boolean; 
+    expires_at: string;
+    plan_name?: string;
+    used_quota?: number;
+    total_quota?: number;
+    subscription_expires_at?: string;
+    is_disabled?: boolean;
+    billing_strategy?: number;
+    daily_quota_remaining_percent?: number;
+    weekly_quota_remaining_percent?: number;
+    daily_quota_reset_at_unix?: number;
+    weekly_quota_reset_at_unix?: number;
+    overage_balance_micros?: number;
+  }> {
+    return await invoke('login_account', { id });
+  },
+
+  async refreshToken(id: string): Promise<{ 
+    success: boolean; 
+    token?: string;
+    expires_at?: string; 
+    old_expires_at?: string; 
+    message?: string;
+    plan_name?: string;
+    used_quota?: number;
+    total_quota?: number;
+    subscription_expires_at?: string;
+    is_disabled?: boolean;
+    is_team_owner?: boolean;
+    billing_strategy?: number;
+    daily_quota_remaining_percent?: number;
+    weekly_quota_remaining_percent?: number;
+    daily_quota_reset_at_unix?: number;
+    weekly_quota_reset_at_unix?: number;
+    overage_balance_micros?: number;
+  }> {
+    return await invoke('refresh_token', { id });
+  },
+
+  async resetCredits(id: string, seatCount?: number): Promise<any> {
+    return await invoke('reset_credits', { id, seatCount });
+  },
+
+  async updateSeats(id: string, seatCount: number, retryTimes: number): Promise<UpdateSeatsResult> {
+    return await invoke('update_seats', { id, seatCount, retryTimes });
+  },
+
+  async getBilling(id: string): Promise<BillingInfo> {
+    return await invoke('get_billing', { id });
+  },
+
+  async batchResetCredits(ids: string[], seatCount?: number): Promise<BatchResult> {
+    return await invoke('batch_reset_credits', { ids, seatCount });
+  },
+
+  async batchRefreshTokens(ids: string[]): Promise<BatchResult> {
+    return await invoke('batch_refresh_tokens', { ids });
+  },
+
+  /**
+   * 更新订阅计划
+   * @param id 账号ID
+   * @param planType 计划类型
+   * @param paymentPeriod 付款周期（1=月付, 2=年付，默认1）
+   * @param preview 预览模式（true=仅预览不实际执行，默认false）
+   */
+  async updatePlan(id: string, planType: string, paymentPeriod: number = 1, preview: boolean = false): Promise<{
+    success: boolean;
+    preview?: boolean;
+    plan_type?: string;
+    payment_period?: number;
+    payment_period_name?: string;
+    status_code?: number;
+    applied_changes?: boolean;
+    payment_failure_reason?: string | null;
+    billing_update?: {
+      amount_due_immediately?: number;
+      price_per_seat?: number;
+      num_seats?: number;
+      sub_interval?: number;
+      sub_interval_name?: string;
+      amount_per_interval?: number;
+      billing_start?: string;
+      billing_end?: string;
+      unused_plan_refunded?: boolean;
+      has_sso_add_on?: boolean;
+    };
+    requires_password_reset?: boolean;
+    raw_response?: string;
+    timestamp: string;
+  }> {
+    return await invoke('update_plan', { id, planType, paymentPeriod, preview });
+  },
+
+  /**
+   * 取消订阅
+   * @param id 账号ID
+   * @param reason 取消原因
+   * @returns 包含操作结果的响应
+   */
+  async cancelSubscription(id: string, reason: string): Promise<{
+    success: boolean;
+    reason?: string;
+    status_code?: number;
+    raw_response?: string;
+    timestamp: string;
+  }> {
+    return await invoke('cancel_subscription', { id, reason });
+  },
+
+  /**
+   * 恢复订阅
+   * @param id 账号ID
+   * @returns 包含操作结果的响应
+   */
+  async resumeSubscription(id: string): Promise<{
+    success: boolean;
+    status_code?: number;
+    raw_response?: string;
+    timestamp: string;
+  }> {
+    return await invoke('resume_subscription', { id });
+  },
+
+  async getAccountInfo(id: string): Promise<any> {
+    return await invoke('get_account_info', { id });
+  },
+
+  async getCurrentUser(id: string): Promise<any> {
+    return await invoke('get_current_user', { id });
+  },
+
+  /**
+   * 获取套餐状态（积分/配额信息）
+   * 比 getCurrentUser 更轻量，专用于刷新积分状态
+   * @param id 账号ID
+   * @returns 包含套餐状态和积分信息的响应
+   */
+  async getPlanStatus(id: string): Promise<{
+    success: boolean;
+    plan_status?: {
+      plan_name?: string;
+      teams_tier?: number;
+      teams_tier_name?: string;
+      used_prompt_credits?: number;
+      used_flow_credits?: number;
+      used_flex_credits?: number;
+      available_prompt_credits?: number;
+      available_flow_credits?: number;
+      available_flex_credits?: number;
+      monthly_prompt_credits?: number;
+      monthly_flow_credits?: number;
+      plan_start?: number;
+      plan_end?: number;
+    };
+    status_code?: number;
+    error?: string;
+    timestamp: string;
+  }> {
+    return await invoke('get_plan_status', { id });
+  },
+
+  /**
+   * 获取试用绑卡链接
+   * @param id 账号ID
+   * @param teamsTier 团队等级: 1=Teams, 2=Pro, 3=Enterprise
+   * @param paymentPeriod 支付周期: 1=月付, 2=年付
+   * @param teamName 团队名称 (仅 Teams/Enterprise 需要)
+   * @param seatCount 席位数量 (仅 Teams/Enterprise 需要)
+   * @param turnstileToken Turnstile 验证令牌 (startTrial=true 时所有计划均必需)
+   * @returns 包含Stripe Checkout链接的响应
+   */
+  async getTrialPaymentLink(
+    id: string, 
+    teamsTier?: number,
+    paymentPeriod?: number,
+    startTrial?: boolean,
+    teamName?: string,
+    seatCount?: number,
+    turnstileToken?: string
+  ): Promise<{
+    success: boolean;
+    stripe_url?: string;
+    teams_tier?: number;
+    payment_period?: number;
+    status_code?: number;
+    error?: string;
+    timestamp: string;
+  }> {
+    return await invoke('get_trial_payment_link', { id, teamsTier, paymentPeriod, startTrial, teamName, seatCount, turnstileToken });
+  },
+
+  // === Protobuf解析API（返回解析后的结构化数据） ===
+  
+  /**
+   * 获取当前用户信息（自动解析Protobuf）
+   * 返回解析后的用户数据结构
+   */
+  async getCurrentUserParsed(id: string): Promise<{
+    success: boolean;
+    data?: {
+      user: {
+        id: string;
+        name: string;
+        email: string;
+        firebase_uid: string;
+        subscription_id: string;
+        team: string;
+        timezone: string;
+      };
+      subscription?: {
+        id: string;
+        email: string;
+        stripe_subscription_id: string;
+        stripe_customer_id: string;
+        seats: number;
+        usage: number;
+        quota: number;
+        used_quota: number;
+      };
+      plan?: {
+        name: string;
+        level: number;
+        bandwidth_limit: number;
+        cache_limit: number;
+      };
+      admin?: {
+        id: string;
+        username: string;
+        role: string;
+      };
+      is_root_admin: boolean;
+    };
+    parsed_data?: any;
+    timestamp: string;
+    error?: string;
+  }> {
+    return await invoke('get_current_user_parsed', { id });
+  },
+
+  /**
+   * 获取账单信息（自动解析Protobuf）
+   * TODO: 实现Protobuf解析
+   */
+  async getBillingParsed(id: string): Promise<any> {
+    return await invoke('get_billing_parsed', { id });
+  },
+
+  /**
+   * 批量获取用户信息（自动解析Protobuf）
+   */
+  async batchGetUsersParsed(ids: string[]): Promise<{
+    success: boolean;
+    results: Array<{
+      id: string;
+      success: boolean;
+      data?: any;
+      error?: string;
+    }>;
+    total: number;
+    timestamp: string;
+  }> {
+    return await invoke('batch_get_users_parsed', { ids });
+  },
+
+  /**
+   * 一键切换账号到Windsurf
+   * @param id 账号ID
+   * @returns 切换结果
+   */
+  async switchAccount(id: string): Promise<{ 
+    success: boolean; 
+    message?: string;
+    auth_token?: string;
+    machine_id_reset?: boolean;
+    seamless_patch_active?: boolean;
+    auto_enabled_seamless?: boolean;
+    error?: string;
+  }> {
+    return await invoke('switch_account', { id });
+  },
+  
+  /**
+   * 重置机器ID
+   * @returns 重置结果
+   */
+  async resetMachineId(): Promise<{
+    success: boolean;
+    message?: string;
+    error?: string;
+    requires_admin?: boolean;
+  }> {
+    return await invoke('reset_machine_id');
+  },
+};
+
+// 设置管理API
+export const settingsApi = {
+  async getSettings(): Promise<Settings> {
+    return await invoke('get_settings');
+  },
+
+  async updateSettings(settings: Settings): Promise<void> {
+    return await invoke('update_settings', { settings });
+  },
+
+  async getGroups(): Promise<string[]> {
+    return await invoke('get_groups');
+  },
+
+  async addGroup(name: string): Promise<void> {
+    return await invoke('add_group', { name });
+  },
+
+  async deleteGroup(name: string): Promise<void> {
+    return await invoke('delete_group', { name });
+  },
+
+  async renameGroup(oldName: string, newName: string): Promise<void> {
+    return await invoke('rename_group', { oldName, newName });
+  },
+
+  async getLogs(limit?: number): Promise<OperationLog[]> {
+    return await invoke('get_logs', { limit });
+  },
+
+  async clearLogs(): Promise<void> {
+    return await invoke('clear_logs');
+  },
+
+  async exportData(): Promise<any> {
+    return await invoke('export_data');
+  },
+
+  async getStats(): Promise<any> {
+    return await invoke('get_stats');
+  },
+
+  async getCurrentWindsurfInfo(): Promise<{
+    email?: string;
+    name?: string;
+    api_key?: string;
+    plan_name?: string;
+    team_id?: string;
+    version?: string;
+    is_active: boolean;
+  }> {
+    return await invoke('get_current_windsurf_info');
+  },
+
+  // 标签管理
+  async getTags(): Promise<GlobalTag[]> {
+    return await invoke('get_tags');
+  },
+
+  async addTag(tag: GlobalTag): Promise<void> {
+    return await invoke('add_tag', { tag });
+  },
+
+  async updateTag(oldName: string, tag: GlobalTag): Promise<void> {
+    return await invoke('update_tag', { oldName, tag });
+  },
+
+  async deleteTag(name: string): Promise<void> {
+    return await invoke('delete_tag', { name });
+  },
+
+  async batchUpdateAccountTags(accountIds: string[], addTags: string[], removeTags: string[]): Promise<{
+    success_count: number;
+    failed_count: number;
+  }> {
+    return await invoke('batch_update_account_tags', { accountIds, addTags, removeTags });
+  },
+
+  // Team Settings API
+  async getTeamConfig(id: string): Promise<{
+    success: boolean;
+    data?: {
+      team_id?: string;
+      allow_auto_run_commands?: boolean;
+      allow_mcp_servers?: boolean;
+      allow_app_deployments?: boolean;
+      allow_sandbox_app_deployments?: boolean;
+      allow_teams_app_deployments?: boolean;
+      allow_github_reviews?: boolean;
+      allow_github_description_edits?: boolean;
+      allow_conversation_sharing?: boolean;
+      allow_individual_level_analytics?: boolean;
+      allow_attribution?: boolean;
+      allow_vibe_and_replace?: boolean;
+      allow_browser_experimental_features?: boolean;
+      disable_deepwiki?: boolean;
+      allowed_mcp_servers?: string[];
+    };
+    error?: string;
+  }> {
+    return await invoke('get_team_config', { id });
+  },
+
+  async updateTeamConfig(id: string, config: {
+    allow_auto_run_commands?: boolean;
+    allow_mcp_servers?: boolean;
+    allow_app_deployments?: boolean;
+    allow_sandbox_app_deployments?: boolean;
+    allow_teams_app_deployments?: boolean;
+    allow_github_reviews?: boolean;
+    allow_github_description_edits?: boolean;
+    allow_conversation_sharing?: boolean;
+    allow_individual_level_analytics?: boolean;
+    allow_attribution?: boolean;
+    allow_vibe_and_replace?: boolean;
+    allow_browser_experimental_features?: boolean;
+    disable_deepwiki?: boolean;
+    allowed_mcp_servers?: string;
+  }): Promise<{ success: boolean; error?: string }> {
+    return await invoke('update_team_config', { id, config });
+  },
+
+  // 排序管理
+  async getSortedAccounts(sortField: SortField, sortDirection: SortDirection): Promise<Account[]> {
+    return await invoke('get_sorted_accounts', { sortField, sortDirection });
+  },
+
+  async updateAccountsOrder(accountIds: string[]): Promise<void> {
+    return await invoke('update_accounts_order', { accountIds });
+  },
+
+  async updateSortConfig(sortConfig: SortConfig): Promise<void> {
+    return await invoke('update_sort_config', { sortConfig });
+  },
+
+  async getSortConfig(): Promise<SortConfig> {
+    return await invoke('get_sort_config');
+  }
+};
+
+// Analytics API
+export const analyticsApi = {
+  /**
+   * 获取账户的使用分析数据（最近30天）
+   * @param id 账户ID
+   * @returns 分析数据
+   */
+  async getAccountAnalytics(id: string): Promise<AnalyticsData> {
+    return await invoke('get_account_analytics', { id });
+  }
+};
+
+// Devin Session 认证 API
+export const devinApi = {
+  /**
+   * 登录流派智能嗅探（方案 B 统一入口）
+   *
+   * 后端并发调：
+   * - Firebase 侧 `CheckUserLoginMethod`　（user_exists / is_migrated / has_password 等）
+   * - Devin 侧 `/_devin-auth/connections`　（method / sso_connections 等）
+   *
+   * 返回 `recommended` 字段标注建议的登录流派，前端据此自动分派。
+   */
+  async sniffLoginMethod(email: string): Promise<LoginMethodSniffResult> {
+    return await invoke('sniff_login_method', { email });
+  },
+
+  /**
+   * 单独调用 Firebase 侧 `CheckUserLoginMethod`（调试/明细展示）
+   *
+   * 日常智能登录请直接使用 `sniffLoginMethod`。
+   */
+  async checkUserLoginMethod(email: string): Promise<CheckUserLoginMethodResult> {
+    return await invoke('devin_check_user_login_method', { email });
+  },
+
+  /**
+   * 查询指定邮箱可用的登录方式（可选，用于 UI 预判断）
+   */
+  async checkConnections(email: string): Promise<any> {
+    return await invoke('devin_check_connections', { email });
+  },
+
+  /**
+   * 仅账密登录（底层接口），返回 auth1_token
+   */
+  async passwordLogin(email: string, password: string): Promise<{
+    auth1_token: string;
+    account_id?: string;
+    [key: string]: any;
+  }> {
+    return await invoke('devin_password_login', { email, password });
+  },
+
+  /**
+   * 使用 auth1_token 换取 session_token（底层接口）
+   */
+  async windsurfPostAuth(auth1Token: string, orgId?: string): Promise<{
+    session_token: string;
+    auth1_token?: string;
+    account_id?: string;
+    primary_org_id?: string;
+    orgs: WindsurfOrg[];
+  }> {
+    return await invoke('devin_windsurf_post_auth', { auth1Token, orgId });
+  },
+
+  /**
+   * 完整流程：账密登录 + 建账号（主流程）
+   *
+   * 当账号属于多个组织时，返回 `requires_org_selection=true` + orgs 列表，
+   * UI 需要让用户选择 org 后调用 `addAccountWithOrg`
+   */
+  async addAccountByLogin(params: {
+    email: string;
+    password: string;
+    nickname?: string;
+    tags: string[];
+    group?: string;
+    orgId?: string;
+  }): Promise<DevinLoginResult> {
+    return await invoke('add_account_by_devin_login', {
+      email: params.email,
+      password: params.password,
+      nickname: params.nickname,
+      tags: params.tags,
+      group: params.group,
+      orgId: params.orgId,
+    });
+  },
+
+  /**
+   * 多组织场景下的二次选择：在已有 auth1_token 的基础上，指定 org_id 完成账号创建
+   *
+   * `password` 可选：账密流首次选 org 失败后二次调用时传入用户原始密码，让账号卡能回显；
+   * 纯凭证迁入 / 邮箱无密登录场景可省略。
+   */
+  async addAccountWithOrg(params: {
+    email: string;
+    auth1Token: string;
+    orgId: string;
+    nickname?: string;
+    tags: string[];
+    group?: string;
+    password?: string;
+  }): Promise<DevinLoginResult> {
+    return await invoke('add_account_by_devin_with_org', {
+      email: params.email,
+      auth1Token: params.auth1Token,
+      orgId: params.orgId,
+      nickname: params.nickname,
+      tags: params.tags,
+      group: params.group,
+      password: params.password ?? null,
+    });
+  },
+
+  /**
+   * 使用已存储的 auth1_token 刷新 session_token
+   */
+  async refreshSession(id: string): Promise<{
+    success: boolean;
+    session_token: string;
+    primary_org_id?: string;
+    message?: string;
+  }> {
+    return await invoke('refresh_devin_session', { id });
+  },
+
+  /**
+   * 通过已有的 `devin-session-token$...` 前缀 session_token 直接导入 Devin 账号
+   *
+   * 适用场景：用户从浏览器 localStorage / cookie 拷出有效 session_token 的迁入路径。
+   * 仅需 `sessionToken`，后端调 GetCurrentUser 反查 email / api_key / 配额等信息。
+   * Devin 扩展字段（account_id / auth1_token / primary_org_id）留空——日常 API 仍可工作，
+   * 仅 `refreshSession` 会失败（到期需用户重新获取 session_token）。
+   */
+  async addAccountBySessionToken(params: {
+    sessionToken: string;
+    nickname?: string;
+    tags: string[];
+    group?: string;
+  }): Promise<DevinLoginResult> {
+    return await invoke('add_account_by_devin_session_token', {
+      sessionToken: params.sessionToken,
+      nickname: params.nickname,
+      tags: params.tags,
+      group: params.group,
+    });
+  },
+
+  // ========== 邮箱验证码（无密码登录） ==========
+
+  /**
+   * 发送邮箱验证码（底层接口）
+   *
+   * - `mode`：`"signup"` 或 `"login"`（无密码邮件登录），默认 `"login"`
+   * - `product`：默认 `"Windsurf"`；服务端对 `/email/start` 强制 literal 校验，
+   *   仅接受 `"Devin"` / `"Windsurf"`（首字母大写），传小写会返回 422。
+   *
+   * 服务端向邮箱发送 6 位验证码，并返回 `email_verification_token`，
+   * 供后续 `addAccountByEmailLogin` 回传使用。
+   */
+  async emailStart(
+    email: string,
+    mode: 'signup' | 'login' = 'login',
+    product: 'Windsurf' | 'Devin' = 'Windsurf'
+  ): Promise<EmailStartResponse> {
+    return await invoke('devin_email_start', { email, mode, product });
+  },
+
+  /**
+   * 完整流程：邮箱验证码注册新账号 + 建账号
+   *
+   * 前置：调用方已通过 `emailStart(email, "signup")` 拿到 `email_verification_token`，
+   * 并引导用户读取邮件中的 6 位验证码。
+   *
+   * 服务端 `mode=signup` 完成注册并返回新账号的 auth1_token，
+   * 多组织场景下返回 `requires_org_selection=true` + orgs，UI 需调 `addAccountWithOrg` 二次完成。
+   */
+  async addAccountByRegister(params: {
+    email: string;
+    emailVerificationToken: string;
+    code: string;
+    password: string;
+    name: string;
+    nickname?: string;
+    tags: string[];
+    group?: string;
+    orgId?: string;
+  }): Promise<DevinLoginResult> {
+    return await invoke('add_account_by_devin_register', params);
+  },
+
+  /**
+   * 完整流程：无密码邮件验证码登录 + 建账号
+   *
+   * 用于从 SSO 迁移且无密码、或忘记密码的已存在 Devin 账号。
+   * 前置：调用方已通过 `emailStart(email, "login")` 拿到 `email_verification_token`，
+   * 并引导用户读取邮件中的 6 位验证码。
+   *
+   * 服务端 `mode=login` 时**不会创建新账号**，仅返回已有账号的 auth1_token。
+   * 多组织场景下返回 `requires_org_selection=true` + orgs，UI 需调 `addAccountWithOrg` 二次完成。
+   */
+  async addAccountByEmailLogin(params: {
+    email: string;
+    emailVerificationToken: string;
+    code: string;
+    nickname?: string;
+    tags: string[];
+    group?: string;
+    orgId?: string;
+  }): Promise<DevinLoginResult> {
+    return await invoke('add_account_by_devin_email_login', params);
+  },
+};
+
+// 系统维护 API
+export const systemApi = {
+  /**
+   * 重置HTTP客户端（用于从网络故障中恢复）
+   * 当遇到连续的API请求失败时，可以调用此方法重置HTTP连接池
+   */
+  async resetHttpClient(): Promise<{ success: boolean; message: string }> {
+    return await invoke('reset_http_client');
+  }
+};
