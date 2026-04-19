@@ -49,8 +49,8 @@
             </el-icon>
           </div>
           <div class="card-info">
-            <span class="card-label">Windsurf 版本</span>
-            <span class="card-value">{{ windsurfVersion || '未检测到' }}</span>
+            <span class="card-label">Windsurf Version</span>
+            <span class="card-value">{{ windsurfVersion || 'Not detected' }}</span>
           </div>
         </div>
         
@@ -61,8 +61,8 @@
             </el-icon>
           </div>
           <div class="card-info">
-            <span class="card-label">当前账号</span>
-            <span class="card-value">{{ currentEmail || '未登录' }}</span>
+            <span class="card-label">Current Account</span>
+            <span class="card-value">{{ currentEmail || 'Not logged in' }}</span>
           </div>
         </div>
       </div>
@@ -96,31 +96,31 @@
           <div class="title-icon-wrapper sponsor-icon">
             <el-icon><Coffee /></el-icon>
           </div>
-          请作者喝杯咖啡
+          Buy the author a coffee
         </h3>
         <div class="sponsor-grid">
           <div class="sponsor-item alipay">
             <div class="qr-wrapper">
               <img src="/支付宝支付.png" alt="支付宝" class="sponsor-qr" />
               <div class="qr-overlay">
-                <span class="qr-text">支付宝扫码</span>
+                <span class="qr-text">Alipay QR</span>
               </div>
             </div>
             <div class="sponsor-label">
               <span class="pay-icon alipay-icon">支</span>
-              支付宝
+              Alipay
             </div>
           </div>
           <div class="sponsor-item wechat">
             <div class="qr-wrapper">
               <img src="/微信支付.png" alt="微信支付" class="sponsor-qr" />
               <div class="qr-overlay">
-                <span class="qr-text">微信扫码</span>
+                <span class="qr-text">WeChat QR</span>
               </div>
             </div>
             <div class="sponsor-label">
               <span class="pay-icon wechat-icon">微</span>
-              微信支付
+              WeChat Pay
             </div>
           </div>
         </div>
@@ -131,80 +131,80 @@
           <div class="title-icon-wrapper">
             <el-icon><Star /></el-icon>
           </div>
-          功能特性
+Features
         </h3>
         <div class="feature-grid">
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Document /></el-icon>
             </div>
-            <span class="feature-text">导出账号</span>
+            <span class="feature-text">Export Accounts</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><DataAnalysis /></el-icon>
             </div>
-            <span class="feature-text">统计信息</span>
+            <span class="feature-text">Statistics</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Refresh /></el-icon>
             </div>
-            <span class="feature-text">刷新状态</span>
+            <span class="feature-text">Refresh Status</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><User /></el-icon>
             </div>
-            <span class="feature-text">多账号管理</span>
+            <span class="feature-text">Multi-Account Management</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Switch /></el-icon>
             </div>
-            <span class="feature-text">切换账号</span>
+            <span class="feature-text">Switch Account</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Delete /></el-icon>
             </div>
-            <span class="feature-text">删除账号</span>
+            <span class="feature-text">Delete Account</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Edit /></el-icon>
             </div>
-            <span class="feature-text">编辑账号</span>
+            <span class="feature-text">Edit Account</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Upload /></el-icon>
             </div>
-            <span class="feature-text">批量导入</span>
+            <span class="feature-text">Batch Import</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><List /></el-icon>
             </div>
-            <span class="feature-text">操作日志</span>
+            <span class="feature-text">Logs</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Setting /></el-icon>
             </div>
-            <span class="feature-text">设置</span>
+            <span class="feature-text">Settings</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Link /></el-icon>
             </div>
-            <span class="feature-text">获取链接</span>
+            <span class="feature-text">Get Link</span>
           </div>
           <div class="feature-card">
             <div class="feature-icon-wrapper">
               <el-icon><Lightning /></el-icon>
             </div>
-            <span class="feature-text">无感换号</span>
+            <span class="feature-text">Seamless Switch</span>
           </div>
         </div>
       </div>
@@ -217,7 +217,7 @@
           <p class="year">© 2025 All rights reserved</p>
         </div>
         <p class="disclaimer">
-          本软件仅供学习交流使用，请勿用于商业用途
+          This software is for learning and communication only. Do not use for commercial purposes.
         </p>
       </div>
     </div>

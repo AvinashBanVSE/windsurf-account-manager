@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="uiStore.showStatsDialog"
-    title="统计信息"
+    title="Statistics"
     width="700px"
   >
     <div v-if="loading" class="loading-container">

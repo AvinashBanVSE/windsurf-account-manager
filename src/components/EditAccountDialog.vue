@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="uiStore.showEditAccountDialog"
-    title="编辑账号"
+    title="Edit Account"
     width="500px"
     :close-on-click-modal="false"
   >

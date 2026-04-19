@@ -1,24 +1,24 @@
 <template>
   <el-dialog
     v-model="uiStore.showSettingsDialog"
-    title="设置"
+    title="Settings"
     width="700px"
   >
     <el-tabs v-model="activeTab" type="border-card">
       <!-- 基础设置标签页 -->
-      <el-tab-pane label="基础设置" name="basic">
+      <el-tab-pane label="Basic" name="basic">
         <el-form :model="settings" label-width="140px">
-          <el-form-item label="自动刷新Token">
+          <el-form-item label="Auto Refresh Token">
             <el-switch v-model="settings.auto_refresh_token" />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，Token过期时将自动刷新
+              When enabled, will auto-refresh token when expired
             </div>
           </el-form-item>
           
-          <el-form-item label="全量并发刷新" v-if="settings.auto_refresh_token">
+          <el-form-item label="Unlimited Concurrent Refresh" v-if="settings.auto_refresh_token">
             <el-switch v-model="settings.unlimitedConcurrentRefresh" />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，自动刷新Token时所有账号同时并发，不受并发限制，可大幅节省时间
+              When enabled, all accounts refresh concurrently without limit to save time
             </div>
           </el-form-item>
           
@@ -36,7 +36,7 @@
           </el-form-item>
           -->
           
-          <el-form-item label="重试次数">
+          <el-form-item label="Retry Times">
             <el-input-number
               v-model="settings.retry_times"
               :min="1"
@@ -44,11 +44,11 @@
               :step="1"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              API调用失败时的重试次数
+              Retry count when API call fails
             </div>
           </el-form-item>
           
-          <el-form-item label="并发限制">
+          <el-form-item label="Concurrent Limit">
             <el-input-number
               v-model="settings.concurrent_limit"
               :min="1"
@@ -57,36 +57,36 @@
               :disabled="settings.unlimitedConcurrentRefresh"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              {{ settings.unlimitedConcurrentRefresh ? '已开启全量并发刷新，此设置不影响自动刷新' : '批量操作时的最大并发数' }}
+              {{ settings.unlimitedConcurrentRefresh ? 'Unlimited concurrent refresh enabled, this setting does not affect auto refresh' : 'Max concurrent for batch operations' }}
             </div>
           </el-form-item>
           
-          <el-form-item label="界面主题">
+          <el-form-item label="Theme">
             <el-radio-group v-model="settings.theme">
-              <el-radio-button label="light">浅色</el-radio-button>
-              <el-radio-button label="dark">深色</el-radio-button>
+              <el-radio-button label="light">Light</el-radio-button>
+              <el-radio-button label="dark">Dark</el-radio-button>
             </el-radio-group>
           </el-form-item>
           
-          <el-form-item label="显示详细结果">
+          <el-form-item label="Show Detailed Results">
             <el-switch 
               v-model="settings.show_seats_result_dialog"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，积分重置时将显示详细的座位更新结果对话框
+              When enabled, shows detailed seat update results during credit reset
             </div>
           </el-form-item>
           
-          <el-form-item label="隐私模式">
+          <el-form-item label="Privacy Mode">
             <el-switch 
               v-model="settings.privacyMode"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，所有邮箱地址将显示为随机字符，保护隐私（适用于截图演示）
+              When enabled, all emails display as random characters to protect privacy (for screenshots)
             </div>
           </el-form-item>
           

@@ -7,47 +7,47 @@
     class="auto-reset-dialog"
     @close="handleClose"
   >
-    <!-- 自定义对话框头部 -->
+    <!-- Custom Dialog Header -->
     <template #header>
       <div class="dialog-header">
         <div class="header-title">
           <div class="header-icon">
             <el-icon><Timer /></el-icon>
           </div>
-          <h3 class="header-text">自动重置积分</h3>
+          <h3 class="header-text">Auto Reset Credits</h3>
         </div>
         <el-button :icon="Close" circle @click="visible = false" class="close-btn" />
       </div>
     </template>
     
     <el-tabs v-model="activeTab" @tab-change="handleTabChange" class="custom-tabs">
-      <!-- Tab 1: 规则配置 -->
-      <el-tab-pane label="规则配置" name="rules">
+      <!-- Tab 1: Rule Config -->
+      <el-tab-pane label="Rule Config" name="rules">
         <div class="tab-content">
-          <!-- 添加配置区域 -->
+          <!-- Add Config Area -->
           <el-card class="add-config-card" shadow="never">
             <template #header>
               <div class="card-header">
-                <span>添加自动重置规则</span>
+                <span>Add Auto Reset Rule</span>
               </div>
             </template>
             
             <el-form :model="newConfig" label-width="100px" size="default">
               <el-row :gutter="16">
                 <el-col :span="12">
-                  <el-form-item label="目标类型">
+                  <el-form-item label="Target Type">
                     <el-radio-group v-model="newConfig.targetType" @change="handleTargetTypeChange">
-                      <el-radio value="group">按分组</el-radio>
-                      <el-radio value="account">按账号</el-radio>
+                      <el-radio value="group">By Group</el-radio>
+                      <el-radio value="account">By Account</el-radio>
                     </el-radio-group>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="选择目标">
+                  <el-form-item label="Select Target">
                     <el-select 
                       v-if="newConfig.targetType === 'group'"
                       v-model="newConfig.targetId" 
-                      placeholder="选择分组"
+                      placeholder="Select group"
                       style="width: 100%;"
                     >
                       <el-option
@@ -59,8 +59,8 @@
                         <div class="group-option">
                           <span>{{ group }}</span>
                           <span class="group-stats">
-                            <el-tag type="primary" size="small">主{{ getGroupStats(group).masters }}</el-tag>
-                            <el-tag type="info" size="small">成员{{ getGroupStats(group).members }}</el-tag>
+                            <el-tag type="primary" size="small">Master {{ getGroupStats(group).masters }}</el-tag>
+                            <el-tag type="info" size="small">Member {{ getGroupStats(group).members }}</el-tag>
                           </span>
                         </div>
                       </el-option>
@@ -68,7 +68,7 @@
                     <el-select 
                       v-else
                       v-model="newConfig.targetId" 
-                      placeholder="选择账号"
+                      placeholder="Select account"
                       filterable
                       style="width: 100%;"
                     >
@@ -85,14 +85,14 @@
               
               <el-row :gutter="16">
                 <el-col :span="8">
-                  <el-form-item label="检查间隔">
+<el-form-item label="Check Interval">
                     <el-input-number
                       v-model="newConfig.checkInterval"
                       :min="1"
                       :max="1440"
                       style="width: 100%;"
                     />
-                    <span class="unit-label">分钟</span>
+<span class="unit-label">min</span>
                     <div class="interval-presets">
                       <el-button size="small" text @click="newConfig.checkInterval = 5">5</el-button>
                       <el-button size="small" text @click="newConfig.checkInterval = 10">10</el-button>
@@ -102,7 +102,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item label="使用率阈值">
+                  <el-form-item label="Usage Threshold">
                     <el-input-number
                       v-model="newConfig.usageThreshold"
                       :min="1"
@@ -113,7 +113,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item label="剩余阈值">
+                  <el-form-item label="Remaining Threshold">
                     <el-input-number
                       v-model="newConfig.remainingThreshold"
                       :min="0"
@@ -121,7 +121,7 @@
                       :step="100"
                       style="width: 100%;"
                     />
-                    <span class="unit-label">积分</span>
+                    <span class="unit-label">credits</span>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -129,21 +129,21 @@
               <el-form-item>
                 <el-button type="primary" @click="handleAddConfig" :loading="adding">
                   <el-icon><Plus /></el-icon>
-                  添加规则
+                  Add Rule
                 </el-button>
                 <span class="tip-text">
-                  当使用率 ≥ {{ newConfig.usageThreshold }}% 且 剩余积分 ≤ {{ newConfig.remainingThreshold }} 时触发重置
+                  Triggers reset when usage ≥ {{ newConfig.usageThreshold }}% AND remaining credits ≤ {{ newConfig.remainingThreshold }}
                 </span>
               </el-form-item>
             </el-form>
           </el-card>
           
-          <!-- 已配置的规则列表 -->
+          <!-- Configured Rules List -->
           <el-card class="config-list-card" shadow="never">
             <template #header>
               <div class="card-header">
                 <div class="header-left">
-                  <span>已配置的规则 ({{ filteredConfigs.length }}/{{ configs.length }})</span>
+                  <span>Configured Rules ({{ filteredConfigs.length }}/{{ configs.length }})</span>
                   <el-pagination
                     v-if="filteredConfigs.length > 0"
                     v-model:current-page="configCurrentPage"
@@ -158,7 +158,7 @@
                 <div class="header-actions">
                   <el-input
                     v-model="searchKeyword"
-                    placeholder="搜索账号/备注"
+                    placeholder="Search account/notes"
                     :prefix-icon="Search"
                     clearable
                     size="small"
@@ -172,7 +172,7 @@
                     :loading="checkingAll"
                   >
                     <el-icon><Refresh /></el-icon>
-                    立即检查全部
+                    Check All Now
                   </el-button>
                   <el-button 
                     v-if="filteredConfigs.length > 0" 
@@ -182,61 +182,61 @@
                     :loading="resettingAll"
                   >
                     <el-icon><RefreshRight /></el-icon>
-                    立即重置全部
+                    Reset All Now
                   </el-button>
                 </div>
               </div>
             </template>
             
-            <el-table :data="paginatedConfigs" v-loading="loading" empty-text="暂无自动重置规则">
-              <el-table-column label="目标" min-width="280">
+            <el-table :data="paginatedConfigs" v-loading="loading" empty-text="No auto reset rules configured">
+              <el-table-column label="Target" min-width="280">
                 <template #default="{ row }">
                   <div class="target-info">
                     <el-tag :type="row.targetType === 'group' ? 'primary' : 'success'" size="small">
-                      {{ row.targetType === 'group' ? '分组' : '账号' }}
+                      {{ row.targetType === 'group' ? 'Group' : 'Account' }}
                     </el-tag>
                     <span class="target-name">
                       {{ getTargetEmail(row) }}
                       <span v-if="getTargetNickname(row)" class="nickname">({{ getTargetNickname(row) }})</span>
                     </span>
                     <span v-if="row.targetType === 'group'" class="group-info">
-                      <el-tag type="warning" size="small" effect="plain">主{{ getGroupStats(row.targetId).masters }}</el-tag>
-                      <el-tag type="info" size="small" effect="plain">成员{{ getGroupStats(row.targetId).members }}</el-tag>
+                      <el-tag type="warning" size="small" effect="plain">Master {{ getGroupStats(row.targetId).masters }}</el-tag>
+                      <el-tag type="info" size="small" effect="plain">Member {{ getGroupStats(row.targetId).members }}</el-tag>
                     </span>
                   </div>
                 </template>
               </el-table-column>
               
-              <el-table-column label="检查间隔" width="90" align="center">
+              <el-table-column label="Interval" width="90" align="center">
                 <template #default="{ row }">
-                  {{ row.checkInterval }}分钟
+                  {{ row.checkInterval }}min
                 </template>
               </el-table-column>
               
-              <el-table-column label="触发条件" width="140">
+              <el-table-column label="Condition" width="140">
                 <template #default="{ row }">
                   <div class="condition-info">
-                    <span>使用率 ≥ {{ row.usageThreshold }}%</span>
-                    <span>剩余 ≤ {{ row.remainingThreshold }}</span>
+                    <span>Usage ≥ {{ row.usageThreshold }}%</span>
+                    <span>Remaining ≤ {{ row.remainingThreshold }}</span>
                   </div>
                 </template>
               </el-table-column>
               
-              <el-table-column label="上次检查" width="120">
+              <el-table-column label="Last Check" width="120">
                 <template #default="{ row }">
                   <span v-if="row.lastCheckAt">{{ formatTime(row.lastCheckAt) }}</span>
                   <span v-else class="no-data">-</span>
                 </template>
               </el-table-column>
               
-              <el-table-column label="上次重置" width="120">
+              <el-table-column label="Last Reset" width="120">
                 <template #default="{ row }">
                   <span v-if="row.lastResetAt">{{ formatTime(row.lastResetAt) }}</span>
                   <span v-else class="no-data">-</span>
                 </template>
               </el-table-column>
               
-              <el-table-column label="状态" width="70" align="center">
+              <el-table-column label="Status" width="70" align="center">
                 <template #default="{ row }">
                   <el-switch
                     v-model="row.enabled"
@@ -246,12 +246,12 @@
                 </template>
               </el-table-column>
               
-              <el-table-column label="操作" width="150" align="center">
+              <el-table-column label="Actions" width="150" align="center">
                 <template #default="{ row }">
-                  <el-button type="primary" link size="small" @click="handleEditConfig(row)">编辑</el-button>
-                  <el-button type="success" link size="small" @click="handleCheckNow(row)" :loading="row._checking">检查</el-button>
-                  <el-button type="warning" link size="small" @click="handleResetNow(row)" :loading="row._resetting">重置</el-button>
-                  <el-button type="danger" link size="small" @click="handleDeleteConfig(row)">删除</el-button>
+                  <el-button type="primary" link size="small" @click="handleEditConfig(row)">Edit</el-button>
+                  <el-button type="success" link size="small" @click="handleCheckNow(row)" :loading="row._checking">Check</el-button>
+                  <el-button type="warning" link size="small" @click="handleResetNow(row)" :loading="row._resetting">Reset</el-button>
+                  <el-button type="danger" link size="small" @click="handleDeleteConfig(row)">Delete</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -260,22 +260,22 @@
         </div>
       </el-tab-pane>
       
-      <!-- Tab 2: 重置记录 -->
-      <el-tab-pane label="重置记录" name="records">
+      <!-- Tab 2: Reset Records -->
+      <el-tab-pane label="Reset Records" name="records">
         <div class="tab-content">
           <el-card shadow="never">
             <template #header>
               <div class="card-header">
-                <span>重置历史记录 ({{ recordsTotal }})</span>
+                <span>Reset History ({{ recordsTotal }})</span>
                 <el-button v-if="recordsTotal > 0" type="danger" link @click="handleClearRecords">
                   <el-icon><Delete /></el-icon>
-                  清空记录
+                  Clear Records
                 </el-button>
               </div>
             </template>
             
-            <el-table :data="records" v-loading="recordsLoading" empty-text="暂无重置记录">
-              <el-table-column label="账号" min-width="200">
+            <el-table :data="records" v-loading="recordsLoading" empty-text="No reset records">
+              <el-table-column label="Account" min-width="200">
                 <template #default="{ row }">
                   <div>
                     <span>{{ row.account_email }}</span>
@@ -284,41 +284,41 @@
                 </template>
               </el-table-column>
               
-              <el-table-column label="主号" min-width="180">
+              <el-table-column label="Master" min-width="180">
                 <template #default="{ row }">
                   {{ row.master_email }}
                 </template>
               </el-table-column>
               
-              <el-table-column label="重置前使用" width="120" align="center">
+              <el-table-column label="Used Before Reset" width="120" align="center">
                 <template #default="{ row }">
                   <span>{{ formatNumber(row.used_quota_before / 100) }}</span>
                   <span class="usage-percent">({{ row.usage_percent }}%)</span>
                 </template>
               </el-table-column>
               
-              <el-table-column label="总配额" width="100" align="center">
+              <el-table-column label="Total Quota" width="100" align="center">
                 <template #default="{ row }">
                   {{ formatNumber(row.total_quota / 100) }}
                 </template>
               </el-table-column>
               
-              <el-table-column label="自动加入" width="80" align="center">
+              <el-table-column label="Auto Join" width="80" align="center">
                 <template #default="{ row }">
                   <el-tag :type="row.auto_joined ? 'success' : 'info'" size="small">
-                    {{ row.auto_joined ? '是' : '否' }}
+                    {{ row.auto_joined ? 'Yes' : 'No' }}
                   </el-tag>
                 </template>
               </el-table-column>
               
-              <el-table-column label="重置时间" width="160">
+              <el-table-column label="Reset Time" width="160">
                 <template #default="{ row }">
                   {{ formatFullTime(row.reset_at) }}
                 </template>
               </el-table-column>
             </el-table>
             
-            <!-- 记录分页 -->
+            <!-- Records Pagination -->
             <div class="pagination-wrapper">
               <el-pagination
                 v-model:current-page="recordsPage"
@@ -335,18 +335,18 @@
         </div>
       </el-tab-pane>
       
-      <!-- Tab 3: 统计概览 -->
-      <el-tab-pane label="统计概览" name="stats">
+      <!-- Tab 3: Statistics Overview -->
+      <el-tab-pane label="Statistics" name="stats">
         <div class="tab-content">
           <el-card shadow="never">
             <template #header>
               <div class="card-header">
-                <span>账号重置统计 ({{ statsTotal }})</span>
+                <span>Account Reset Statistics ({{ statsTotal }})</span>
               </div>
             </template>
             
-            <el-table :data="stats" v-loading="statsLoading" empty-text="暂无统计数据">
-              <el-table-column label="账号" min-width="200">
+            <el-table :data="stats" v-loading="statsLoading" empty-text="No statistics data">
+              <el-table-column label="Account" min-width="200">
                 <template #default="{ row }">
                   <div>
                     <span>{{ row.account_email }}</span>
@@ -355,25 +355,25 @@
                 </template>
               </el-table-column>
               
-              <el-table-column label="重置次数" width="100" align="center">
+              <el-table-column label="Reset Count" width="100" align="center">
                 <template #default="{ row }">
                   <el-tag type="primary">{{ row.reset_count }}</el-tag>
                 </template>
               </el-table-column>
               
-              <el-table-column label="累计使用额度" width="140" align="center">
+              <el-table-column label="Total Used" width="140" align="center">
                 <template #default="{ row }">
                   {{ formatNumber(row.total_used_quota / 100) }}
                 </template>
               </el-table-column>
               
-              <el-table-column label="平均每次使用" width="140" align="center">
+              <el-table-column label="Avg Per Reset" width="140" align="center">
                 <template #default="{ row }">
                   {{ row.reset_count > 0 ? formatNumber(Math.round(row.total_used_quota / row.reset_count / 100)) : '-' }}
                 </template>
               </el-table-column>
               
-              <el-table-column label="上次重置" width="160">
+              <el-table-column label="Last Reset" width="160">
                 <template #default="{ row }">
                   <span v-if="row.last_reset_at">{{ formatFullTime(row.last_reset_at) }}</span>
                   <span v-else class="no-data">-</span>
@@ -381,7 +381,7 @@
               </el-table-column>
             </el-table>
             
-            <!-- 统计分页 -->
+            <!-- Statistics Pagination -->
             <div class="pagination-wrapper">
               <el-pagination
                 v-model:current-page="statsPage"
@@ -399,36 +399,36 @@
       </el-tab-pane>
     </el-tabs>
     
-    <!-- 编辑对话框 -->
+    <!-- Edit Dialog -->
     <el-dialog
       v-model="showEditDialog"
-      title="编辑自动重置规则"
+      title="Edit Auto Reset Rule"
       width="450px"
       :close-on-click-modal="false"
       append-to-body
     >
       <el-form :model="editForm" label-width="100px" v-if="editingConfig">
-        <el-form-item label="目标">
+        <el-form-item label="Target">
           <span>{{ getTargetName(editingConfig) }}</span>
         </el-form-item>
         
-        <el-form-item label="检查间隔">
+        <el-form-item label="Check Interval">
           <el-input-number
             v-model="editForm.checkInterval"
             :min="1"
             :max="1440"
             style="width: 100%;"
           />
-          <span class="unit-label">分钟</span>
+          <span class="unit-label">minutes</span>
           <div class="interval-presets">
-            <el-button size="small" text @click="editForm.checkInterval = 5">5分钟</el-button>
-            <el-button size="small" text @click="editForm.checkInterval = 10">10分钟</el-button>
-            <el-button size="small" text @click="editForm.checkInterval = 30">30分钟</el-button>
-            <el-button size="small" text @click="editForm.checkInterval = 60">60分钟</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 5">5 min</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 10">10 min</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 30">30 min</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 60">60 min</el-button>
           </div>
         </el-form-item>
         
-        <el-form-item label="使用率阈值">
+        <el-form-item label="Usage Threshold">
           <el-input-number
             v-model="editForm.usageThreshold"
             :min="1"
@@ -438,7 +438,7 @@
           <span class="unit-label">%</span>
         </el-form-item>
         
-        <el-form-item label="剩余阈值">
+        <el-form-item label="Remaining Threshold">
           <el-input-number
             v-model="editForm.remainingThreshold"
             :min="0"
@@ -446,19 +446,19 @@
             :step="100"
             style="width: 100%;"
           />
-          <span class="unit-label">积分</span>
+          <span class="unit-label">credits</span>
         </el-form-item>
         
         <el-form-item>
-          <span class="tip-text">
-            当使用率 ≥ {{ editForm.usageThreshold }}% 且 剩余积分 ≤ {{ editForm.remainingThreshold }} 时触发重置
-          </span>
+<span class="tip-text">
+              Triggers reset when usage ≥ {{ editForm.usageThreshold }}% AND remaining credits ≤ {{ editForm.remainingThreshold }}
+            </span>
         </el-form-item>
       </el-form>
       
       <template #footer>
-        <el-button @click="showEditDialog = false">取消</el-button>
-        <el-button type="primary" @click="handleSaveEdit">保存</el-button>
+        <el-button @click="showEditDialog = false">Cancel</el-button>
+        <el-button type="primary" @click="handleSaveEdit">Save</el-button>
       </template>
     </el-dialog>
   </el-dialog>
@@ -526,13 +526,13 @@ const visible = computed({
   set: (val) => emit('update:modelValue', val)
 });
 
-// Tab 状态
+// Tab state
 const activeTab = ref('rules');
 
-// 分页选项
+// Pagination options
 const pageSizeOptions = [10, 20, 50, 100, 200];
 
-// 规则配置状态
+// Rule config state
 const loading = ref(false);
 const adding = ref(false);
 const checkingAll = ref(false);
@@ -542,21 +542,21 @@ const configs = ref<AutoResetConfig[]>([]);
 const configCurrentPage = ref(1);
 const configPageSize = ref(20);
 
-// 重置记录状态
+// Reset records state
 const recordsLoading = ref(false);
 const records = ref<ResetRecord[]>([]);
 const recordsPage = ref(1);
 const recordsPageSize = ref(20);
 const recordsTotal = ref(0);
 
-// 统计概览状态
+// Statistics overview state
 const statsLoading = ref(false);
 const stats = ref<AccountResetStats[]>([]);
 const statsPage = ref(1);
 const statsPageSize = ref(20);
 const statsTotal = ref(0);
 
-// 定时器ID映射
+// Timer ID mapping
 const timerMap = ref<Map<string, ReturnType<typeof setInterval>>>(new Map());
 
 const newConfig = ref({
@@ -567,7 +567,7 @@ const newConfig = ref({
   remainingThreshold: 1000,
 });
 
-// 编辑相关状态
+// Edit related state
 const showEditDialog = ref(false);
 const editingConfig = ref<AutoResetConfig | null>(null);
 const editForm = ref({
@@ -576,7 +576,7 @@ const editForm = ref({
   remainingThreshold: 1000,
 });
 
-// 过滤后的配置列表
+// Filtered config list
 const filteredConfigs = computed(() => {
   if (!searchKeyword.value.trim()) return configs.value;
   const keyword = searchKeyword.value.toLowerCase().trim();
@@ -586,14 +586,14 @@ const filteredConfigs = computed(() => {
   });
 });
 
-// 分页后的配置列表
+// Paginated config list
 const paginatedConfigs = computed(() => {
   const start = (configCurrentPage.value - 1) * configPageSize.value;
   const end = start + configPageSize.value;
   return filteredConfigs.value.slice(start, end);
 });
 
-// 加载配置
+// Load configs
 async function loadConfigs() {
   loading.value = true;
   try {
@@ -601,13 +601,13 @@ async function loadConfigs() {
     configs.value = result.map(c => ({ ...c, _updating: false, _checking: false, _resetting: false }));
     setupTimers();
   } catch (error) {
-    console.error('加载自动重置配置失败:', error);
+    console.error('Failed to load auto reset config:', error);
   } finally {
     loading.value = false;
   }
 }
 
-// 加载重置记录
+// Load reset records
 async function loadRecords() {
   recordsLoading.value = true;
   try {
@@ -618,13 +618,13 @@ async function loadRecords() {
     records.value = result.records;
     recordsTotal.value = result.total;
   } catch (error) {
-    console.error('加载重置记录失败:', error);
+    console.error('Failed to load reset records:', error);
   } finally {
     recordsLoading.value = false;
   }
 }
 
-// 加载统计数据
+// Load statistics
 async function loadStats() {
   statsLoading.value = true;
   try {
@@ -635,13 +635,13 @@ async function loadStats() {
     stats.value = result.stats;
     statsTotal.value = result.total;
   } catch (error) {
-    console.error('加载统计数据失败:', error);
+    console.error('Failed to load statistics:', error);
   } finally {
     statsLoading.value = false;
   }
 }
 
-// Tab 切换处理
+// Tab switch handler
 function handleTabChange(tab: string) {
   if (tab === 'records') {
     loadRecords();
@@ -650,7 +650,7 @@ function handleTabChange(tab: string) {
   }
 }
 
-// 设置定时器
+// Setup timers
 function setupTimers() {
   timerMap.value.forEach(timer => clearInterval(timer));
   timerMap.value.clear();
@@ -663,21 +663,21 @@ function setupTimers() {
   });
 }
 
-// 执行检查
+// Execute check
 async function executeCheck(configId: string) {
   try {
     const result = await invoke<any>('check_and_auto_reset', { configId });
     if (result.reset_count > 0) {
-      ElMessage.success(`自动重置: 重置了 ${result.reset_count} 个账号的积分`);
+      ElMessage.success(`Auto reset: Reset credits for ${result.reset_count} accounts`);
       await accountsStore.loadAccounts();
     }
     await loadConfigs();
   } catch (error) {
-    console.error('自动重置检查失败:', error);
+    console.error('Auto reset check failed:', error);
   }
 }
 
-// 获取目标邮箱/分组名
+// Get target email/group name
 function getTargetEmail(config: AutoResetConfig): string {
   if (config.targetType === 'group') {
     return config.targetId;
@@ -687,7 +687,7 @@ function getTargetEmail(config: AutoResetConfig): string {
   }
 }
 
-// 获取目标备注
+// Get target nickname
 function getTargetNickname(config: AutoResetConfig): string | null {
   if (config.targetType === 'group') {
     return null;
@@ -698,39 +698,39 @@ function getTargetNickname(config: AutoResetConfig): string | null {
   }
 }
 
-// 获取目标名称（兼容）
+// Get target name (compatible)
 function getTargetName(config: AutoResetConfig): string {
   const email = getTargetEmail(config);
   const nickname = getTargetNickname(config);
   return nickname ? `${email} (${nickname})` : email;
 }
 
-// 判断是否为主账号（有团队的账号）
+// Check if master account (accounts with team)
 function isMasterAccount(account: any): boolean {
-  // 使用 is_team_owner 字段判断，该字段在登录/刷新时通过 API 获取
+  // Use is_team_owner field, obtained via API during login/refresh
   return account.is_team_owner === true;
 }
 
-// 获取分组统计信息（主账号/团队成员数量）
+// Get group stats (master/member count)
 function getGroupStats(group: string): { masters: number; members: number } {
   const groupAccounts = accountsStore.accounts.filter(a => a.group === group);
-  // 主账号：有团队套餐的账号
+  // Master: accounts with team plan
   const masters = groupAccounts.filter(a => isMasterAccount(a)).length;
-  // 团队成员：普通账号
+  // Member: regular accounts
   const members = groupAccounts.length - masters;
   return { masters, members };
 }
 
-// 获取分组标签（用于下拉选项显示）
+// Get group label (for dropdown display)
 function getGroupLabel(group: string): string {
   const stats = getGroupStats(group);
-  return `${group} (主${stats.masters}/成员${stats.members})`;
+  return `${group} (Master ${stats.masters}/Member ${stats.members})`;
 }
 
-// 格式化时间（短格式）
+// Format time (short format)
 function formatTime(timeStr: string): string {
   const date = new Date(timeStr);
-  return date.toLocaleString('zh-CN', {
+  return date.toLocaleString('en-US', {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
@@ -738,10 +738,10 @@ function formatTime(timeStr: string): string {
   });
 }
 
-// 格式化时间（完整格式）
+// Format time (full format)
 function formatFullTime(timeStr: string): string {
   const date = new Date(timeStr);
-  return date.toLocaleString('zh-CN', {
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -751,20 +751,20 @@ function formatFullTime(timeStr: string): string {
   });
 }
 
-// 格式化数字
+// Format number
 function formatNumber(num: number): string {
-  return num.toLocaleString('zh-CN');
+  return num.toLocaleString('en-US');
 }
 
-// 目标类型变化时清空选择
+// Clear selection when target type changes
 function handleTargetTypeChange() {
   newConfig.value.targetId = '';
 }
 
-// 添加配置
+// Add config
 async function handleAddConfig() {
   if (!newConfig.value.targetId) {
-    ElMessage.warning('请选择目标');
+    ElMessage.warning('Please select a target');
     return;
   }
   
@@ -778,17 +778,17 @@ async function handleAddConfig() {
       remainingThreshold: newConfig.value.remainingThreshold,
     });
     
-    ElMessage.success('添加成功');
+    ElMessage.success('Added successfully');
     newConfig.value.targetId = '';
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`添加失败: ${error}`);
+    ElMessage.error(`Add failed: ${error}`);
   } finally {
     adding.value = false;
   }
 }
 
-// 切换启用状态
+// Toggle enabled state
 async function handleToggleEnabled(config: AutoResetConfig, enabled: boolean) {
   config._updating = true;
   try {
@@ -805,37 +805,37 @@ async function handleToggleEnabled(config: AutoResetConfig, enabled: boolean) {
       }
     }
     
-    ElMessage.success(enabled ? '已启用' : '已禁用');
+    ElMessage.success(enabled ? 'Enabled' : 'Disabled');
   } catch (error) {
     config.enabled = !enabled;
-    ElMessage.error(`操作失败: ${error}`);
+    ElMessage.error(`Operation failed: ${error}`);
   } finally {
     config._updating = false;
   }
 }
 
-// 立即检查
+// Check now
 async function handleCheckNow(config: AutoResetConfig) {
   config._checking = true;
   try {
     const result = await invoke<any>('check_and_auto_reset', { configId: config.id });
     
     if (result.reset_count > 0) {
-      ElMessage.success(`重置了 ${result.reset_count} 个账号的积分`);
+      ElMessage.success(`Reset credits for ${result.reset_count} accounts`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('检查完成，无需重置');
+      ElMessage.info('Check complete, no reset needed');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`检查失败: ${error}`);
+    ElMessage.error(`Check failed: ${error}`);
   } finally {
     config._checking = false;
   }
 }
 
-// 检查全部
+// Check all
 async function handleCheckAll() {
   checkingAll.value = true;
   let totalReset = 0;
@@ -847,42 +847,42 @@ async function handleCheckAll() {
     }
     
     if (totalReset > 0) {
-      ElMessage.success(`检查完成，共重置 ${totalReset} 个账号`);
+      ElMessage.success(`Check complete, reset ${totalReset} accounts`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('检查完成，无需重置');
+      ElMessage.info('Check complete, no reset needed');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`检查失败: ${error}`);
+    ElMessage.error(`Check failed: ${error}`);
   } finally {
     checkingAll.value = false;
   }
 }
 
-// 立即重置单个
+// Reset single now
 async function handleResetNow(config: AutoResetConfig) {
   config._resetting = true;
   try {
     const result = await invoke<any>('force_reset_config', { configId: config.id });
     
     if (result.reset_count > 0) {
-      ElMessage.success(`已重置 ${result.reset_count} 个账号的积分`);
+      ElMessage.success(`Reset credits for ${result.reset_count} accounts`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('没有可重置的账号');
+      ElMessage.info('No accounts to reset');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`重置失败: ${error}`);
+    ElMessage.error(`Reset failed: ${error}`);
   } finally {
     config._resetting = false;
   }
 }
 
-// 立即重置全部
+// Reset all now
 async function handleResetAll() {
   resettingAll.value = true;
   let totalReset = 0;
@@ -894,21 +894,21 @@ async function handleResetAll() {
     }
     
     if (totalReset > 0) {
-      ElMessage.success(`重置完成，共重置 ${totalReset} 个账号`);
+      ElMessage.success(`Reset complete, reset ${totalReset} accounts`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('没有可重置的账号');
+      ElMessage.info('No accounts to reset');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`重置失败: ${error}`);
+    ElMessage.error(`Reset failed: ${error}`);
   } finally {
     resettingAll.value = false;
   }
 }
 
-// 编辑配置
+// Edit config
 function handleEditConfig(config: AutoResetConfig) {
   editingConfig.value = config;
   editForm.value = {
@@ -919,7 +919,7 @@ function handleEditConfig(config: AutoResetConfig) {
   showEditDialog.value = true;
 }
 
-// 保存编辑
+// Save edit
 async function handleSaveEdit() {
   if (!editingConfig.value) return;
   
@@ -931,21 +931,21 @@ async function handleSaveEdit() {
       remainingThreshold: editForm.value.remainingThreshold,
     });
     
-    ElMessage.success('修改成功');
+    ElMessage.success('Updated successfully');
     showEditDialog.value = false;
     editingConfig.value = null;
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`修改失败: ${error}`);
+    ElMessage.error(`Update failed: ${error}`);
   }
 }
 
-// 删除配置
+// Delete config
 async function handleDeleteConfig(config: AutoResetConfig) {
   try {
     await ElMessageBox.confirm(
-      `确定要删除 "${getTargetName(config)}" 的自动重置规则吗？`,
-      '确认删除',
+      `Are you sure you want to delete the auto reset rule for "${getTargetName(config)}"?`,
+      'Confirm Delete',
       { type: 'warning' }
     );
     
@@ -957,31 +957,31 @@ async function handleDeleteConfig(config: AutoResetConfig) {
       timerMap.value.delete(config.id);
     }
     
-    ElMessage.success('删除成功');
+    ElMessage.success('Deleted successfully');
     await loadConfigs();
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`删除失败: ${error}`);
+      ElMessage.error(`Delete failed: ${error}`);
     }
   }
 }
 
-// 清空重置记录
+// Clear reset records
 async function handleClearRecords() {
   try {
     await ElMessageBox.confirm(
-      '确定要清空所有重置记录吗？此操作不可恢复。',
-      '确认清空',
+      'Are you sure you want to clear all reset records? This action cannot be undone.',
+      'Confirm Clear',
       { type: 'warning' }
     );
     
     await invoke('clear_reset_records');
-    ElMessage.success('清空成功');
+    ElMessage.success('Cleared successfully');
     await loadRecords();
     await loadStats();
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`清空失败: ${error}`);
+      ElMessage.error(`Clear failed: ${error}`);
     }
   }
 }
@@ -990,7 +990,7 @@ function handleClose() {
   visible.value = false;
 }
 
-// 监听对话框打开
+// Watch dialog open
 watch(visible, (val) => {
   if (val) {
     loadConfigs();
@@ -998,13 +998,13 @@ watch(visible, (val) => {
   }
 });
 
-// 组件卸载时清除定时器
+// Clear timers on component unmount
 onUnmounted(() => {
   timerMap.value.forEach(timer => clearInterval(timer));
   timerMap.value.clear();
 });
 
-// 暴露方法供外部调用
+// Expose methods for external calls
 defineExpose({
   loadConfigs,
   setupTimers,
@@ -1012,7 +1012,7 @@ defineExpose({
 </script>
 
 <style scoped>
-/* 对话框头部样式 */
+/* Dialog header style */
 .dialog-header {
   display: flex;
   align-items: center;
@@ -1060,7 +1060,7 @@ defineExpose({
   transform: rotate(90deg);
 }
 
-/* 自定义标签页样式 */
+/* Custom tab style */
 .custom-tabs :deep(.el-tabs__header) {
   margin-bottom: 16px;
   border-bottom: 2px solid #E5E7EB;
@@ -1084,14 +1084,14 @@ defineExpose({
   border-radius: 3px;
 }
 
-/* 标签页内容区域 */
+/* Tab content area */
 .tab-content {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* 卡片样式 */
+/* Card style */
 .add-config-card,
 .config-list-card {
   border: 1px solid #E5E7EB;
@@ -1141,7 +1141,7 @@ defineExpose({
   gap: 12px;
 }
 
-/* 表单样式 */
+/* Form style */
 .unit-label {
   margin-left: 8px;
   color: #6B7280;
@@ -1159,7 +1159,7 @@ defineExpose({
   border: 1px solid #BBF7D0;
 }
 
-/* 表格目标信息 */
+/* Table target info */
 .target-info {
   display: flex;
   align-items: center;
@@ -1187,7 +1187,7 @@ defineExpose({
   color: #9CA3AF;
 }
 
-/* 分页 */
+/* Pagination */
 .pagination-wrapper {
   display: flex;
   justify-content: flex-end;
@@ -1196,7 +1196,7 @@ defineExpose({
   border-top: 1px solid #F3F4F6;
 }
 
-/* 昵称标签 */
+/* Nickname tag */
 .nickname {
   color: #D97706;
   font-size: 12px;
@@ -1214,7 +1214,7 @@ defineExpose({
   margin-left: 4px;
 }
 
-/* 快速选择按钮 */
+/* Quick select buttons */
 .interval-presets {
   display: flex;
   gap: 6px;
@@ -1236,7 +1236,7 @@ defineExpose({
   border-color: #10B981;
 }
 
-/* 分组选项样式 */
+/* Group option style */
 .group-option {
   display: flex;
   justify-content: space-between;
@@ -1267,7 +1267,7 @@ defineExpose({
   border-radius: 4px;
 }
 
-/* 表格样式优化 */
+/* Table style optimization */
 :deep(.el-table) {
   border-radius: 8px;
   overflow: hidden;
@@ -1283,7 +1283,7 @@ defineExpose({
   padding: 12px 0;
 }
 
-/* 暗色模式适配 */
+/* Dark mode adaptation */
 :root.dark .dialog-header {
   background: linear-gradient(135deg, #065F46 0%, #064E3B 100%);
 }

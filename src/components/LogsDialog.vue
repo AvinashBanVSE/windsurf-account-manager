@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="uiStore.showLogsDialog"
-    title="操作日志"
+    title="Operation Logs"
     width="800px"
   >
     <div class="logs-container">

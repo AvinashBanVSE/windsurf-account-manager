@@ -19,7 +19,7 @@
       >
         <el-menu-item index="accounts" @click="setActiveMenu('accounts')">
           <el-icon><User /></el-icon>
-          <template #title>账号管理</template>
+          <template #title>Accounts</template>
         </el-menu-item>
         
         <el-sub-menu
@@ -29,7 +29,7 @@
         >
           <template #title>
             <el-icon><Folder /></el-icon>
-            <span>分组管理</span>
+            <span>Groups</span>
           </template>
           <el-menu-item 
             v-for="group in settingsStore.groups" 
@@ -51,38 +51,38 @@
           </el-menu-item>
           <el-menu-item index="add-group" class="group-add-action" @click="showAddGroupDialog">
             <el-icon><Plus /></el-icon>
-            添加分组
+            Add Group
           </el-menu-item>
         </el-sub-menu>
         
         <el-menu-item index="logs" @click="uiStore.openLogsDialog">
           <el-icon><Document /></el-icon>
-          <template #title>操作日志</template>
+          <template #title>Operation Logs</template>
         </el-menu-item>
         
         <el-menu-item index="stats" @click="uiStore.openStatsDialog">
           <el-icon><DataAnalysis /></el-icon>
-          <template #title>统计信息</template>
+          <template #title>Statistics</template>
         </el-menu-item>
         
         <el-menu-item index="auto-reset" @click="showAutoResetDialog = true">
           <el-icon><Timer /></el-icon>
-          <template #title>自动重置</template>
+          <template #title>Auto Reset</template>
         </el-menu-item>
         
         <el-menu-item index="card-generator" @click="showCardGeneratorDialog = true">
           <el-icon><CreditCard /></el-icon>
-          <template #title>虚拟卡生成</template>
+          <template #title>Card Generator</template>
         </el-menu-item>
         
         <el-menu-item index="about" @click="showAboutDialog">
           <el-icon><InfoFilled /></el-icon>
-          <template #title>关于</template>
+          <template #title>About</template>
         </el-menu-item>
         
         <el-menu-item index="settings" @click="uiStore.openSettingsDialog">
           <el-icon><Setting /></el-icon>
-          <template #title>设置</template>
+          <template #title>Settings</template>
         </el-menu-item>
       </el-menu>
       
@@ -102,13 +102,13 @@
         <div class="header-left">
           <el-input
             v-model="searchQuery"
-            placeholder="搜索账号..."
+            placeholder="Search accounts..."
             :prefix-icon="Search"
             clearable
             class="search-input"
             @input="handleSearch"
           />
-          <el-tooltip content="高级筛选" placement="bottom">
+          <el-tooltip content="Advanced Filter" placement="bottom">
             <el-button
               :icon="Filter"
               circle
@@ -121,22 +121,22 @@
           <!-- 排序选择器 -->
           <el-select
             v-model="currentSortField"
-            placeholder="排序方式"
+            placeholder="Sort by"
             size="default"
             class="sort-select"
             @change="handleSortChange"
           >
-            <el-option label="邮箱名称" value="email" />
-            <el-option label="创建时间" value="created_at" />
-            <el-option label="已用积分" value="used_quota" />
-            <el-option label="剩余积分" value="remaining_quota" />
-            <el-option label="Token过期" value="token_expires_at" />
-            <el-option label="订阅到期" value="subscription_expires_at" />
-            <el-option label="套餐类型" value="plan_name" />
-            <el-option label="日配额剩余%" value="daily_quota_remaining" />
-            <el-option label="周配额剩余%" value="weekly_quota_remaining" />
+            <el-option label="Email" value="email" />
+            <el-option label="Created Time" value="created_at" />
+            <el-option label="Used Credits" value="used_quota" />
+            <el-option label="Remaining Credits" value="remaining_quota" />
+            <el-option label="Token Expiry" value="token_expires_at" />
+            <el-option label="Subscription Expiry" value="subscription_expires_at" />
+            <el-option label="Plan Type" value="plan_name" />
+            <el-option label="Daily Quota %" value="daily_quota_remaining" />
+            <el-option label="Weekly Quota %" value="weekly_quota_remaining" />
           </el-select>
-          <el-tooltip :content="sortDirection === 'asc' ? '升序' : '降序'" placement="bottom">
+          <el-tooltip :content="sortDirection === 'asc' ? 'Ascending' : 'Descending'" placement="bottom">
             <el-button
               :icon="sortDirection === 'asc' ? SortUp : SortDown"
               circle
@@ -147,7 +147,7 @@
         
         <div class="header-right">
           <!-- 批量删除 -->
-          <el-tooltip content="批量删除" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
+          <el-tooltip content="Batch Delete" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-badge :value="accountsStore.selectedAccounts.size" :offset="[12, -8]">
               <el-button
                 type="danger"
@@ -158,7 +158,7 @@
             </el-badge>
           </el-tooltip>
           
-          <el-tooltip content="批量转让订阅" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
+          <el-tooltip content="Batch Transfer" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-button
               type="success"
               :icon="Switch"
@@ -168,7 +168,7 @@
           </el-tooltip>
           
           <!-- 批量刷新状态 -->
-          <el-tooltip content="批量刷新状态" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
+          <el-tooltip content="Batch Refresh" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-button
               type="warning"
               :icon="RefreshRight"
@@ -177,7 +177,7 @@
             />
           </el-tooltip>
           
-          <el-tooltip content="批量更换订阅" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
+          <el-tooltip content="Batch Update Plan" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-button
               type="primary"
               :icon="Trophy"
@@ -187,7 +187,7 @@
           </el-tooltip>
           
           <!-- 导出选中账号 -->
-          <el-tooltip content="导出选中账号" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
+          <el-tooltip content="Export Selected" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-button
               type="info"
               :icon="Download"
@@ -197,7 +197,7 @@
           </el-tooltip>
           
           <!-- 批量更改分组 -->
-          <el-tooltip content="批量更改分组" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
+          <el-tooltip content="Batch Change Group" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-button
               type="primary"
               :icon="FolderOpened"
@@ -207,7 +207,7 @@
           </el-tooltip>
           
           <!-- 取消已选 -->
-          <el-tooltip content="取消已选" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
+          <el-tooltip content="Clear Selection" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-button
               :icon="Close"
               circle
@@ -217,7 +217,7 @@
           </el-tooltip>
           
           <!-- 选择本页账号 -->
-          <el-tooltip content="选择本页账号" placement="bottom">
+          <el-tooltip content="Select Page" placement="bottom">
             <el-button
               :icon="DocumentChecked"
               circle
@@ -227,7 +227,7 @@
           </el-tooltip>
           
           <!-- 全选按钮（带分隔线） -->
-          <el-tooltip content="全选" placement="bottom" class="select-all-button">
+          <el-tooltip content="Select All" placement="bottom" class="select-all-button">
             <el-button
               :icon="Select"
               circle
@@ -237,7 +237,7 @@
           </el-tooltip>
           
           <!-- 添加账号 -->
-          <el-tooltip content="添加账号" placement="bottom">
+          <el-tooltip content="Add Account" placement="bottom">
             <el-button 
               type="default" 
               :icon="Plus" 
@@ -247,7 +247,7 @@
           </el-tooltip>
           
           <!-- 批量添加 -->
-          <el-tooltip content="批量导入" placement="bottom">
+          <el-tooltip content="Batch Import" placement="bottom">
             <el-button 
               type="default" 
               :icon="Upload"
@@ -257,7 +257,7 @@
           </el-tooltip>
           
           <!-- 导出账号 -->
-          <el-tooltip content="导出账号" placement="bottom">
+          <el-tooltip content="Export Account" placement="bottom">
             <el-button 
               :icon="Download"
               circle 
@@ -267,7 +267,7 @@
           </el-tooltip>
           
           <!-- 标签管理 -->
-          <el-tooltip content="标签管理" placement="bottom">
+          <el-tooltip content="Tag Management" placement="bottom">
             <el-button 
               :icon="PriceTag"
               circle 
@@ -277,7 +277,7 @@
           </el-tooltip>
           
           <!-- 全局刷新 -->
-          <el-tooltip content="刷新全部" placement="bottom">
+          <el-tooltip content="Refresh All" placement="bottom">
             <el-button 
               :icon="RefreshRight" 
               circle 
@@ -294,10 +294,10 @@
         <transition name="filter-slide">
           <div v-if="showFilterPanel" class="filter-panel">
             <div class="filter-panel-header">
-              <span class="filter-title">高级筛选</span>
+              <span class="filter-title">Advanced Filter</span>
               <div class="filter-header-actions">
-                <el-button size="small" @click="clearAllFilters">清除筛选</el-button>
-                <el-button size="small" type="primary" @click="applyFilters">应用筛选</el-button>
+                <el-button size="small" @click="clearAllFilters">Clear Filter</el-button>
+                <el-button size="small" type="primary" @click="applyFilters">Apply Filter</el-button>
                 <el-button :icon="Close" circle size="small" @click="showFilterPanel = false" />
               </div>
             </div>
@@ -305,72 +305,40 @@
               <!-- 第一行：数值范围筛选 -->
               <div class="filter-row">
                 <div class="filter-item filter-item-range">
-                  <span class="filter-label">剩余额度</span>
+<span class="filter-label">Remaining Credits</span>
+                  <el-input-number v-model="filterForm.remainingQuotaMin" :min="0" :controls="false" placeholder="Min" size="small" />
+                  <el-input-number v-model="filterForm.remainingQuotaMax" :min="0" :controls="false" placeholder="Max" size="small" />
+
+                  <span class="filter-label">Total Quota</span>
+                  <el-input-number v-model="filterForm.totalQuotaMin" :min="0" :controls="false" placeholder="Min" size="small" />
+                  <el-input-number v-model="filterForm.totalQuotaMax" :min="0" :controls="false" placeholder="Max" size="small" />
+
+                  <span class="filter-label">Days Left</span>
                   <div class="filter-range">
-                    <el-input-number v-model="filterForm.remainingQuotaMin" :min="0" :controls="false" placeholder="最小" size="small" />
-                    <span class="range-separator">-</span>
-                    <el-input-number v-model="filterForm.remainingQuotaMax" :min="0" :controls="false" placeholder="最大" size="small" />
-                  </div>
-                </div>
-                <div class="filter-item filter-item-range">
-                  <span class="filter-label">总额度</span>
-                  <div class="filter-range">
-                    <el-input-number v-model="filterForm.totalQuotaMin" :min="0" :controls="false" placeholder="最小" size="small" />
-                    <span class="range-separator">-</span>
-                    <el-input-number v-model="filterForm.totalQuotaMax" :min="0" :controls="false" placeholder="最大" size="small" />
-                  </div>
-                </div>
-                <div class="filter-item filter-item-range">
-                  <span class="filter-label">剩余天数</span>
-                  <div class="filter-range">
-                    <el-input-number v-model="filterForm.expiryDaysMin" :controls="false" placeholder="最小" size="small" />
-                    <span class="range-separator">-</span>
-                    <el-input-number v-model="filterForm.expiryDaysMax" :controls="false" placeholder="最大" size="small" />
-                  </div>
-                </div>
-              </div>
+<el-input-number v-model="filterForm.expiryDaysMin" :controls="false" placeholder="Min" size="small" />
+                  <el-input-number v-model="filterForm.expiryDaysMax" :controls="false" placeholder="Max" size="small" />
+
               <!-- 第二行：日/周配额剩余百分比（仅 billing_strategy === 2 (QUOTA) 的账号参与） -->
-              <div class="filter-row">
-                <div class="filter-item filter-item-range">
-                  <span class="filter-label">日配额剩余%</span>
-                  <div class="filter-range">
-                    <el-input-number v-model="filterForm.dailyQuotaPercentMin" :min="0" :max="100" :controls="false" placeholder="最小" size="small" />
-                    <span class="range-separator">-</span>
-                    <el-input-number v-model="filterForm.dailyQuotaPercentMax" :min="0" :max="100" :controls="false" placeholder="最大" size="small" />
-                  </div>
-                </div>
-                <div class="filter-item filter-item-range">
-                  <span class="filter-label">周配额剩余%</span>
-                  <div class="filter-range">
-                    <el-input-number v-model="filterForm.weeklyQuotaPercentMin" :min="0" :max="100" :controls="false" placeholder="最小" size="small" />
-                    <span class="range-separator">-</span>
-                    <el-input-number v-model="filterForm.weeklyQuotaPercentMax" :min="0" :max="100" :controls="false" placeholder="最大" size="small" />
-                  </div>
-                </div>
-              </div>
+                  <span class="filter-label">Daily Quota %</span>
+                  <el-input-number v-model="filterForm.dailyQuotaPercentMin" :min="0" :max="100" :controls="false" placeholder="Min" size="small" />
+                  <el-input-number v-model="filterForm.dailyQuotaPercentMax" :min="0" :max="100" :controls="false" placeholder="Max" size="small" />
+
+                  <span class="filter-label">Weekly Quota %</span>
+                  <el-input-number v-model="filterForm.weeklyQuotaPercentMin" :min="0" :max="100" :controls="false" placeholder="Min" size="small" />
+                  <el-input-number v-model="filterForm.weeklyQuotaPercentMax" :min="0" :max="100" :controls="false" placeholder="Max" size="small" />
+
               <!-- 第三行：选择器筛选 -->
-              <div class="filter-row filter-row-select">
-                <div class="filter-item filter-item-select">
-                  <span class="filter-label">套餐</span>
-                  <el-select v-model="filterForm.selectedPlans" multiple collapse-tags collapse-tags-tooltip placeholder="全部" size="small">
-                    <el-option v-for="plan in accountsStore.allPlanNames" :key="plan" :label="plan" :value="plan" />
-                  </el-select>
-                </div>
-                <div class="filter-item filter-item-select">
-                  <span class="filter-label">标签</span>
-                  <el-select v-model="filterForm.selectedTags" multiple collapse-tags collapse-tags-tooltip placeholder="全部" size="small">
-                    <el-option v-for="tag in accountsStore.allTags" :key="tag" :label="tag" :value="tag" />
-                  </el-select>
-                </div>
-                <div class="filter-item filter-item-select">
-                  <span class="filter-label">域名</span>
-                  <el-select v-model="filterForm.selectedDomains" multiple collapse-tags collapse-tags-tooltip placeholder="全部" size="small">
-                    <el-option v-for="domain in accountsStore.allDomains" :key="domain" :label="domain" :value="domain" />
-                  </el-select>
-                </div>
-                <div class="filter-item filter-item-select">
-                  <span class="filter-label">状态</span>
-                  <el-select v-model="filterForm.selectedStatuses" multiple collapse-tags collapse-tags-tooltip placeholder="全部" size="small">
+                  <span class="filter-label">Plan</span>
+                  <el-select v-model="filterForm.selectedPlans" multiple collapse-tags collapse-tags-tooltip placeholder="All" size="small">
+
+                  <span class="filter-label">Tag</span>
+                  <el-select v-model="filterForm.selectedTags" multiple collapse-tags collapse-tags-tooltip placeholder="All" size="small">
+
+                  <span class="filter-label">Domain</span>
+                  <el-select v-model="filterForm.selectedDomains" multiple collapse-tags collapse-tags-tooltip placeholder="All" size="small">
+
+                  <span class="filter-label">Status</span>
+                  <el-select v-model="filterForm.selectedStatuses" multiple collapse-tags collapse-tags-tooltip placeholder="All" size="small">
                     <el-option v-for="status in statusOptions" :key="status.value" :label="status.label" :value="status.value" />
                   </el-select>
                 </div>
@@ -384,11 +352,11 @@
         </div>
         
         <div v-else-if="accountsStore.filteredAccounts.length === 0" class="empty-container">
-          <el-empty description="暂无账号数据">
-            <el-button type="primary" @click="uiStore.openAddAccountDialog">
-              添加第一个账号
-            </el-button>
-          </el-empty>
+<el-empty description="No accounts yet">
+              <el-button type="primary" @click="uiStore.openAddAccountDialog">
+                Add First Account
+              </el-button>
+            </el-empty>
         </div>
         
         <div v-else class="accounts-container">
@@ -474,18 +442,18 @@
     <!-- 批量更改分组对话框 -->
     <el-dialog
       v-model="showBatchGroupDialog"
-      title="批量更改分组"
+      title="Batch Change Group"
       width="400px"
       :close-on-click-modal="false"
       @close="closeBatchGroupDialog"
     >
       <div class="batch-group-content">
         <p class="batch-group-hint">
-          将选中的 <strong>{{ accountsStore.selectedAccounts.size }}</strong> 个账号移动到指定分组：
+          Move <strong>{{ accountsStore.selectedAccounts.size }}</strong> selected accounts to target group:
         </p>
         <el-select
           v-model="batchGroupTarget"
-          placeholder="选择目标分组"
+          placeholder="Select target group"
           style="width: 100%;"
           size="large"
         >
@@ -498,14 +466,14 @@
         </el-select>
       </div>
       <template #footer>
-        <el-button @click="closeBatchGroupDialog">取消</el-button>
+        <el-button @click="closeBatchGroupDialog">Cancel</el-button>
         <el-button
           type="primary"
           :disabled="!batchGroupTarget"
           :loading="isBatchUpdatingGroup"
           @click="handleBatchUpdateGroup"
         >
-          确认更改
+          Confirm
         </el-button>
       </template>
     </el-dialog>
@@ -513,34 +481,38 @@
     <!-- 批量转让订阅对话框 -->
     <el-dialog
       v-model="showBatchTransferDialog"
-      title="批量转让订阅"
+      title="Batch Transfer Subscription"
       width="600px"
       :close-on-click-modal="false"
     >
       <el-alert
-        title="批量转让说明"
+        title="Batch Transfer Instructions"
         type="warning"
         :closable="false"
         show-icon
         style="margin-bottom: 20px"
       >
         <template #default>
-          <p>已选中 <strong>{{ accountsStore.selectedAccounts.size }}</strong> 个源账户需要转让订阅。</p>
-          <p>请在下方输入对应数量的目标邮箱（每行一个），转让后源账户将被移出团队。</p>
-          <p style="color: #e6a23c; margin-top: 8px;">⚠️ 此操作不可撤销！</p>
+          <p>Selected <strong>{{ accountsStore.selectedAccounts.size }}</strong> source accounts need subscription transfer.</p>
+          <p>Please enter corresponding number of target emails below (one per line), source accounts will be removed from team after transfer.</p>
+          <p style="color: #e6a23c; margin-top: 8px;">⚠️ This action cannot be undone!</p>
         </template>
       </el-alert>
       
       <el-form label-width="100px">
-        <el-form-item label="目标邮箱">
+<el-form-item label="Target Emails">
           <el-input
-            v-model="batchTransferEmails"
+            v-model="transferEmailsInput"
             type="textarea"
-            :rows="8"
-            :placeholder="'请输入 ' + accountsStore.selectedAccounts.size + ' 个目标邮箱，每行一个\n例如：\nuser1@example.com\nuser2@example.com'"
-            name="batch-transfer-emails-no-autofill"
-            autocomplete="off"
+            :rows="6"
+            :placeholder="'Please enter ' + accountsStore.selectedAccounts.size + ' target emails, one per line\nExample:\nuser1@example.com\nuser2@example.com'"
           />
+          <div class="transfer-email-count">
+            Entered: {{ parsedTransferEmails.length }} / {{ accountsStore.selectedAccounts.size }} emails
+            <el-icon v-if="parsedTransferEmails.length === accountsStore.selectedAccounts.size" class="count-match"><Check /></el-icon>
+            <el-icon v-else class="count-mismatch"><Close /></el-icon>
+            {{ parsedTransferEmails.length === accountsStore.selectedAccounts.size ? '(Match ✓)' : '(Mismatch)' }}
+          </div>
         </el-form-item>
         <el-form-item>
           <div class="email-count-hint">
@@ -575,7 +547,7 @@
           :disabled="parsedTransferEmails.length !== accountsStore.selectedAccounts.size"
           @click="handleBatchTransfer"
         >
-          确认批量转让
+          Confirm Batch Transfer
         </el-button>
       </template>
     </el-dialog>
@@ -1017,7 +989,7 @@ async function handleBatchTransfer() {
   try {
     await ElMessageBox.confirm(
       `确定要将 ${selectedIds.length} 个账户的订阅转让给对应的目标邮箱吗？\n\n转让后源账户将被移出团队，此操作不可撤销！`,
-      '确认批量转让',
+      'Confirm Batch Transfer',
       {
         confirmButtonText: '确认转让',
         cancelButtonText: '取消',
