@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="团队积分记录"
+    title="Team Credit History"
     width="80%"
     @close="handleClose"
     append-to-body
@@ -9,18 +9,18 @@
   >
     <div v-if="loading" class="loading-container">
       <el-icon class="is-loading" size="32"><Loading /></el-icon>
-      <p>正在获取积分记录...</p>
+      <p>Fetching credit records...</p>
     </div>
 
     <div v-else-if="creditEntries">
       <!-- 统计信息 -->
       <el-row :gutter="20" style="margin-bottom: 20px;" v-if="creditEntries.success">
         <el-col :span="6">
-          <el-statistic title="总记录数" :value="creditEntries.total_entries || 0" />
+          <el-statistic title="Total Records" :value="creditEntries.total_entries || 0" />
         </el-col>
         <el-col :span="6">
           <el-statistic 
-            title="总积分数" 
+            title="Total Credits" 
             :value="totalCredits" 
             :precision="2"
             suffix="积分"
@@ -28,7 +28,7 @@
         </el-col>
         <el-col :span="6">
           <el-statistic 
-            title="推荐积分" 
+            title="Recommended Credits" 
             :value="referralCredits" 
             :precision="2"
             suffix="积分"
@@ -36,7 +36,7 @@
         </el-col>
         <el-col :span="6">
           <el-statistic 
-            title="购买积分" 
+            title="Purchased Credits" 
             :value="purchaseCredits" 
             :precision="2"
             suffix="积分"
@@ -54,7 +54,7 @@
         @sort-change="handleSortChange"
       >
         <el-table-column 
-          label="授予日期" 
+          label="Grant Date" 
           prop="grant_date"
           width="180"
           sortable="custom"
@@ -68,7 +68,7 @@
         </el-table-column>
 
         <el-table-column 
-          label="积分数量" 
+          label="Credit Amount" 
           prop="num_credits"
           width="120"
           align="right"
@@ -82,7 +82,7 @@
         </el-table-column>
 
         <el-table-column 
-          label="积分类型" 
+          label="Credit Type" 
           prop="type"
           width="100"
         >
@@ -94,7 +94,7 @@
         </el-table-column>
 
         <el-table-column 
-          label="获取原因" 
+          label="Source" 
           prop="reason"
           min-width="200"
         >
@@ -145,7 +145,7 @@
         </el-table-column>
 
         <el-table-column 
-          label="推荐ID" 
+          label="Referral ID" 
           prop="referral_id"
           width="100"
         >
@@ -158,7 +158,7 @@
         </el-table-column>
 
         <el-table-column 
-          label="团队ID" 
+          label="Team ID" 
           prop="team_id"
           width="280"
           :show-overflow-tooltip="true"
@@ -176,7 +176,7 @@
       <!-- 错误信息 -->
       <el-alert
         v-if="!creditEntries.success"
-        :title="creditEntries.error || '获取积分记录失败'"
+        :title="creditEntries.error || 'Failed to get credit history'"
         type="error"
         :closable="false"
         show-icon
@@ -184,10 +184,10 @@
 
       <!-- 原始响应（用于调试） -->
       <el-collapse v-if="creditEntries?.raw_response" style="margin-top: 20px;">
-        <el-collapse-item title="查看原始响应">
+        <el-collapse-item title="View Raw Response">
           <div v-if="creditEntries.raw_response.startsWith('data:application/proto;base64,')">
             <el-button @click="decodeAndShowResponse" type="primary" size="small" style="margin-bottom: 10px;">
-              解码Base64响应
+              Decode Base64 Response
             </el-button>
             <pre class="raw-data" style="max-height: 200px; overflow-y: auto;">{{ creditEntries.raw_response }}</pre>
           </div>
@@ -197,26 +197,26 @@
 
       <!-- 原始数据（调试模式） -->
       <el-collapse v-if="creditEntries?.raw_data" style="margin-top: 20px;">
-        <el-collapse-item title="查看解析数据">
+        <el-collapse-item title="View Parsed Data">
           <pre class="raw-data">{{ JSON.stringify(creditEntries.raw_data, null, 2) }}</pre>
         </el-collapse-item>
       </el-collapse>
     </div>
 
     <div v-else>
-      <el-empty description="暂无积分记录" />
+      <el-empty description="No credit records" />
     </div>
 
     <template #footer>
-      <el-button @click="handleRefresh" :icon="Refresh">刷新</el-button>
-      <el-button @click="handleClose">关闭</el-button>
+      <el-button @click="handleRefresh" :icon="Refresh">Refresh</el-button>
+      <el-button @click="handleClose">Close</el-button>
       <el-button 
         type="primary" 
         @click="handleExport" 
         :icon="Download"
         v-if="creditEntries?.entries?.length > 0"
       >
-        导出记录
+        Export Records
       </el-button>
     </template>
   </el-dialog>
@@ -306,7 +306,7 @@ async function loadCreditEntries() {
       });
     }
   } catch (error) {
-    ElMessage.error(`获取积分记录失败: ${error}`);
+    ElMessage.error(`Failed to get credit records: ${error}`);
     creditEntries.value = {
       success: false,
       error: String(error)

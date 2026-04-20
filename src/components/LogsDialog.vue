@@ -7,21 +7,21 @@
     <div class="logs-container">
       <div class="logs-header">
         <el-button size="small" @click="loadLogs" :icon="Refresh">
-          刷新
+          Refresh
         </el-button>
         <el-button size="small" @click="clearLogs" :icon="Delete">
-          清空日志
+          Clear Logs
         </el-button>
       </div>
       
       <el-table :data="logs" style="width: 100%" max-height="400">
-        <el-table-column prop="timestamp" label="时间" width="180">
+        <el-table-column prop="timestamp" label="Time" width="180">
           <template #default="{ row }">
             {{ formatDate(row.timestamp) }}
           </template>
         </el-table-column>
         
-        <el-table-column prop="operation_type" label="操作类型" width="120">
+        <el-table-column prop="operation_type" label="Operation Type" width="120">
           <template #default="{ row }">
             <el-tag :type="getOperationTypeTag(row.operation_type)">
               {{ formatOperationType(row.operation_type) }}
@@ -29,14 +29,14 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="account_email" label="账号" width="180" />
+        <el-table-column prop="account_email" label="Account" width="180" />
         
-        <el-table-column prop="message" label="消息" />
+        <el-table-column prop="message" label="Message" />
         
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="status" label="Status" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 'success' ? 'success' : 'danger'">
-              {{ row.status === 'success' ? '成功' : '失败' }}
+              {{ row.status === 'success' ? 'Success' : 'Failed' }}
             </el-tag>
           </template>
         </el-table-column>

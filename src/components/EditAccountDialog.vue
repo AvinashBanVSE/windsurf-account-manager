@@ -25,7 +25,7 @@
       <el-form-item label="备注名称" prop="nickname">
         <el-input
           v-model="formData.nickname"
-          placeholder="请输入备注名称"
+          placeholder="Enter nickname"
           :prefix-icon="User"
         />
       </el-form-item>
@@ -34,7 +34,7 @@
         <el-input 
           v-model="formData.newPassword" 
           type="password"
-          placeholder="留空则不修改密码"
+          placeholder="Leave empty to keep password unchanged"
           show-password
           autocomplete="new-password"
         />
@@ -44,7 +44,7 @@
         <el-input 
           v-model="formData.confirmPassword" 
           type="password"
-          placeholder="请再次输入密码"
+          placeholder="Enter password again"
           show-password
           autocomplete="new-password"
         />
@@ -53,7 +53,7 @@
       <el-form-item label="分组">
         <el-select
           v-model="formData.group"
-          placeholder="选择分组"
+          placeholder="Select group"
           clearable
         >
           <el-option
@@ -71,7 +71,7 @@
           multiple
           filterable
           allow-create
-          placeholder="输入或选择标签"
+          placeholder="Enter or select tags"
           style="width: 100%"
           @change="handleTagsChange"
         >

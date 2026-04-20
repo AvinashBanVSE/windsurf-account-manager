@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="使用分析"
+    title="Usage Analytics"
     width="90%"
     class="analytics-dialog"
     :close-on-click-modal="false"
@@ -279,11 +279,11 @@
       </div>
 
       <!-- 空状态 -->
-      <el-empty v-if="!loading && !analyticsData" description="暂无数据" />
+      <el-empty v-if="!loading && !analyticsData" description="No data" />
     </div>
 
     <template #footer>
-      <el-button @click="handleClose">关闭</el-button>
+      <el-button @click="handleClose">Close</el-button>
       <el-button type="primary" @click="handleRefresh" :loading="loading">
         <el-icon class="el-icon--left"><Refresh /></el-icon>刷新
       </el-button>

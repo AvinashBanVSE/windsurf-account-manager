@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="团队管理"
+    title="Team Management"
     width="900px"
     :close-on-click-modal="false"
     destroy-on-close
@@ -11,12 +11,12 @@
       <!-- 标签页 -->
       <el-tabs v-model="activeTab" type="border-card">
         <!-- 团队成员列表 -->
-        <el-tab-pane label="团队成员" name="members">
+        <el-tab-pane label="Team Members" name="members">
           <!-- 邀请链接区域 -->
           <div v-if="teamInviteId" class="invite-link-section">
             <div class="invite-link-label">
               <el-icon><Link /></el-icon>
-              <span>团队邀请ID:</span>
+              <span>Team Invite ID:</span>
             </div>
             <div class="invite-link-content">
               <el-input
@@ -27,11 +27,11 @@
               />
               <el-button type="primary" size="small" @click="copyInviteId">
                 <el-icon><CopyDocument /></el-icon>
-                复制
+                Copy
               </el-button>
               <el-button size="small" @click="copyInviteUrl">
                 <el-icon><Link /></el-icon>
-                复制链接
+                Copy Link
               </el-button>
             </div>
           </div>
@@ -39,7 +39,7 @@
           <div class="tab-header">
             <el-button type="primary" size="small" @click="showInviteDialog = true">
               <el-icon><Plus /></el-icon>
-              邀请成员
+              Invite Member
             </el-button>
             <el-button 
               type="warning" 
@@ -49,20 +49,20 @@
               @click="batchResetMemberCredits"
             >
               <el-icon><RefreshRight /></el-icon>
-              批量重置积分
+              Batch Reset Credits
             </el-button>
             <el-button size="small" @click="loadTeamMembers">
               <el-icon><Refresh /></el-icon>
-              刷新
+              Refresh
             </el-button>
             <el-button type="danger" size="small" @click="showTransferDialog = true">
               <el-icon><Switch /></el-icon>
-              转让订阅
+              Transfer Subscription
             </el-button>
           </div>
           
           <el-table :data="members" style="width: 100%" max-height="400" class="member-table">
-            <el-table-column label="名称 & 邮箱" min-width="220">
+            <el-table-column label="Name & Email" min-width="220">
               <template #default="{ row }">
                 <div class="member-cell">
                   <div class="member-cell-name">
@@ -73,43 +73,43 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="最后使用" width="120" align="center">
+            <el-table-column label="Last Used" width="120" align="center">
               <template #default="{ row }">
                 <span class="time-text">{{ formatLastUsed(row.last_update_time) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="已用积分" width="100" align="center">
+            <el-table-column label="Used Credits" width="100" align="center">
               <template #default="{ row }">
                 <span>{{ Math.floor((row.prompts_used || 0) / 100) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="禁用访问" width="90" align="center">
+            <el-table-column label="Disable Access" width="90" align="center">
               <template #default="{ row }">
                 <el-tag :type="row.disable_codeium ? 'danger' : 'success'" size="small">
-                  {{ row.disable_codeium ? '是' : '否' }}
+                  {{ row.disable_codeium ? 'Yes' : 'No' }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="180" fixed="right" align="center">
+            <el-table-column label="Actions" width="180" fixed="right" align="center">
               <template #default="{ row }">
                 <el-button type="info" size="small" text @click="openMemberDetail(row)">
-                  编辑
+                  Edit
                 </el-button>
                 <template v-if="row.role !== 'Admin'">
                   <el-popconfirm
-                    title="确定要移除该成员吗？"
-                    confirm-button-text="确定"
-                    cancel-button-text="取消"
+                    title="Remove this member?"
+                    confirm-button-text="Confirm"
+                    cancel-button-text="Cancel"
                     @confirm="removeMember(row)"
                   >
                     <template #reference>
                       <el-button type="danger" size="small" text>
-                        移除
+                        Remove
                       </el-button>
                     </template>
                   </el-popconfirm>
                   <el-button type="primary" size="small" text :loading="row.rejoining" @click="rejoinMember(row)">
-                    重置积分
+                    Reset Credits
                   </el-button>
                 </template>
               </template>
@@ -117,38 +117,38 @@
           </el-table>
           
           <div v-if="members.length === 0 && !loading" class="empty-state">
-            <el-empty description="暂无团队成员" />
+            <el-empty description="No team members" />
           </div>
         </el-tab-pane>
         
         <!-- 待处理邀请 -->
-        <el-tab-pane label="待处理邀请" name="invitations">
+        <el-tab-pane label="Pending Invites" name="invitations">
           <div class="tab-header">
             <el-button size="small" @click="loadPendingInvitations">
               <el-icon><Refresh /></el-icon>
-              刷新
+              Refresh
             </el-button>
           </div>
           
           <el-table :data="pendingInvitations" style="width: 100%" max-height="400">
-            <el-table-column prop="name" label="名称" width="150" />
-            <el-table-column prop="email" label="邮箱" min-width="200" />
-            <el-table-column prop="created_at" label="邀请时间" width="180">
+            <el-table-column prop="name" label="Name" width="150" />
+            <el-table-column prop="email" label="Email" min-width="200" />
+            <el-table-column prop="created_at" label="Invite Time" width="180">
               <template #default="{ row }">
                 {{ formatTime(row.created_at) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="100" fixed="right">
+            <el-table-column label="Actions" width="100" fixed="right">
               <template #default="{ row }">
                 <el-popconfirm
-                  title="确定要撤销该邀请吗？"
-                  confirm-button-text="确定"
-                  cancel-button-text="取消"
+                  title="Revoke this invite?"
+                  confirm-button-text="Confirm"
+                  cancel-button-text="Cancel"
                   @confirm="revokeInvitation(row)"
                 >
                   <template #reference>
                     <el-button type="warning" size="small" text>
-                      撤销
+                      Revoke
                     </el-button>
                   </template>
                 </el-popconfirm>
@@ -157,43 +157,43 @@
           </el-table>
           
           <div v-if="pendingInvitations.length === 0 && !loading" class="empty-state">
-            <el-empty description="暂无待处理邀请" />
+            <el-empty description="No pending invitations" />
           </div>
         </el-tab-pane>
         
         <!-- 我的邀请（普通用户） -->
-        <el-tab-pane label="我的邀请" name="my-invitation">
+        <el-tab-pane label="My Invites" name="my-invitation">
           <div class="my-invitation-section">
             <div v-if="myInvitation" class="invitation-card">
               <div class="invitation-info">
-                <h3>您收到了团队邀请</h3>
-                <p><strong>团队名称:</strong> {{ myInvitation.team_name || '未知团队' }}</p>
-                <p><strong>邀请人:</strong> {{ myInvitation.admin_name || '管理员' }}</p>
+                <h3>You received a team invitation</h3>
+                <p><strong>Team Name:</strong> {{ myInvitation.team_name || 'Unknown team' }}</p>
+                <p><strong>Invited by:</strong> {{ myInvitation.admin_name || 'Admin' }}</p>
               </div>
               <div class="invitation-actions">
                 <el-button type="primary" @click="acceptInvitation">
-                  接受邀请
+                  Accept Invitation
                 </el-button>
                 <el-button type="danger" @click="rejectInvitation">
-                  拒绝邀请
+                  Decline Invitation
                 </el-button>
               </div>
             </div>
             <div v-else class="empty-state">
-              <el-empty description="暂无待处理的邀请" />
+              <el-empty description="No pending invitations" />
               <el-button size="small" @click="loadMyInvitation">
                 <el-icon><Refresh /></el-icon>
-                检查邀请
+                Check Invitation
               </el-button>
             </div>
           </div>
         </el-tab-pane>
 
         <!-- 申请加入团队 -->
-        <el-tab-pane label="申请加入" name="join-team">
+        <el-tab-pane label="Join Team" name="join-team">
           <div class="join-team-section">
             <el-alert
-              title="通过邀请链接加入团队"
+              title="Join team via invite link"
               type="info"
               description="输入团队管理员分享的邀请ID，申请加入团队。申请提交后需等待管理员审批。"
               :closable="false"
@@ -201,16 +201,16 @@
               style="margin-bottom: 20px"
             />
             <el-form :model="joinForm" label-width="100px">
-              <el-form-item label="邀请链接ID">
+              <el-form-item label="Invite Link ID">
                 <el-input
                   v-model="joinForm.inviteId"
-                  placeholder="输入邀请ID（UUID格式）"
+                  placeholder="Enter invite ID (UUID format)"
                   clearable
                 />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" :loading="joining" @click="submitJoinRequest">
-                  提交申请
+                  Submit Application
                 </el-button>
               </el-form-item>
             </el-form>
@@ -218,36 +218,36 @@
         </el-tab-pane>
 
         <!-- 待审批申请（管理员） -->
-        <el-tab-pane label="待审批" name="pending-requests">
+        <el-tab-pane label="Pending Approval" name="pending-requests">
           <div class="tab-header">
             <el-button size="small" @click="loadTeamMembers">
               <el-icon><Refresh /></el-icon>
-              刷新
+              Refresh
             </el-button>
           </div>
           
           <el-table :data="pendingMembers" style="width: 100%" max-height="400">
-            <el-table-column prop="name" label="名称" width="150" />
-            <el-table-column prop="email" label="邮箱" min-width="200" />
-            <el-table-column prop="status" label="状态" width="100">
+            <el-table-column prop="name" label="Name" width="150" />
+            <el-table-column prop="email" label="Email" min-width="200" />
+            <el-table-column prop="status" label="Status" width="100">
               <template #default>
-                <el-tag type="warning" size="small">待审批</el-tag>
+                <el-tag type="warning" size="small">Pending Approval</el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="160" fixed="right">
+            <el-table-column label="Actions" width="160" fixed="right">
               <template #default="{ row }">
                 <el-button type="success" size="small" text @click="approveJoinRequest(row, 'approve')">
-                  同意
+                  Approve
                 </el-button>
                 <el-button type="danger" size="small" text @click="approveJoinRequest(row, 'reject')">
-                  拒绝
+                  Reject
                 </el-button>
               </template>
             </el-table-column>
           </el-table>
           
           <div v-if="pendingMembers.length === 0 && !loading" class="empty-state">
-            <el-empty description="暂无待审批的加入申请" />
+            <el-empty description="No pending join requests" />
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -256,7 +256,7 @@
     <!-- 邀请成员对话框 -->
     <el-dialog
       v-model="showInviteDialog"
-      title="邀请成员"
+      title="Invite Member"
       width="500px"
       :close-on-click-modal="false"
       append-to-body
@@ -264,11 +264,11 @@
       <el-form :model="inviteForm" label-width="60px">
         <div v-for="(user, index) in inviteForm.users" :key="index" class="invite-user-row">
           <div class="invite-user-fields">
-            <el-form-item label="名称">
-              <el-input v-model="user.name" placeholder="成员名称" />
+            <el-form-item label="Name">
+              <el-input v-model="user.name" placeholder="Member name" />
             </el-form-item>
-            <el-form-item label="邮箱">
-              <el-input v-model="user.email" placeholder="成员邮箱" />
+            <el-form-item label="Email">
+              <el-input v-model="user.email" placeholder="Member email" />
             </el-form-item>
           </div>
           <el-button
@@ -283,22 +283,22 @@
         </div>
         <el-button class="add-more-btn" @click="addInviteUser">
           <el-icon><Plus /></el-icon>
-          添加更多
+          Add More
         </el-button>
         
         <!-- 自动加入开关 -->
         <div class="auto-join-section">
           <el-switch v-model="autoJoinEnabled" />
-          <span class="auto-join-label">自动加入</span>
+          <span class="auto-join-label">Auto Join</span>
           <el-tooltip content="邀请后，如果成员邮箱在账号管理器中，将自动接受邀请加入团队" placement="top">
             <el-icon class="help-icon"><QuestionFilled /></el-icon>
           </el-tooltip>
         </div>
       </el-form>
       <template #footer>
-        <el-button @click="showInviteDialog = false">取消</el-button>
+        <el-button @click="showInviteDialog = false">Cancel</el-button>
         <el-button type="primary" :loading="inviting" @click="submitInvite">
-          {{ autoJoinEnabled ? '邀请并自动加入' : '发送邀请' }}
+          {{ autoJoinEnabled ? 'Invite & Auto Join' : 'Send Invite' }}
         </el-button>
       </template>
     </el-dialog>
@@ -306,13 +306,13 @@
     <!-- 转让订阅对话框 -->
     <el-dialog
       v-model="showTransferDialog"
-      title="转让订阅"
+      title="Transfer Subscription"
       width="500px"
       :close-on-click-modal="false"
       append-to-body
     >
       <el-alert
-        title="转让订阅说明"
+        title="Transfer Subscription Info"
         type="warning"
         description="转让后，您将被移出团队，订阅将转移给目标用户。此操作不可撤销！"
         :closable="false"
@@ -320,20 +320,20 @@
         style="margin-bottom: 20px"
       />
       <el-form :model="transferForm" label-width="100px" autocomplete="off">
-        <el-form-item label="目标邮箱" required>
+        <el-form-item label="Target Email" required>
           <el-input
             v-model="transferForm.email"
-            placeholder="输入接收订阅的用户邮箱"
+            placeholder="Enter user email to receive subscription"
             clearable
             name="transfer-target-email-no-autofill"
             autocomplete="off"
             data-form-type="other"
           />
         </el-form-item>
-        <el-form-item label="用户名称">
+        <el-form-item label="User Name">
           <el-input
             v-model="transferForm.name"
-            placeholder="可选，用户名称"
+            placeholder="Optional, user name"
             clearable
             name="transfer-target-name-no-autofill"
             autocomplete="off"
@@ -345,18 +345,18 @@
       <!-- 转让进度显示 -->
       <div v-if="transferring" class="transfer-progress">
         <el-steps :active="transferStep" finish-status="success" simple>
-          <el-step title="禁用访问" />
-          <el-step title="邀请用户" />
-          <el-step title="授予管理员" />
-          <el-step title="移除自己" />
+          <el-step title="Disable Access" />
+          <el-step title="Invite User" />
+          <el-step title="Grant Admin" />
+          <el-step title="Remove Self" />
         </el-steps>
         <div class="transfer-status">{{ transferStatus }}</div>
       </div>
       
       <template #footer>
-        <el-button @click="showTransferDialog = false" :disabled="transferring">取消</el-button>
+        <el-button @click="showTransferDialog = false" :disabled="transferring">Cancel</el-button>
         <el-button type="danger" :loading="transferring" @click="executeTransfer">
-          确认转让
+          Confirm Transfer
         </el-button>
       </template>
     </el-dialog>
@@ -364,7 +364,7 @@
     <!-- 成员详情对话框 -->
     <el-dialog
       v-model="showMemberDetail"
-      :title="selectedMember?.name || '成员详情'"
+      :title="selectedMember?.name || 'Member Details'"
       width="520px"
       :close-on-click-modal="false"
       append-to-body
@@ -402,25 +402,25 @@
             </el-input>
           </el-form-item>
           
-          <el-form-item label="注册时间">
+          <el-form-item label="Sign Up Time">
             <span class="info-value">{{ formatSignUpTime(selectedMember.sign_up_time) }}</span>
           </el-form-item>
           
-          <el-form-item label="角色">
+          <el-form-item label="Role">
             <el-select v-model="memberDetailForm.role" style="width: 200px" size="default">
-              <el-option label="普通用户" value="User" />
-              <el-option label="管理员" value="Admin" />
+              <el-option label="User" value="User" />
+              <el-option label="Admin" value="Admin" />
             </el-select>
           </el-form-item>
           
-          <el-form-item label="禁用访问">
+          <el-form-item label="Disable Access">
             <el-switch 
               v-model="memberDetailForm.disableAccess"
-              active-text="已禁用"
+              active-text="Disabled"
               inactive-text=""
               style="--el-switch-on-color: #f56c6c"
             />
-            <div class="form-tip">禁用后该成员将无法使用 Windsurf，且不占用席位</div>
+            <div class="form-tip">After disabling, the member will not be able to use Windsurf and will not occupy a seat</div>
           </el-form-item>
         </el-form>
       </div>
@@ -428,10 +428,10 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button type="danger" plain @click="handleRemoveMember" :loading="memberDetailLoading">
-            移除成员
+            Remove Member
           </el-button>
           <el-button type="primary" @click="saveMemberDetail" :loading="memberDetailLoading">
-            保存修改
+            Save Changes
           </el-button>
         </div>
       </template>
@@ -644,7 +644,7 @@ async function loadTeamMembers() {
       members.value = approvedList
       pendingMembers.value = pendingList
     } else {
-      ElMessage.error(result.error || '获取团队成员失败')
+      ElMessage.error(result.error || 'Failed to get team members')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -663,7 +663,7 @@ async function removeMember(member: TeamMember) {
     })
     
     if (result.success) {
-      ElMessage.success('成员已移除')
+      ElMessage.success('Member removed')
       loadTeamMembers()
     } else {
       ElMessage.error(result.error || '移除成员失败')
@@ -696,13 +696,13 @@ function openMemberDetail(member: TeamMember) {
 function copyApiKey() {
   if (!selectedMember.value) return
   navigator.clipboard.writeText(selectedMember.value.api_key)
-    .then(() => ElMessage.success('已复制 API Key'))
-    .catch(() => ElMessage.error('复制失败'))
+    .then(() => ElMessage.success('API Key copied'))
+    .catch(() => ElMessage.error('Copy failed'))
 }
 
 // 格式化注册时间
 function formatSignUpTime(timestamp?: number): string {
-  if (!timestamp) return '未知'
+  if (!timestamp) return 'Unknown'
   const date = new Date(timestamp * 1000)
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
@@ -716,7 +716,7 @@ function formatSignUpTime(timestamp?: number): string {
 
 // 格式化最后使用时间（相对时间）
 function formatLastUsed(timestamp?: number): string {
-  if (!timestamp) return '未使用'
+  if (!timestamp) return 'Never used'
   
   const now = Date.now()
   const time = timestamp * 1000
@@ -726,10 +726,10 @@ function formatLastUsed(timestamp?: number): string {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
   
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes}分钟前`
-  if (hours < 24) return `${hours}小时前`
-  if (days < 30) return `${days}天前`
+  if (minutes < 1) return 'Just now'
+  if (minutes < 60) return `${minutes} min ago`
+  if (hours < 24) return `${hours} hours ago`
+  if (days < 30) return `${days} days ago`
   
   return new Date(time).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
 }
@@ -748,11 +748,11 @@ function formatLastUsed(timestamp?: number): string {
  * - `unauthenticated`:     主认证 token 失效
  */
 const UPDATE_ACCESS_ERROR_MESSAGES: Record<string, string> = {
-  failed_precondition: '当前 Devin 套餐不支持 Windsurf 访问管理，需升级到 Teams-v2 套餐后使用',
-  permission_denied: '权限不足：仅团队管理员可操作访问权限',
-  unauthenticated: '认证失效，请刷新账号登录状态后重试',
-  invalid_argument: '请求参数无效，成员 API Key 可能已失效',
-  not_found: '目标成员未找到，可能已被移除',
+  failed_precondition: 'Current Devin plan does not support Windsurf access management, please upgrade to Teams-v2 plan first',
+  permission_denied: 'Insufficient permissions: only team admins can manage access permissions',
+  unauthenticated: 'Authentication expired, please refresh account login status and retry',
+  invalid_argument: 'Invalid request parameters, member API Key may have expired',
+  not_found: 'Target member not found, may have been removed',
 }
 
 /** 从后端失败返回体中提取一条友好中文错误消息，兜底到服务端原文或通用文案 */
@@ -760,7 +760,7 @@ function extractUpdateAccessErrorMessage(result: any): string {
   const code = result?.parsed_error?.code as string | undefined
   const serverMsg = result?.parsed_error?.message as string | undefined
   const friendly = code ? UPDATE_ACCESS_ERROR_MESSAGES[code] : undefined
-  return friendly || serverMsg || result?.error || '更新访问权限失败'
+  return friendly || serverMsg || result?.error || 'Failed to update access permissions'
 }
 
 /**
@@ -829,7 +829,7 @@ async function saveMemberDetail() {
       )
     }
     
-    ElMessage.success('保存成功')
+    ElMessage.success('Saved successfully')
     showMemberDetail.value = false
     loadTeamMembers()
   } catch (error: any) {
@@ -844,9 +844,9 @@ async function handleRemoveMember() {
   if (!selectedMember.value) return
   
   try {
-    await ElMessageBox.confirm('确定要移除该成员吗？', '确认', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm('Are you sure you want to remove this member?', 'Confirm', {
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
       type: 'warning'
     })
     
@@ -857,11 +857,11 @@ async function handleRemoveMember() {
     })
     
     if (result.success) {
-      ElMessage.success('成员已移除')
+      ElMessage.success('Member removed')
       showMemberDetail.value = false
       loadTeamMembers()
     } else {
-      ElMessage.error(result.error || '移除成员失败')
+      ElMessage.error(result.error || 'Failed to remove member')
     }
   } catch (error: any) {
     if (error !== 'cancel') {
@@ -904,9 +904,9 @@ async function rejoinMember(member: TeamMember) {
     const joined = autoJoinResults.some(r => r.success)
     
     if (joined) {
-      ElMessage.success(`${member.name} 积分已重置成功`)
+      ElMessage.success(`Credits reset successfully for ${member.name}`)
     } else {
-      ElMessage.success(`已重新邀请 ${member.name}，等待接受邀请`)
+      ElMessage.success(`Re-invited ${member.name}, waiting for invitation acceptance`)
     }
     
     loadTeamMembers()
@@ -923,17 +923,17 @@ async function batchResetMemberCredits() {
   const membersToReset = otherMembers.value
   
   if (membersToReset.length === 0) {
-    ElMessage.warning('没有可重置的成员')
+    ElMessage.warning('No members to reset')
     return
   }
   
   try {
     await ElMessageBox.confirm(
-      `确定要重置 ${membersToReset.length} 位成员的积分吗？此操作将移除并重新邀请这些成员。`,
-      '批量重置积分',
+      `Are you sure you want to reset credits for ${membersToReset.length} members? This will remove and re-invite these members.`,
+      'Batch Reset Credits',
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }
     )
@@ -1041,7 +1041,7 @@ async function loadPendingInvitations() {
       }
       console.log('[PendingInvitations] Parsed:', pendingInvitations.value)
     } else {
-      ElMessage.error(result.error || '获取待处理邀请失败')
+      ElMessage.error(result.error || 'Failed to get pending invitations')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -1060,10 +1060,10 @@ async function revokeInvitation(invitation: PendingInvitation) {
     })
     
     if (result.success) {
-      ElMessage.success('邀请已撤销')
+      ElMessage.success('Invitation revoked')
       loadPendingInvitations()
     } else {
-      ElMessage.error(result.error || '撤销邀请失败')
+      ElMessage.error(result.error || 'Failed to revoke invitation')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -1111,10 +1111,10 @@ async function acceptInvitation() {
     })
     
     if (result.success) {
-      ElMessage.success('已成功加入团队')
+      ElMessage.success('Successfully joined the team')
       myInvitation.value = null
     } else {
-      ElMessage.error(result.error || '接受邀请失败')
+      ElMessage.error(result.error || 'Failed to accept invitation')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -1128,7 +1128,7 @@ async function rejectInvitation() {
   if (!myInvitation.value) return
   
   try {
-    await ElMessageBox.confirm('确定要拒绝该邀请吗？', '确认', {
+    await ElMessageBox.confirm('Are you sure you want to decline this invitation?', 'Confirm', {
       type: 'warning'
     })
     
@@ -1139,10 +1139,10 @@ async function rejectInvitation() {
     })
     
     if (result.success) {
-      ElMessage.success('已拒绝邀请')
+      ElMessage.success('Invitation declined')
       myInvitation.value = null
     } else {
-      ElMessage.error(result.error || '拒绝邀请失败')
+      ElMessage.error(result.error || 'Failed to decline invitation')
     }
   } catch (error: any) {
     if (error !== 'cancel') {
@@ -1166,7 +1166,7 @@ async function submitInvite() {
   const validUsers = inviteForm.value.users.filter(u => u.name && u.email)
   
   if (validUsers.length === 0) {
-    ElMessage.warning('请至少填写一个有效的成员信息')
+    ElMessage.warning('Please fill in at least one valid member information')
     return
   }
   
@@ -1186,12 +1186,12 @@ async function submitInvite() {
         const joinedCount = autoJoinResults.filter(r => r.success).length
         
         if (joinedCount > 0) {
-          ElMessage.success(`成功邀请 ${invitedCount} 位成员，${joinedCount} 位已自动加入`)
+          ElMessage.success(`Successfully invited ${invitedCount} members, ${joinedCount} joined automatically`)
         } else {
-          ElMessage.success(`成功邀请 ${invitedCount} 位成员`)
+          ElMessage.success(`Successfully invited ${invitedCount} members`)
         }
       } else {
-        ElMessage.success(`成功邀请 ${invitedCount} 位成员`)
+        ElMessage.success(`Successfully invited ${invitedCount} members`)
       }
       
       showInviteDialog.value = false
@@ -1263,7 +1263,7 @@ function formatTime(timestamp?: number): string {
 // 申请加入团队
 async function submitJoinRequest() {
   if (!joinForm.value.inviteId.trim()) {
-    ElMessage.warning('请输入邀请链接ID')
+    ElMessage.warning('Please enter the invite link ID')
     return
   }
   
@@ -1275,10 +1275,10 @@ async function submitJoinRequest() {
     })
     
     if (result.success) {
-      ElMessage.success(result.message || '申请已提交，等待管理员审批')
+      ElMessage.success(result.message || 'Application submitted, waiting for admin approval')
       joinForm.value.inviteId = ''
     } else {
-      ElMessage.error(result.error || '申请失败')
+      ElMessage.error(result.error || 'Application failed')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -1298,10 +1298,10 @@ async function approveJoinRequest(member: TeamMember, action: 'approve' | 'rejec
     })
     
     if (result.success) {
-      ElMessage.success(result.message || (action === 'approve' ? '已同意加入' : '已拒绝加入'))
+      ElMessage.success(result.message || (action === 'approve' ? 'Join approved' : 'Join rejected'))
       loadTeamMembers()
     } else {
-      ElMessage.error(result.error || '操作失败')
+      ElMessage.error(result.error || 'Operation failed')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -1313,17 +1313,17 @@ async function approveJoinRequest(member: TeamMember, action: 'approve' | 'rejec
 // 执行订阅转让
 async function executeTransfer() {
   if (!transferForm.value.email.trim()) {
-    ElMessage.warning('请输入目标用户邮箱')
+    ElMessage.warning('Please enter the target user email')
     return
   }
   
   try {
     await ElMessageBox.confirm(
-      `确定要将订阅转让给 ${transferForm.value.email} 吗？\n\n转让后您将被移出团队，此操作不可撤销！`,
-      '确认转让',
+      `Are you sure you want to transfer the subscription to ${transferForm.value.email}?\n\nAfter transfer, you will be removed from the team, and this action cannot be undone!`,
+      'Confirm Transfer',
       {
-        confirmButtonText: '确认转让',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm Transfer',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }
     )
@@ -1339,7 +1339,7 @@ async function executeTransfer() {
     const targetName = transferForm.value.name.trim() || targetEmail.split('@')[0]
     
     // Step 1: 禁用自己的访问权限
-    transferStatus.value = '正在禁用自己的访问权限...'
+    transferStatus.value = 'Disabling your access...'
     transferStep.value = 0
     
     // 找到当前账号的成员信息并禁用访问
@@ -1356,7 +1356,7 @@ async function executeTransfer() {
     const existingMember = members.value.find(m => m.email?.toLowerCase() === targetEmail.toLowerCase())
     
     // Step 2: 邀请用户加入团队
-    transferStatus.value = '正在邀请用户...'
+    transferStatus.value = 'Inviting user...'
     transferStep.value = 1
     
     let memberApiKey = existingMember?.api_key
@@ -1369,7 +1369,7 @@ async function executeTransfer() {
       })
       
       if (!inviteResult.success) {
-        throw new Error(inviteResult.error || '邀请用户失败')
+        throw new Error(inviteResult.error || 'Failed to invite user')
       }
       
       // 尝试自动接受邀请（如果邮箱在账号管理器中）
@@ -1378,7 +1378,7 @@ async function executeTransfer() {
       
       if (!joined) {
         // 用户未能自动加入，需要等待手动接受
-        ElMessage.warning('邀请已发送，但用户需要手动接受邀请后才能完成转让。请在用户接受后重试。')
+        ElMessage.warning('Invitation sent, user needs to manually accept. Please retry after user accepts.')
         showTransferDialog.value = false
         transferring.value = false
         loadPendingInvitations()
@@ -1389,13 +1389,13 @@ async function executeTransfer() {
       await loadTeamMembers()
       const newMember = members.value.find(m => m.email?.toLowerCase() === targetEmail.toLowerCase())
       if (!newMember) {
-        throw new Error('无法找到新加入的成员')
+        throw new Error('Cannot find newly joined member')
       }
       memberApiKey = newMember.api_key
     }
     
     // Step 3: 赋予用户管理员权限
-    transferStatus.value = '正在授予管理员权限...'
+    transferStatus.value = 'Granting admin permissions...'
     transferStep.value = 2
     
     await invoke<any>('add_user_role', {
@@ -1405,7 +1405,7 @@ async function executeTransfer() {
     })
     
     // Step 4: 把自己移除团队
-    transferStatus.value = '正在移除自己...'
+    transferStatus.value = 'Removing yourself...'
     transferStep.value = 3
     
     // 使用 Step 1 中找到的当前账号成员信息
@@ -1417,9 +1417,9 @@ async function executeTransfer() {
     }
     
     transferStep.value = 4
-    transferStatus.value = '转让完成！'
+    transferStatus.value = 'Transfer complete!'
     
-    ElMessage.success(`订阅已成功转让给 ${targetEmail}`)
+    ElMessage.success(`Subscription successfully transferred to ${targetEmail}`)
     
     // 重置表单并关闭对话框
     showTransferDialog.value = false
@@ -1468,7 +1468,7 @@ async function copyInviteId() {
   
   try {
     await navigator.clipboard.writeText(teamInviteId.value)
-    ElMessage.success('邀请ID已复制到剪贴板')
+    ElMessage.success('Invite ID copied to clipboard')
   } catch (error) {
     // 备用方法
     const textarea = document.createElement('textarea')
@@ -1489,7 +1489,7 @@ async function copyInviteUrl() {
   
   try {
     await navigator.clipboard.writeText(inviteUrl)
-    ElMessage.success('邀请链接已复制到剪贴板')
+    ElMessage.success('Invite link copied to clipboard')
   } catch (error) {
     const textarea = document.createElement('textarea')
     textarea.value = inviteUrl

@@ -7,7 +7,7 @@
   >
     <div class="card-header">
       <!-- 拖拽手柄 - simple 版本已禁用
-      <div class="drag-handle" title="拖拽排序">
+      <div class="drag-handle" title="Drag to reorder">
         <el-icon><Rank /></el-icon>
       </div>
       -->

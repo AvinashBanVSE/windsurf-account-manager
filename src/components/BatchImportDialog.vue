@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="批量导入账号"
+    title="Batch Import Accounts"
     width="700px"
     :close-on-click-modal="false"
     @close="handleClose"
@@ -200,7 +200,7 @@
             <span class="setting-label">分组:</span>
             <el-select
               v-model="selectedGroup"
-              placeholder="选择分组（可选）"
+              placeholder="Select group (optional)"
               clearable
               style="width: 180px;"
             >
@@ -222,7 +222,7 @@
               multiple
               collapse-tags
               collapse-tags-tooltip
-              placeholder="选择标签（可选）"
+              placeholder="Select tags (optional)"
               clearable
               style="width: 180px;"
             >

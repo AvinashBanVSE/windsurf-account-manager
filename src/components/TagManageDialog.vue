@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="标签管理"
+    title="Tag Management"
     width="600px"
     :close-on-click-modal="false"
     @close="handleClose"
@@ -11,7 +11,7 @@
       <div class="add-tag-section">
         <el-input
           v-model="newTagName"
-          placeholder="输入新标签名称"
+          placeholder="Enter new tag name"
           size="default"
           class="tag-input"
           @keyup.enter="handleAddTag"
@@ -99,7 +99,7 @@
             <el-select
               v-model="batchAddTags"
               multiple
-              placeholder="选择要添加的标签"
+              placeholder="Select tags to add"
               style="flex: 1"
               :disabled="availableTagsToAdd.length === 0"
             >
@@ -118,7 +118,7 @@
             <el-select
               v-model="batchRemoveTags"
               multiple
-              placeholder="选择要移除的标签"
+              placeholder="Select tags to remove"
               style="flex: 1"
               :disabled="availableTagsToRemove.length === 0"
             >
@@ -147,7 +147,7 @@
     <!-- 编辑标签对话框 -->
     <el-dialog
       v-model="editDialogVisible"
-      title="编辑标签"
+      title="Edit Tag"
       width="400px"
       append-to-body
     >

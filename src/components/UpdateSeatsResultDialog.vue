@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="座位更新结果"
+    title="Seat Update Result"
     width="600px"
     @close="handleClose"
   >
@@ -10,10 +10,10 @@
       <el-card v-if="resultData.success" class="result-card" shadow="never">
         <template #header>
           <div class="card-header">
-            <span>更新成功</span>
+            <span>Update Successful</span>
             <el-tag type="success">
               <el-icon><Check /></el-icon>
-              座位数: {{ lastAttempt?.total_seats || 'N/A' }}
+              Seats: {{ lastAttempt?.total_seats || 'N/A' }}
             </el-tag>
           </div>
         </template>
@@ -21,16 +21,16 @@
         <!-- 座位信息 -->
         <div class="seats-section" v-if="lastAttempt">
           <el-descriptions :column="2" border>
-            <el-descriptions-item label="总座位数">
+            <el-descriptions-item label="Total Seats">
               <el-text type="success" style="font-size: 16px; font-weight: bold;">{{ lastAttempt.total_seats || 0 }}</el-text>
             </el-descriptions-item>
-            <el-descriptions-item label="计费周期">
-              <el-text type="primary">{{ lastAttempt.billing_interval === 'yearly' ? '年付' : '月付' }}</el-text>
+            <el-descriptions-item label="Billing Cycle">
+              <el-text type="primary">{{ lastAttempt.billing_interval === 'yearly' ? 'Yearly' : 'Monthly' }}</el-text>
             </el-descriptions-item>
-            <el-descriptions-item label="每座位价格">
+            <el-descriptions-item label="Price Per Seat">
               <el-text type="info">${{ lastAttempt.price_per_seat || 0 }}</el-text>
             </el-descriptions-item>
-            <el-descriptions-item label="总费用">
+            <el-descriptions-item label="Total Cost">
               <el-text type="warning" style="font-size: 16px; font-weight: bold;">${{ lastAttempt.total_monthly_price || 0 }}</el-text>
             </el-descriptions-item>
           </el-descriptions>
@@ -38,7 +38,7 @@
           <!-- 立即应付金额（如果有） -->
           <div v-if="lastAttempt.amount_due_immediately > 0" style="margin-top: 15px;">
             <el-alert
-              :title="`立即应付: $${lastAttempt.amount_due_immediately}`"
+              :title="`Due now: $${lastAttempt.amount_due_immediately}`"
               type="warning"
               :closable="false"
               show-icon
@@ -48,12 +48,12 @@
         
         <!-- 时间信息 -->
         <div class="time-section" v-if="lastAttempt && (lastAttempt.billing_start_time || lastAttempt.next_billing_time)">
-          <h4>计费周期</h4>
+          <h4>Billing Cycle</h4>
           <el-descriptions :column="1" border>
-            <el-descriptions-item label="当前周期开始" v-if="lastAttempt.billing_start_time">
+            <el-descriptions-item label="Current Period Start" v-if="lastAttempt.billing_start_time">
               <el-text>{{ lastAttempt.billing_start_time }}</el-text>
             </el-descriptions-item>
-            <el-descriptions-item label="下次计费时间" v-if="lastAttempt.next_billing_time">
+            <el-descriptions-item label="Next Billing Time" v-if="lastAttempt.next_billing_time">
               <el-text type="warning">{{ lastAttempt.next_billing_time }}</el-text>
             </el-descriptions-item>
           </el-descriptions>
@@ -63,7 +63,7 @@
       <!-- 错误信息 -->
       <el-alert
         v-if="!resultData.success"
-        title="座位更新失败"
+        title="Seat Update Failed"
         :description="getErrorMessage()"
         type="error"
         :closable="false"
@@ -72,22 +72,22 @@
       
       <!-- 尝试记录 -->
       <div class="attempts-section" v-if="resultData.attempts?.length > 0">
-        <h4>尝试记录 ({{ resultData.attempts.length }}次)</h4>
+        <h4>Attempt Records ({{ resultData.attempts.length }} times)</h4>
         <el-collapse>
           <el-collapse-item 
             v-for="(attempt, index) in resultData.attempts" 
             :key="index"
-            :title="`尝试 #${attempt.attempt} - 状态码: ${attempt.status_code || 'N/A'}`"
+            :title="`Attempt #${attempt.attempt} - Status: ${attempt.status_code || 'N/A'}`"
           >
             <el-descriptions :column="1" size="small">
-              <el-descriptions-item label="时间">{{ attempt.timestamp }}</el-descriptions-item>
-              <el-descriptions-item label="状态码">{{ attempt.status_code || 'N/A' }}</el-descriptions-item>
-              <el-descriptions-item label="错误" v-if="attempt.error">
+              <el-descriptions-item label="Time">{{ attempt.timestamp }}</el-descriptions-item>
+              <el-descriptions-item label="Status Code">{{ attempt.status_code || 'N/A' }}</el-descriptions-item>
+              <el-descriptions-item label="Error" v-if="attempt.error">
                 <el-text type="danger">{{ attempt.error }}</el-text>
               </el-descriptions-item>
             </el-descriptions>
             <div v-if="attempt.raw_response" style="margin-top: 10px;">
-              <el-text type="info" size="small">响应数据:</el-text>
+              <el-text type="info" size="small">Response Data:</el-text>
               <pre class="raw-response">{{ formatResponse(attempt.raw_response) }}</pre>
             </div>
           </el-collapse-item>
@@ -96,9 +96,9 @@
     </div>
     
     <template #footer>
-      <el-button @click="handleClose">关闭</el-button>
+      <el-button @click="handleClose">Close</el-button>
       <el-button type="primary" @click="copyToClipboard" v-if="resultData">
-        复制数据
+        Copy Data
       </el-button>
     </template>
   </el-dialog>
@@ -145,9 +145,9 @@ const lastAttempt = computed(() => {
 
 // 获取错误信息
 function getErrorMessage() {
-  if (!props.resultData?.attempts?.length) return '未知错误';
+  if (!props.resultData?.attempts?.length) return 'Unknown error';
   const lastAttempt = props.resultData.attempts[props.resultData.attempts.length - 1];
-  return lastAttempt?.error || `HTTP ${lastAttempt?.status_code || '未知状态码'}`;
+  return lastAttempt?.error || `HTTP ${lastAttempt?.status_code || 'Unknown status code'}`;
 }
 
 // 格式化响应数据
@@ -168,9 +168,9 @@ async function copyToClipboard() {
   if (props.resultData) {
     try {
       await navigator.clipboard.writeText(JSON.stringify(props.resultData, null, 2));
-      ElMessage.success('已复制到剪贴板');
+      ElMessage.success('Copied to clipboard');
     } catch (error) {
-      ElMessage.error('复制失败');
+      ElMessage.error('Copy failed');
     }
   }
 }

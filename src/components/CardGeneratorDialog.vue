@@ -34,7 +34,7 @@
           <div class="form-row">
             <el-input
               v-model="newBin.prefix"
-              placeholder="BIN前缀 (如: 411111)"
+              placeholder="BIN prefix (e.g., 411111)"
               size="default"
               class="bin-input"
             />
@@ -42,7 +42,7 @@
           <div class="form-row">
             <el-select
               v-model="newBin.type"
-              placeholder="卡类型"
+              placeholder="Card type"
               size="default"
               class="type-select"
             >
@@ -128,7 +128,7 @@
           
           <div class="option-row" v-if="nameFormat === 'custom'">
             <span class="option-label">持卡人姓名</span>
-            <el-input v-model="customName" placeholder="如: JOHN DOE" size="small" class="full-width" />
+            <el-input v-model="customName" placeholder="e.g., JOHN DOE" size="small" class="full-width" />
           </div>
           
           <div class="option-row">

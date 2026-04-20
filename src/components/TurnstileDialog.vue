@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="人机验证"
+    title="Human Verification"
     width="400px"
     :close-on-click-modal="false"
     :close-on-press-escape="false"

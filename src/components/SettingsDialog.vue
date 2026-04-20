@@ -23,10 +23,10 @@
           </el-form-item>
           
           <!-- 座位数选项 - simple 版本已禁用
-          <el-form-item label="座位数选项">
+          <el-form-item label="Seat Count Options">
             <el-input
               v-model="seatCountOptionsInput"
-              placeholder="例如: 18, 19, 20"
+              placeholder="e.g., 18, 19, 20"
               style="width: 200px;"
               @blur="parseSeatCountOptions"
             />
@@ -90,31 +90,31 @@
             </div>
           </el-form-item>
           
-          <el-divider content-position="left">网络维护</el-divider>
+          <el-divider content-position="left">Network Maintenance</el-divider>
           
-          <el-form-item label="轻量级API">
+          <el-form-item label="Lightweight API">
             <el-switch 
               v-model="settings.useLightweightApi"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启时使用 GetPlanStatus 获取配额信息（更快），关闭时使用 GetCurrentUser（数据更完整）
+              When enabled, uses GetPlanStatus to get quota info (faster); when off, uses GetCurrentUser (more complete data)
             </div>
           </el-form-item>
           
-          <el-form-item label="启用代理">
+          <el-form-item label="Enable Proxy">
             <el-switch 
               v-model="settings.proxyEnabled"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，登录和刷新Token等 Google API 请求将通过代理进行
+              When enabled, login and refresh Token Google API requests will go through proxy
             </div>
           </el-form-item>
           
-          <el-form-item label="代理地址" v-if="settings.proxyEnabled">
+          <el-form-item label="Proxy Address" v-if="settings.proxyEnabled">
             <el-input
               v-model="settings.proxyUrl"
               placeholder="http://127.0.0.1:7890"
@@ -130,34 +130,34 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="重置网络连接">
+          <el-form-item label="Reset Network Connection">
             <el-button 
               type="warning" 
               @click="handleResetHttpClient"
               :loading="resettingHttp"
             >
-              重置HTTP客户端
+              Reset HTTP Client
             </el-button>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              当遇到连续的API请求失败时，可点击此按钮重置网络连接池
+              When encountering continuous API request failures, click this button to reset network connection pool
             </div>
           </el-form-item>
         </el-form>
       </el-tab-pane>
       
       <!-- 支付设置标签页 -->
-      <el-tab-pane label="支付设置" name="payment">
+      <el-tab-pane label="Payment Settings" name="payment">
         <el-form :model="settings" label-width="140px">
-          <el-divider content-position="left">订阅计划设置</el-divider>
+          <el-divider content-position="left">Subscription Plan Settings</el-divider>
           
-          <el-form-item label="订阅计划">
+          <el-form-item label="Subscription Plan">
             <el-select v-model="settings.subscriptionPlan" style="width: 100%;">
-              <el-option-group label="Windsurf 常用">
-                <el-option label="Pro 专业版" :value="2" />
-                <el-option label="Max 旗舰版" :value="18" />
-                <el-option label="Teams 团队版" :value="1" />
-                <el-option label="Trial 试用版" :value="9" />
-                <el-option label="Free 免费版" :value="0" />
+              <el-option-group label="Windsurf Common">
+                <el-option label="Pro" :value="2" />
+                <el-option label="Max" :value="18" />
+                <el-option label="Teams" :value="1" />
+                <el-option label="Trial" :value="9" />
+                <el-option label="Free" :value="0" />
               </el-option-group>
               <el-option-group label="Windsurf Ultimate">
                 <el-option label="Pro Ultimate" :value="8" />
@@ -179,7 +179,7 @@
                 <el-option label="Devin Free" :value="19" />
                 <el-option label="Devin Trial" :value="20" />
               </el-option-group>
-              <el-option-group label="其他">
+              <el-option-group label="Other">
                 <el-option label="Waitlist Pro" :value="6" />
               </el-option-group>
             </el-select>
@@ -188,17 +188,17 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="支付周期">
+          <el-form-item label="Payment Period">
             <el-select v-model="settings.paymentPeriod" style="width: 100%;">
-              <el-option label="月付" :value="1" />
-              <el-option label="年付" :value="2" />
+              <el-option label="Monthly" :value="1" />
+              <el-option label="Yearly" :value="2" />
             </el-select>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
               年付通常可享受优惠价格
             </div>
           </el-form-item>
           
-          <el-form-item label="开启试用">
+          <el-form-item label="Start Trial">
             <el-switch 
               v-model="settings.startTrial"
               active-text="开启"
@@ -209,17 +209,17 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="团队名称" v-if="[1, 3, 4, 5, 7, 10, 11, 12, 14, 15].includes(settings.subscriptionPlan)">
+          <el-form-item label="Team Name" v-if="[1, 3, 4, 5, 7, 10, 11, 12, 14, 15].includes(settings.subscriptionPlan)">
             <el-input 
               v-model="settings.teamName" 
-              placeholder="输入团队名称（Teams类计划必填）"
+              placeholder="Enter team name (required for Teams plan)"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
               Teams 类计划需要填写团队名称
             </div>
           </el-form-item>
           
-          <el-form-item label="席位数量" v-if="[1, 3, 4, 5, 7, 10, 11, 12, 14, 15].includes(settings.subscriptionPlan)">
+          <el-form-item label="Seat Count" v-if="[1, 3, 4, 5, 7, 10, 11, 12, 14, 15].includes(settings.subscriptionPlan)">
             <el-input-number 
               v-model="settings.seatCount" 
               :min="1" 
@@ -231,67 +231,67 @@
             </div>
           </el-form-item>
           
-          <el-divider content-position="left">支付页面设置</el-divider>
+          <el-divider content-position="left">Payment Page Settings</el-divider>
           
-          <el-form-item label="自动打开支付页面">
+          <el-form-item label="Auto Open Payment Page">
             <el-switch 
               v-model="settings.autoOpenPaymentLinkInWebview"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，获取绑卡链接成功时将自动在内置浏览器窗口中打开支付页面（隐私模式，不保存任何数据）
+              When enabled, automatically opens payment page in built-in browser when getting card binding link succeeds (privacy mode, no data saved)
             </div>
           </el-form-item>
           
-          <el-divider content-position="left">外部浏览器设置</el-divider>
+          <el-divider content-position="left">External Browser Settings</el-divider>
           
-          <el-form-item label="自动打开外部浏览器">
+          <el-form-item label="Auto Open External Browser">
             <el-switch 
               v-model="settings.autoOpenBrowser"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，获取绑卡链接时将自动在外部浏览器中打开（无需点击确认）
+              When enabled, automatically opens in external browser when getting card binding link (no need to click confirm)
             </div>
           </el-form-item>
           
-          <el-form-item label="浏览器模式">
+          <el-form-item label="Browser Mode">
             <el-radio-group v-model="settings.browserMode">
-              <el-radio-button label="incognito">无痕模式</el-radio-button>
-              <el-radio-button label="normal">普通模式</el-radio-button>
+              <el-radio-button label="incognito">Incognito Mode</el-radio-button>
+              <el-radio-button label="normal">Normal Mode</el-radio-button>
             </el-radio-group>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
               选择打开外部浏览器时使用的模式（无痕模式更安全，推荐使用）
             </div>
           </el-form-item>
           
-          <el-divider content-position="left">自动填写设置</el-divider>
+          <el-divider content-position="left">Auto Fill Settings</el-divider>
           
-          <el-form-item label="自动填写支付表单">
+          <el-form-item label="Auto Fill Payment Form">
             <el-switch 
               v-model="settings.autoFillPaymentForm"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，将自动使用虚拟卡信息填写Stripe支付表单（仅用于测试）
+              When enabled, automatically fills Stripe payment form with virtual card info (for testing only)
             </div>
           </el-form-item>
           
-          <el-form-item label="显示虚拟卡信息">
+          <el-form-item label="Show Virtual Card Info">
             <el-switch 
               v-model="settings.showVirtualCardInfo"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，自动填写表单时会弹窗显示生成的虚拟卡信息
+              When enabled, shows popup with generated virtual card info when auto-filling form
             </div>
           </el-form-item>
           
-          <el-form-item label="自动提交表单">
+          <el-form-item label="Auto Submit Form">
             <el-switch 
               v-model="settings.autoSubmitPaymentForm"
               active-text="开启"
@@ -303,7 +303,7 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="支付页面延迟(秒)">
+          <el-form-item label="Payment Page Delay (seconds)">
             <el-input-number
               v-model="settings.paymentPageDelay"
               :min="1"
@@ -316,15 +316,15 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="自定义卡头">
+          <el-form-item label="Custom Card BIN">
             <el-input
               v-model="settings.customCardBin"
-              placeholder="请输入4-12位数字"
+              placeholder="Enter 4-12 digit number"
               maxlength="12"
               @input="validateCardBin"
             >
               <template #append>
-                <el-button @click="resetCardBin">恢复默认</el-button>
+                <el-button @click="resetCardBin">Reset Default</el-button>
               </template>
             </el-input>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
@@ -332,14 +332,14 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="卡段范围（可选）">
+          <el-form-item label="Card BIN Range (optional)">
             <el-input
               v-model="settings.customCardBinRange"
-              placeholder="如：626200-626300"
+              placeholder="e.g., 626200-626300"
               @input="validateCardBinRange"
             >
               <template #append>
-                <el-button @click="clearCardBinRange">清除</el-button>
+                <el-button @click="clearCardBinRange">Clear</el-button>
               </template>
             </el-input>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
@@ -347,7 +347,7 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="绑卡失败重试次数">
+          <el-form-item label="Card Bind Retry Times">
             <el-input-number
               v-model="settings.cardBindRetryTimes"
               :min="0"
@@ -360,9 +360,9 @@
             </div>
           </el-form-item>
           
-          <el-divider content-position="left">卡BIN池功能</el-divider>
+          <el-divider content-position="left">Card BIN Pool Function</el-divider>
           
-          <el-form-item label="测试模式">
+          <el-form-item label="Test Mode">
             <div style="display: flex; align-items: center; gap: 10px;">
               <el-switch v-model="settings.testModeEnabled" />
               <el-button 
@@ -371,37 +371,37 @@
                 @click="resetTestModeProgress"
                 :disabled="!testModeProgress"
               >
-                重置进度
+                Reset Progress
               </el-button>
             </div>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
               开启后，按顺序遍历卡BIN范围，并收集成功的BIN（池数量：{{ successBinCount }}）
               <span v-if="testModeProgress" style="color: #67C23A;">
-                <br/>当前进度：{{ testModeProgress }}
+                <br/>Current Progress: {{ testModeProgress }}
               </span>
             </div>
           </el-form-item>
           
-          <el-form-item label="使用本地BIN池">
+          <el-form-item label="Use Local BIN Pool">
             <el-switch v-model="settings.useLocalSuccessBins" :disabled="successBinCount === 0" />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
               开启后，自动从本地成功BIN池中随机获取卡BIN生成卡号
             </div>
           </el-form-item>
           
-          <el-form-item label="BIN池管理">
+          <el-form-item label="BIN Pool Management">
             <el-button-group>
               <el-button size="small" @click="viewSuccessBins" :disabled="successBinCount === 0">
-                查看BIN池
+                View BIN Pool
               </el-button>
               <el-button size="small" type="danger" @click="clearSuccessBins" :disabled="successBinCount === 0">
-                清空BIN池
+                Clear BIN Pool
               </el-button>
             </el-button-group>
           </el-form-item>
           
           <el-alert
-            title="重要提示"
+            title="Important Notice"
             type="warning"
             :closable="false"
             show-icon
@@ -420,9 +420,9 @@
       </el-tab-pane>
       
       <!-- 无感换号标签页 -->
-      <el-tab-pane label="无感换号" name="seamless">
+      <el-tab-pane label="Seamless Switch" name="seamless">
         <el-form :model="settings" label-width="140px">
-          <el-form-item label="客户端类型">
+          <el-form-item label="Client Type">
             <el-select
               v-model="settings.windsurfClientType"
               style="width: 200px;"
@@ -433,19 +433,19 @@
             </el-select>
           </el-form-item>
           
-          <el-form-item label="安装路径">
+          <el-form-item label="Install Path">
             <el-input
               v-model="windsurfPath"
-              placeholder="请输入或点击自动检测获取路径"
+              placeholder="Click auto-detect or enter path"
               @blur="handlePathChange"
             >
               <template #append>
                 <el-button-group>
                   <el-button @click="detectWindsurfPath" :loading="detectingPath">
-                    自动检测
+                    Auto-detect
                   </el-button>
                   <el-button @click="browseWindsurfPath">
-                    浏览
+                    Browse
                   </el-button>
                 </el-button-group>
               </template>
@@ -455,18 +455,18 @@
             </div>
           </el-form-item>
           
-          <el-form-item label="启用无感换号">
+          <el-form-item label="Enable Seamless Switch">
             <el-switch 
               v-model="settings.seamlessSwitchEnabled"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
               :loading="patchLoading"
               @change="handleSeamlessSwitch"
               :disabled="!windsurfPath"
             />
           </el-form-item>
           
-          <el-form-item label="补丁状态">
+          <el-form-item label="Patch Status">
             <div class="patch-status-block">
               <!-- 汇总 tag + 操作按钮 -->
               <div class="patch-status-header">
@@ -478,14 +478,14 @@
                   :loading="patchLoading"
                   @click="handleUpgradePatch"
                 >
-                  升级补丁
+                  Upgrade Patch
                 </el-button>
                 <el-button
                   v-if="windsurfPath"
                   size="small"
                   @click="checkPatchStatus"
                 >
-                  重新检测
+                  Re-detect
                 </el-button>
               </div>
               <!-- 子项 checklist（有路径且无 IO 错误时展示） -->
@@ -512,7 +512,7 @@
           </el-form-item>
           
           <el-alert
-            title="功能说明"
+            title="Feature Description"
             type="info"
             :closable="false"
             show-icon
@@ -528,32 +528,32 @@
           
           <el-divider content-position="left">Windsurf 伟哥</el-divider>
           
-          <el-form-item label="启用伟哥功能">
+          <el-form-item label="Enable Geek Feature">
             <el-switch 
               v-model="settings.cunzhiEnabled"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
               :loading="cunzhiLoading"
               @change="handleCunzhiSwitch"
             />
           </el-form-item>
           
-          <el-form-item label="寸止状态">
-            <el-tag v-if="cunzhiStatus.installed" type="success">已安装</el-tag>
+          <el-form-item label="Geek Feature Status">
+            <el-tag v-if="cunzhiStatus.installed" type="success">Installed</el-tag>
             <el-tag v-else-if="cunzhiStatus.error" type="danger">{{ cunzhiStatus.error }}</el-tag>
-            <el-tag v-else type="info">未安装</el-tag>
+            <el-tag v-else type="info">Not Installed</el-tag>
             <el-button 
               v-if="cunzhiStatus.installed" 
               size="small" 
               style="margin-left: 10px;"
               @click="checkCunzhiStatus"
             >
-              重新检测
+              Re-detect
             </el-button>
           </el-form-item>
           
           <el-alert
-            title="伟哥功能说明"
+            title="Geek Feature Description"
             type="success"
             :closable="false"
             show-icon
@@ -570,16 +570,16 @@
       </el-tab-pane>
       
       <!-- 备份设置标签页 -->
-      <el-tab-pane label="备份设置" name="backup">
+      <el-tab-pane label="Backup Settings" name="backup">
         <el-form :model="settings" label-width="140px">
-          <el-form-item label="自动备份">
+          <el-form-item label="Auto Backup">
             <el-switch v-model="settings.autoBackupEnabled" />
             <span style="margin-left: 10px; color: #909399; font-size: 12px;">
-              启用后将按设定间隔自动备份数据
+              When enabled, automatically backs up data at set intervals
             </span>
           </el-form-item>
           
-          <el-form-item label="备份间隔">
+          <el-form-item label="Backup Interval">
             <el-input-number
               v-model="settings.backupInterval"
               :min="1"
@@ -587,40 +587,40 @@
               :step="5"
               :disabled="!settings.autoBackupEnabled"
             />
-            <span style="margin-left: 10px; color: #909399;">分钟</span>
+            <span style="margin-left: 10px; color: #909399;">minutes</span>
           </el-form-item>
           
-          <el-form-item label="最大备份数">
+          <el-form-item label="Max Backups">
             <el-input-number
               v-model="settings.backupMaxCount"
               :min="1"
               :max="100"
             />
-            <span style="margin-left: 10px; color: #909399;">份（超出后自动删除最早的备份）</span>
+            <span style="margin-left: 10px; color: #909399;">copies (automatically deletes oldest when exceeded)</span>
           </el-form-item>
           
-          <el-divider content-position="left">手动操作</el-divider>
+          <el-divider content-position="left">Manual Operations</el-divider>
           
-          <el-form-item label="立即备份">
+          <el-form-item label="Backup Now">
             <el-button type="primary" @click="handleManualBackup" :loading="backupLoading">
-              创建备份
+              Create Backup
             </el-button>
           </el-form-item>
           
-          <el-form-item label="备份列表">
+          <el-form-item label="Backup List">
             <el-button @click="handleShowBackups" :loading="loadingBackups">
-              查看备份
+              View Backups
             </el-button>
           </el-form-item>
           
           <el-alert type="info" :closable="false" style="margin-top: 15px;">
             <template #title>
-              <span style="font-weight: bold;">备份说明</span>
+              <span style="font-weight: bold;">Backup Instructions</span>
             </template>
             <template #default>
               <div style="line-height: 1.8;">
-                <p>备份文件保存在应用数据目录的 <code>backups</code> 文件夹中</p>
-                <p>包含以下数据：账号信息、分组、标签、设置等</p>
+                <p>Backup files are stored in the <code>backups</code> folder in the app data directory</p>
+                <p>Includes: account info, groups, tags, settings, etc.</p>
               </div>
             </template>
           </el-alert>
@@ -629,29 +629,29 @@
         <!-- 备份列表对话框 -->
         <el-dialog
           v-model="showBackupsDialog"
-          title="备份列表"
+          title="Backup List"
           width="600px"
           append-to-body
         >
           <el-table :data="backupList" v-loading="loadingBackups" max-height="400">
-            <el-table-column prop="name" label="文件名" />
-            <el-table-column label="大小" width="100">
+            <el-table-column prop="name" label="File Name" />
+            <el-table-column label="Size" width="100">
               <template #default="{ row }">
                 {{ formatFileSize(row.size) }}
               </template>
             </el-table-column>
-            <el-table-column label="创建时间" width="180">
+            <el-table-column label="Created Time" width="180">
               <template #default="{ row }">
                 {{ formatBackupTime(row.name) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="120">
+            <el-table-column label="Actions" width="120">
               <template #default="{ row }">
                 <el-button type="primary" size="small" link @click="handleRestoreBackup(row)">
-                  恢复
+                  Restore
                 </el-button>
                 <el-button type="danger" size="small" link @click="handleDeleteBackup(row)">
-                  删除
+                  Delete
                 </el-button>
               </template>
             </el-table-column>
@@ -661,9 +661,9 @@
     </el-tabs>
     
     <template #footer>
-      <el-button @click="handleClose">取消</el-button>
+      <el-button @click="handleClose">Cancel</el-button>
       <el-button type="primary" @click="handleSave" :loading="loading">
-        保存
+        Save
       </el-button>
     </template>
   </el-dialog>
@@ -699,7 +699,7 @@ function parseSeatCountOptions() {
     .filter(n => !isNaN(n) && n > 0);
   
   if (numbers.length === 0) {
-    ElMessage.warning('请输入有效的座位数');
+    ElMessage.warning('Please enter valid seat numbers');
     settings.seat_count_options = [18, 19, 20];
     seatCountOptionsInput.value = '18, 19, 20';
   } else {
@@ -801,10 +801,10 @@ async function handleManualBackup() {
   try {
     const result = await invoke<{ success: boolean; path: string; message: string }>('create_backup');
     if (result.success) {
-      ElMessage.success('备份创建成功');
+      ElMessage.success('Backup created successfully');
     }
   } catch (e: any) {
-    ElMessage.error(`备份失败: ${e}`);
+    ElMessage.error(`Backup failed: ${e}`);
   } finally {
     backupLoading.value = false;
   }
@@ -816,7 +816,7 @@ async function handleShowBackups() {
   try {
     backupList.value = await invoke<BackupInfo[]>('list_backups');
   } catch (e: any) {
-    ElMessage.error(`获取备份列表失败: ${e}`);
+    ElMessage.error(`Failed to get backup list: ${e}`);
     backupList.value = [];
   } finally {
     loadingBackups.value = false;
@@ -832,7 +832,7 @@ async function handleRestoreBackup(backup: BackupInfo) {
     );
     
     await invoke('restore_backup', { backupPath: backup.path });
-    ElMessage.success('恢复成功，请刷新页面');
+    ElMessage.success('Restore successful, please refresh the page');
     showBackupsDialog.value = false;
     await settingsStore.loadSettings();
   } catch (e: any) {
@@ -903,7 +903,7 @@ async function resetTestModeProgress() {
     });
     await invoke('reset_test_mode_progress');
     testModeProgress.value = null;
-    ElMessage.success('进度已重置');
+    ElMessage.success('Progress reset');
   } catch (e) {
     // 用户取消
   }
@@ -936,7 +936,7 @@ async function clearSuccessBins() {
     });
     await invoke('clear_success_bins');
     successBinCount.value = 0;
-    ElMessage.success('BIN池已清空');
+    ElMessage.success('BIN pool cleared');
   } catch (e) {
     // 用户取消
   }
@@ -1049,10 +1049,10 @@ async function handleSave() {
     }
     await settingsStore.updateSettings(settings);
     uiStore.setTheme(settings.theme as 'light' | 'dark');
-    ElMessage.success('设置保存成功');
+    ElMessage.success('Settings saved successfully');
     handleClose();
   } catch (error) {
-    ElMessage.error(`保存失败: ${error}`);
+    ElMessage.error(`Save failed: ${error}`);
   } finally {
     loading.value = false;
   }
@@ -1070,14 +1070,14 @@ function validateCardBin(value: string) {
   
   // 检查长度
   if (cleaned.length > 0 && cleaned.length < 4) {
-    ElMessage.warning('卡头必须是4-12位数字');
+    ElMessage.warning('Card BIN must be 4-12 digits');
   }
 }
 
 // 恢复默认卡头
 function resetCardBin() {
   settings.customCardBin = '626202';
-  ElMessage.success('已恢复默认卡头');
+  ElMessage.success('Default card BIN restored');
 }
 
 // 验证卡段范围格式

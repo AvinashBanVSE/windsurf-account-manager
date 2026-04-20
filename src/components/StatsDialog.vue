@@ -11,13 +11,13 @@
     <div v-else-if="stats">
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-statistic title="账号总数" :value="stats.total_accounts" />
+          <el-statistic title="Total Accounts" :value="stats.total_accounts" />
         </el-col>
         <el-col :span="8">
-          <el-statistic title="活跃账号" :value="stats.active_accounts" />
+          <el-statistic title="Active Accounts" :value="stats.active_accounts" />
         </el-col>
         <el-col :span="8">
-          <el-statistic title="分组数量" :value="stats.groups" />
+          <el-statistic title="Group Count" :value="stats.groups" />
         </el-col>
       </el-row>
       
@@ -26,24 +26,24 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-statistic 
-            title="操作成功率" 
+            title="Operation Success Rate" 
             :value="stats.success_rate" 
             suffix="%" 
             :precision="1"
           />
           <div class="stat-detail">
-            成功: {{ stats.successful_operations }} / 失败: {{ stats.failed_operations }}
+            Success: {{ stats.successful_operations }} / Failed: {{ stats.failed_operations }}
           </div>
         </el-col>
         <el-col :span="12">
           <el-statistic 
-            title="积分重置成功率" 
+            title="Credit Reset Success Rate" 
             :value="stats.reset_success_rate" 
             suffix="%" 
             :precision="1"
           />
           <div class="stat-detail">
-            成功: {{ stats.successful_resets }} / 失败: {{ stats.failed_resets }}
+            Success: {{ stats.successful_resets }} / Failed: {{ stats.failed_resets }}
           </div>
         </el-col>
       </el-row>
@@ -51,37 +51,37 @@
       <el-divider />
       
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="总操作次数">
+        <el-descriptions-item label="Total Operations">
           {{ stats.total_operations }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="总重置次数">
+        <el-descriptions-item label="Total Resets">
           {{ stats.total_resets }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="最后操作时间">
-          {{ stats.last_operation ? formatDate(stats.last_operation) : '暂无' }}
+        <el-descriptions-item label="Last Operation Time">
+          {{ stats.last_operation ? formatDate(stats.last_operation) : 'None' }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="自动刷新Token">
+        <el-descriptions-item label="Auto Refresh Token">
           <el-tag :type="stats.settings?.auto_refresh_token ? 'success' : 'info'">
-            {{ stats.settings?.auto_refresh_token ? '开启' : '关闭' }}
+            {{ stats.settings?.auto_refresh_token ? 'On' : 'Off' }}
           </el-tag>
         </el-descriptions-item>
         
-        <el-descriptions-item label="重试次数">
+        <el-descriptions-item label="Retry Times">
           {{ stats.settings?.retry_times || 2 }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="并发限制">
+        <el-descriptions-item label="Concurrent Limit">
           {{ stats.settings?.concurrent_limit || 5 }}
         </el-descriptions-item>
       </el-descriptions>
     </div>
     
     <template #footer>
-      <el-button @click="refresh" :icon="Refresh">刷新</el-button>
-      <el-button @click="uiStore.closeStatsDialog">关闭</el-button>
+      <el-button @click="refresh" :icon="Refresh">Refresh</el-button>
+      <el-button @click="uiStore.closeStatsDialog">Close</el-button>
     </template>
   </el-dialog>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="团队设置 (Team Settings)"
+    title="Team Settings"
     width="700px"
     :close-on-click-modal="false"
     destroy-on-close
@@ -10,15 +10,15 @@
     <div v-loading="loading" class="settings-container">
       <!-- Windsurf Settings -->
       <div class="settings-section">
-        <h3 class="section-title">Windsurf 设置</h3>
+        <h3 class="section-title">Windsurf Settings</h3>
         
         <!-- Models -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">模型配置 (Models)</span>
-            <span class="setting-desc">配置要在 Windsurf 中使用的模型</span>
+            <span class="setting-name">Model Configuration</span>
+            <span class="setting-desc">Configure models to use in Windsurf</span>
           </div>
-          <el-button size="small" @click="openModelsConfig">配置</el-button>
+          <el-button size="small" @click="openModelsConfig">Configure</el-button>
         </div>
         
         <!-- Enable Web Search -->
@@ -54,7 +54,7 @@
             <span class="setting-name">MCP 白名单</span>
             <span class="setting-desc">未添加 MCP 服务器时，默认所有服务器都在白名单中</span>
           </div>
-          <el-button size="small" @click="openMcpWhitelist">添加服务器</el-button>
+          <el-button size="small" @click="openMcpWhitelist">Add Server</el-button>
         </div>
         
         <!-- App Deploys -->
@@ -64,9 +64,9 @@
             <span class="setting-desc">管理团队在 Cascade 中的部署权限</span>
           </div>
           <el-select v-model="settings.appDeploysMode" size="small" style="width: 160px" @change="handleSettingChange">
-            <el-option label="完全部署权限" value="full" />
-            <el-option label="仅内部团队" value="teams" />
-            <el-option label="禁用部署" value="disabled" />
+            <el-option label="Full Deployment" value="full" />
+            <el-option label="Internal Teams Only" value="teams" />
+            <el-option label="Deployment Disabled" value="disabled" />
           </el-select>
         </div>
         
@@ -127,7 +127,7 @@
       
       <!-- Other Settings -->
       <div class="settings-section">
-        <h3 class="section-title">其他设置</h3>
+        <h3 class="section-title">Other Settings</h3>
         
         <!-- Domain Management -->
         <div class="setting-item">
@@ -187,9 +187,9 @@
     
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">关闭</el-button>
+        <el-button @click="dialogVisible = false">Close</el-button>
         <el-button type="primary" :loading="saving" @click="saveSettings">
-          <el-icon><Check /></el-icon> 保存设置
+          <el-icon><Check /></el-icon> Save Settings
         </el-button>
       </div>
     </template>
@@ -197,7 +197,7 @@
     <!-- Models Configuration Dialog -->
     <el-dialog
       v-model="modelsDialogVisible"
-      title="模型配置 (Models)"
+      title="Model Configuration"
       width="700px"
       append-to-body
       @open="loadModelsConfig"
@@ -215,7 +215,7 @@
             collapse-tags
             collapse-tags-tooltip
             :max-collapse-tags="5"
-            placeholder="选择 Cascade 模型"
+            placeholder="Select Cascade model"
             style="width: 100%"
             popper-class="model-select-dropdown"
           >
@@ -246,7 +246,7 @@
             collapse-tags
             collapse-tags-tooltip
             :max-collapse-tags="5"
-            placeholder="选择 Command 模型"
+            placeholder="Select Command model"
             style="width: 100%"
             popper-class="model-select-dropdown"
           >
@@ -277,7 +277,7 @@
             collapse-tags
             collapse-tags-tooltip
             :max-collapse-tags="5"
-            placeholder="选择 Extension 模型"
+            placeholder="Select Extension model"
             style="width: 100%"
             popper-class="model-select-dropdown"
           >
@@ -304,7 +304,7 @@
     <!-- MCP Whitelist Dialog -->
     <el-dialog
       v-model="mcpDialogVisible"
-      title="添加 MCP 服务器"
+      title="Add MCP Server"
       width="500px"
       append-to-body
     >
@@ -320,7 +320,7 @@
         <el-select
           v-if="!mcpManualMode"
           v-model="selectedMcpPlugin"
-          placeholder="选择 MCP 服务器"
+          placeholder="Select MCP server"
           filterable
           style="width: 100%; margin-bottom: 16px"
           :loading="loadingPlugins"
@@ -343,7 +343,7 @@
         <el-input
           v-else
           v-model="newMcpServer"
-          placeholder="输入 MCP 服务器 ID"
+          placeholder="Enter MCP server ID"
           style="margin-bottom: 16px"
         />
         
@@ -353,7 +353,7 @@
             v-model="mcpServerConfig"
             type="textarea"
             :rows="4"
-            placeholder="参考 MCP 服务器文档获取配置详情。留空将使用默认配置。"
+            placeholder="Refer to MCP server docs for config. Leave empty for default."
           />
         </div>
         
@@ -386,7 +386,7 @@
     <!-- Codemaps Configuration Dialog -->
     <el-dialog
       v-model="codemapsDialogVisible"
-      title="代码地图 (Codemaps)"
+      title="Codemaps"
       width="500px"
       append-to-body
     >
@@ -407,9 +407,9 @@
             <span class="setting-desc">允许团队分享代码地图</span>
           </div>
           <el-select v-model="settings.codemapSharing" size="small" style="width: 130px">
-            <el-option label="启用" value="enabled" />
-            <el-option label="仅团队" value="team" />
-            <el-option label="禁用" value="disabled" />
+            <el-option label="Enabled" value="enabled" />
+            <el-option label="Team Only" value="team" />
+            <el-option label="Disabled" value="disabled" />
           </el-select>
         </div>
       </div>

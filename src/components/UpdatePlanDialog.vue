@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="更换订阅计划"
+    title="Change Subscription Plan"
     width="1100px"
     class="plan-dialog"
     :close-on-click-modal="false"

@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="账单与订阅"
+    title="Billing & Subscription"
     width="800px"
     class="billing-dialog"
     :close-on-click-modal="false"
@@ -9,7 +9,7 @@
   >
     <div v-if="loading" class="loading-container">
       <el-icon class="is-loading" size="32"><Loading /></el-icon>
-      <p>正在获取账单信息...</p>
+      <p>Fetching billing information...</p>
     </div>
     
     <div v-else-if="billingData" class="billing-content">
@@ -171,7 +171,7 @@
       <div class="alerts-container" v-if="billingData.failed_payment_message || billingData.top_up_error || isApproachingCacheLimit()">
          <el-alert
           v-if="billingData.failed_payment_message"
-          :title="`支付失败: ${billingData.failed_payment_message}`"
+          :title="`Payment failed: ${billingData.failed_payment_message}`"
           type="error"
           :closable="false"
           show-icon
@@ -179,7 +179,7 @@
         />
         <el-alert
           v-if="billingData.top_up_error"
-          :title="`充值错误: ${billingData.top_up_error}`"
+          :title="`Top-up error: ${billingData.top_up_error}`"
           type="warning"
           :closable="false"
           show-icon
@@ -187,7 +187,7 @@
         />
          <el-alert 
           v-if="isApproachingCacheLimit()" 
-          :title="`注意：缓存使用率已达${getCacheUsagePercentage()}%`"
+          :title="`Note: Cache usage at ${getCacheUsagePercentage()}%`"
           type="warning"
           :closable="false"
           show-icon
@@ -197,7 +197,7 @@
       <!-- 错误信息 -->
       <el-alert
         v-if="!billingData.success"
-        :title="billingData.error || '获取账单信息失败'"
+        :title="billingData.error || 'Failed to get billing info'"
         type="error"
         :closable="false"
         show-icon
@@ -205,7 +205,7 @@
       
       <!-- 原始数据（折叠） -->
       <el-collapse v-if="billingData.raw_data" class="raw-data-collapse">
-        <el-collapse-item title="开发者原始数据">
+        <el-collapse-item title="Developer Raw Data">
           <pre class="raw-data">{{ JSON.stringify(billingData.raw_data, null, 2) }}</pre>
         </el-collapse-item>
       </el-collapse>
@@ -213,9 +213,9 @@
     
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">关闭</el-button>
+        <el-button @click="handleClose">Close</el-button>
         <el-button type="primary" @click="copyToClipboard" v-if="billingData">
-          <el-icon><CopyDocument /></el-icon> 复制数据
+          <el-icon><CopyDocument /></el-icon> Copy Data
         </el-button>
       </div>
     </template>
