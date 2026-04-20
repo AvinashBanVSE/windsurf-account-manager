@@ -6,14 +6,14 @@
     :show-close="false"
     class="card-generator-dialog"
   >
-    <!-- 自定义对话框头部 -->
+    <!-- Custom dialog header -->
     <template #header>
       <div class="dialog-header">
         <div class="header-title">
           <div class="header-icon">
             <el-icon><CreditCard /></el-icon>
           </div>
-          <h3 class="header-text">虚拟卡生成器</h3>
+          <h3 class="header-text">Virtual Card Generator</h3>
         </div>
         <el-button :icon="Close" circle @click="visible = false" class="close-btn" />
       </div>
@@ -362,21 +362,21 @@ function getCardTypeTagType(type: string): '' | 'success' | 'info' | 'warning' |
 
 function addBin() {
   if (!newBin.value.prefix) {
-    ElMessage.warning('请输入BIN前缀');
+    ElMessage.warning('Please enter BIN prefix');
     return;
   }
   if (!/^\d{4,8}$/.test(newBin.value.prefix)) {
-    ElMessage.warning('BIN前缀应为4-8位数字');
+    ElMessage.warning('BIN prefix should be 4-8 digits');
     return;
   }
   if (binList.value.some(b => b.prefix === newBin.value.prefix)) {
-    ElMessage.warning('该BIN已存在');
+    ElMessage.warning('This BIN already exists');
     return;
   }
   binList.value.push({ ...newBin.value });
   newBin.value = { prefix: '', type: 'visa' };
   saveBinList();
-  ElMessage.success('BIN添加成功');
+  ElMessage.success('BIN added successfully');
 }
 
 function removeBin(index: number) {
@@ -453,7 +453,7 @@ function generateCvc(type: string): string {
 // 生成卡片
 function generateCards() {
   if (selectedBinIndex.value === null) {
-    ElMessage.warning('请先选择一个BIN');
+    ElMessage.warning('Please select a BIN first');
     return;
   }
   
@@ -473,7 +473,7 @@ function generateCards() {
   }
   
   generatedCards.value = cards;
-  ElMessage.success(`已生成 ${cards.length} 张卡片`);
+  ElMessage.success(`Generated ${cards.length} cards`);
 }
 
 // 格式化卡号显示
@@ -490,7 +490,7 @@ function formatCardNumber(number: string): string {
 function copyCard(card: GeneratedCard) {
   const text = `${card.number}|${card.expiry}|${card.cvc}|${card.name}`;
   navigator.clipboard.writeText(text);
-  ElMessage.success('已复制到剪贴板');
+  ElMessage.success('Copied to clipboard');
 }
 
 // 复制全部卡片
@@ -499,7 +499,7 @@ function copyAllCards() {
     .map(card => `${card.number}|${card.expiry}|${card.cvc}|${card.name}`)
     .join('\n');
   navigator.clipboard.writeText(text);
-  ElMessage.success(`已复制 ${generatedCards.value.length} 张卡片`);
+  ElMessage.success(`Copied ${generatedCards.value.length} cards`);
 }
 
 // 清空卡片
