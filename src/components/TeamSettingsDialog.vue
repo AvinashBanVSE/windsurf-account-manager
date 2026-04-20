@@ -24,8 +24,8 @@
         <!-- Enable Web Search -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">网页搜索 (Web Search)</span>
-            <span class="setting-desc">允许 Cascade 搜索网页获取相关信息</span>
+            <span class="setting-name">Web Search</span>
+            <span class="setting-desc">Allow Cascade to search the web for relevant information</span>
           </div>
           <el-switch v-model="settings.enableWebSearch" @change="handleSettingChange" />
         </div>
@@ -33,8 +33,8 @@
         <!-- Auto Run Terminal Commands -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">自动运行命令 (Auto Run Commands)</span>
-            <span class="setting-desc">允许 Cascade 在用户机器上自动执行命令</span>
+            <span class="setting-name">Auto Run Commands</span>
+            <span class="setting-desc">Allow Cascade to automatically run commands on user machine</span>
           </div>
           <el-switch v-model="settings.allowAutoRunCommands" @change="handleSettingChange" />
         </div>
@@ -42,8 +42,8 @@
         <!-- MCP Servers -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">MCP 服务器</span>
-            <span class="setting-desc">允许用户使用和配置 MCP 服务器</span>
+            <span class="setting-name">MCP Servers</span>
+            <span class="setting-desc">Allow users to use and configure MCP servers</span>
           </div>
           <el-switch v-model="settings.allowMcpServers" @change="handleSettingChange" />
         </div>
@@ -51,8 +51,8 @@
         <!-- Whitelisted MCP Servers -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">MCP 白名单</span>
-            <span class="setting-desc">未添加 MCP 服务器时，默认所有服务器都在白名单中</span>
+            <span class="setting-name">MCP Whitelist</span>
+            <span class="setting-desc">When no MCP servers are added, all servers are in the whitelist by default</span>
           </div>
           <el-button size="small" @click="openMcpWhitelist">Add Server</el-button>
         </div>
@@ -60,8 +60,8 @@
         <!-- App Deploys -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">应用部署 (App Deploys) <el-tag size="small" type="warning">BETA</el-tag></span>
-            <span class="setting-desc">管理团队在 Cascade 中的部署权限</span>
+            <span class="setting-name">App Deploys <el-tag size="small" type="warning">BETA</el-tag></span>
+            <span class="setting-desc">Manage team deployment permissions in Cascade</span>
           </div>
           <el-select v-model="settings.appDeploysMode" size="small" style="width: 160px" @change="handleSettingChange">
             <el-option label="Full Deployment" value="full" />
@@ -73,8 +73,8 @@
         <!-- Conversation Sharing -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">对话分享 (Conversation Sharing)</span>
-            <span class="setting-desc">允许团队成员分享 Cascade 对话</span>
+            <span class="setting-name">Conversation Sharing</span>
+            <span class="setting-desc">Allow team members to share Cascade conversations</span>
           </div>
           <el-switch v-model="settings.allowConversationSharing" @change="handleSettingChange" />
         </div>
@@ -83,7 +83,7 @@
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-name">DeepWiki</span>
-            <span class="setting-desc">启用 DeepWiki 悬浮卡片和代码符号的 IDE 内文章</span>
+            <span class="setting-desc">Enable DeepWiki floating cards and IDE articles for code symbols</span>
           </div>
           <el-switch v-model="settings.enableDeepwiki" @change="handleSettingChange" />
         </div>
@@ -91,7 +91,7 @@
         <!-- Fast Context -->
         <div class="setting-item">
           <div class="setting-info">
-            <span class="setting-name">快速上下文 (Fast Context)</span>
+            <span class="setting-name">Fast Context</span>
             <span class="setting-desc">启用快速上下文功能</span>
           </div>
           <el-switch v-model="settings.enableFastContext" @change="handleSettingChange" />

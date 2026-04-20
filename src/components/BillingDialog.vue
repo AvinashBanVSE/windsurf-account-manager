@@ -13,7 +13,7 @@
     </div>
     
     <div v-else-if="billingData" class="billing-content">
-      <!-- 顶部订阅卡片 -->
+      <!-- Top subscription card -->
       <div class="subscription-card" :class="`plan-${billingData.plan_name?.toLowerCase() || 'free'}`">
         <div class="card-bg-icon">
           <el-icon><Trophy /></el-icon>
@@ -25,37 +25,37 @@
               {{ formatPlanName(billingData.plan_name) }}
             </div>
             <div class="plan-status">
-              <el-tag v-if="billingData.on_trial" type="warning" effect="dark" round size="small">试用期</el-tag>
-              <el-tag v-if="billingData.subscription_active" type="success" effect="dark" round size="small">活跃</el-tag>
-              <el-tag v-else-if="billingData.subscription_active === false" type="danger" effect="dark" round size="small">未激活</el-tag>
-              <el-tag v-if="billingData.cancel_at_period_end" type="danger" effect="dark" round size="small">将于本期结束后取消</el-tag>
+              <el-tag v-if="billingData.on_trial" type="warning" effect="dark" round size="small">Trial</el-tag>
+              <el-tag v-if="billingData.subscription_active" type="success" effect="dark" round size="small">Active</el-tag>
+              <el-tag v-else-if="billingData.subscription_active === false" type="danger" effect="dark" round size="small">Inactive</el-tag>
+              <el-tag v-if="billingData.cancel_at_period_end" type="danger" effect="dark" round size="small">Cancels at period end</el-tag>
             </div>
           </div>
           <div class="sub-price" v-if="billingData.plan_unit_amount">
             <span class="currency">$</span>
             <span class="amount">{{ billingData.plan_unit_amount.toFixed(2) }}</span>
-            <span class="unit" v-if="billingData.sub_interval"> / {{ billingData.sub_interval === 'yearly' ? '年' : '月' }}</span>
+            <span class="unit" v-if="billingData.sub_interval"> / {{ billingData.sub_interval === 'yearly' ? 'year' : 'month' }}</span>
           </div>
         </div>
         
         <div class="sub-dates" v-if="billingData.next_billing_date || billingData.subscription_renewal_time">
           <div class="date-item" v-if="billingData.subscription_renewal_time">
-            <span class="label">续期时间</span>
+            <span class="label">Renewal Date</span>
             <span class="value">{{ billingData.subscription_renewal_time }}</span>
           </div>
           <div class="date-item" v-if="billingData.next_billing_date">
-            <span class="label">下次扣费</span>
+            <span class="label">Next Billing</span>
             <span class="value">{{ billingData.next_billing_date }}</span>
           </div>
         </div>
       </div>
 
       <div class="info-grid">
-        <!-- 席位使用情况 -->
+        <!-- Seat usage -->
         <div class="info-card seats-card" v-if="billingData.num_seats || billingData.num_users">
           <div class="card-title">
             <el-icon><User /></el-icon>
-            <span>席位使用</span>
+            <span>Seats</span>
           </div>
           <div class="card-content">
             <div class="usage-circle-container">
@@ -68,13 +68,13 @@
               >
                 <template #default="{ percentage }">
                   <div class="percentage-value">{{ percentage }}%</div>
-                  <div class="percentage-label">已使用</div>
+                  <div class="percentage-label">Used</div>
                 </template>
               </el-progress>
             </div>
             <div class="usage-details">
               <div class="detail-row">
-                <span class="label">总席位</span>
+                <span class="label">Total Seats</span>
                 <span class="value">{{ billingData.num_users || 0 }} / {{ billingData.num_seats || 0 }}</span>
               </div>
               <div class="detail-row" v-if="billingData.num_cascade_users !== undefined">
@@ -89,11 +89,11 @@
           </div>
         </div>
         
-        <!-- 配额使用情况 -->
+        <!-- Quota usage -->
         <div class="info-card quota-card" v-if="billingData.total_quota">
           <div class="card-title">
             <el-icon><DataAnalysis /></el-icon>
-            <span>配额使用</span>
+            <span>Quota Usage</span>
           </div>
           <div class="card-content">
             <div class="quota-main">
@@ -113,16 +113,16 @@
             
             <div class="quota-tags">
               <el-tag size="small" type="info" effect="plain" v-if="billingData.base_quota">
-                基础: {{ formatQuota(billingData.base_quota) }}
+                Base: {{ formatQuota(billingData.base_quota) }}
               </el-tag>
               <el-tag size="small" type="success" effect="plain" v-if="billingData.extra_credits">
-                额外: +{{ formatQuota(billingData.extra_credits) }}
+                Extra: +{{ formatQuota(billingData.extra_credits) }}
               </el-tag>
             </div>
 
             <div class="cache-info" v-if="billingData.cache_limit">
               <div class="cache-header">
-                <span>缓存使用 ({{ getCacheUsagePercentage() }}%)</span>
+                <span>Cache Usage ({{ getCacheUsagePercentage() }}%)</span>
                 <span>{{ formatQuota(billingData.cache_limit) }}</span>
               </div>
               <el-progress 
@@ -135,11 +135,11 @@
           </div>
         </div>
         
-        <!-- 支付信息 -->
+        <!-- Payment info -->
         <div class="info-card payment-card" v-if="billingData.payment_method || billingData.plan_unit_amount">
           <div class="card-title">
             <el-icon><CreditCard /></el-icon>
-            <span>支付方式</span>
+            <span>Payment Method</span>
           </div>
           <div class="card-content">
             <div class="payment-method" v-if="billingData.payment_method">
@@ -150,24 +150,24 @@
                 <div class="method-type">{{ formatPaymentType(billingData.payment_method.type) }}</div>
                 <div class="method-number" v-if="billingData.payment_method?.last4">**** {{ billingData.payment_method.last4 }}</div>
                 <div class="method-exp" v-if="billingData.payment_method?.exp_month">
-                  有效期: {{ billingData.payment_method.exp_month }}/{{ billingData.payment_method.exp_year }}
+                  Exp: {{ billingData.payment_method.exp_month }}/{{ billingData.payment_method.exp_year }}
                 </div>
               </div>
             </div>
             <div v-else class="no-payment">
-              未绑定支付方式
+              No payment method
             </div>
             
             <div class="invoice-link" v-if="billingData.invoice_url">
               <el-link type="primary" :href="billingData.invoice_url" target="_blank">
-                <el-icon><Link /></el-icon> 查看最近发票
+                <el-icon><Link /></el-icon> View Recent Invoices
               </el-link>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- 警告信息区域 -->
+      <!-- Alerts area -->
       <div class="alerts-container" v-if="billingData.failed_payment_message || billingData.top_up_error || isApproachingCacheLimit()">
          <el-alert
           v-if="billingData.failed_payment_message"
@@ -194,7 +194,7 @@
         />
       </div>
       
-      <!-- 错误信息 -->
+      <!-- Error info -->
       <el-alert
         v-if="!billingData.success"
         :title="billingData.error || 'Failed to get billing info'"
@@ -203,7 +203,7 @@
         show-icon
       />
       
-      <!-- 原始数据（折叠） -->
+      <!-- Raw data (collapsed) -->
       <el-collapse v-if="billingData.raw_data" class="raw-data-collapse">
         <el-collapse-item title="Developer Raw Data">
           <pre class="raw-data">{{ JSON.stringify(billingData.raw_data, null, 2) }}</pre>
@@ -258,13 +258,13 @@ watch(visible, (val) => {
   emit('update:modelValue', val);
 });
 
-// 配额百分比
+// Quota percentage
 const quotaPercentage = computed(() => {
   if (!props.billingData?.total_quota || !props.billingData?.used_quota) return 0;
   return Math.min(Math.round((props.billingData.used_quota / props.billingData.total_quota) * 100), 100);
 });
 
-// 配额颜色
+// Quota color
 const quotaColor = computed(() => {
   const percentage = quotaPercentage.value;
   if (percentage < 50) return '#10b981';
@@ -272,14 +272,14 @@ const quotaColor = computed(() => {
   return '#ef4444';
 });
 
-// 缓存使用率百分比
+// Cache usage percentage
 function getCacheUsagePercentage() {
   if (!props.billingData?.cache_limit || props.billingData?.used_quota === undefined) return 0;
   const percentage = Math.round((props.billingData.used_quota / props.billingData.cache_limit) * 100);
   return Math.min(percentage, 100);
 }
 
-// 缓存使用率标签类型
+// Cache usage type
 function getCacheUsageType() {
   const percentage = getCacheUsagePercentage();
   if (percentage < 50) return 'success';
@@ -287,25 +287,25 @@ function getCacheUsageType() {
   return 'danger';
 }
 
-// 是否接近缓存限制
+// Is approaching cache limit
 function isApproachingCacheLimit() {
   const percentage = getCacheUsagePercentage();
   return percentage >= 80;
 }
 
-// 格式化配额
+// Format quota
 function formatQuota(num: number | undefined | null) {
   if (!num) return '0.00';
   return (num / 100).toFixed(2);
 }
 
-// 计算席位使用百分比
+// Calculate seat usage percentage
 function getSeatUsagePercentage() {
   if (!props.billingData?.num_seats || !props.billingData?.num_users) return 0;
   return Math.min(Math.round((props.billingData.num_users / props.billingData.num_seats) * 100), 100);
 }
 
-// 获取席位使用颜色
+// Get seat usage color
 function getSeatUsageColor() {
   const percentage = getSeatUsagePercentage();
   if (percentage < 50) return '#10b981';
@@ -314,31 +314,31 @@ function getSeatUsageColor() {
   return '#ef4444';
 }
 
-// 格式化支付方式
+// Format payment type
 function formatPaymentType(type: string) {
   const types: Record<string, string> = {
-    'unionpay': '银联卡',
-    'card': '信用卡',
+    'unionpay': 'UnionPay',
+    'card': 'Credit Card',
     'visa': 'Visa',
     'mastercard': 'MasterCard',
-    'alipay': '支付宝',
-    'wechat': '微信支付'
+    'alipay': 'Alipay',
+    'wechat': 'WeChat Pay'
   };
-  return types[type?.toLowerCase()] || type || '未知';
+  return types[type?.toLowerCase()] || type || 'Unknown';
 }
 
-// 格式化套餐名称
+// Format plan name
 function formatPlanName(name: string) {
   const names: Record<string, string> = {
-    'pro': 'Pro 专业版',
-    'teams': 'Teams 团队版',
-    'enterprise': 'Enterprise 企业版',
-    'enterprise_self_serve': 'Enterprise 企业自助版',
-    'trial': 'Trial 试用版',
-    'free': 'Free 免费版',
-    'starter': 'Starter 入门版'
+    'pro': 'Pro',
+    'teams': 'Teams',
+    'enterprise': 'Enterprise',
+    'enterprise_self_serve': 'Enterprise Self-Serve',
+    'trial': 'Trial',
+    'free': 'Free',
+    'starter': 'Starter'
   };
-  return names[name?.toLowerCase()] || name || '未知';
+  return names[name?.toLowerCase()] || name || 'Unknown';
 }
 
 function handleClose() {
@@ -350,9 +350,9 @@ async function copyToClipboard() {
   if (props.billingData) {
     try {
       await navigator.clipboard.writeText(JSON.stringify(props.billingData, null, 2));
-      ElMessage.success('已复制到剪贴板');
+      ElMessage.success('Copied to clipboard');
     } catch (error) {
-      ElMessage.error('复制失败');
+      ElMessage.error('Copy failed');
     }
   }
 }
@@ -381,7 +381,7 @@ async function copyToClipboard() {
   gap: 24px;
 }
 
-/* 顶部订阅卡片 */
+/* Top subscription card */
 .subscription-card {
   position: relative;
   padding: 24px;
@@ -404,7 +404,7 @@ async function copyToClipboard() {
     transform: rotate(15deg);
   }
 
-  /* 不同套餐的主题色 */
+  /* Plan theme colors */
   &.plan-pro {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   }
@@ -485,7 +485,7 @@ async function copyToClipboard() {
   }
 }
 
-/* 信息网格 */
+/* Info grid */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -525,7 +525,7 @@ async function copyToClipboard() {
   }
 }
 
-/* 席位卡片 */
+/* Seats card */
 .seats-card {
   .usage-circle-container {
     display: flex;
@@ -561,7 +561,7 @@ async function copyToClipboard() {
   }
 }
 
-/* 配额卡片 */
+/* Quota card */
 .quota-card {
   .quota-main {
     margin-bottom: 16px;
@@ -600,7 +600,7 @@ async function copyToClipboard() {
   }
 }
 
-/* 支付卡片 */
+/* Payment card */
 .payment-card {
   .payment-method {
     display: flex;
@@ -646,7 +646,7 @@ async function copyToClipboard() {
   }
 }
 
-/* 警告和原始数据 */
+/* Alerts and raw data */
 .alerts-container {
   display: flex;
   flex-direction: column;
@@ -688,7 +688,7 @@ async function copyToClipboard() {
   gap: 12px;
 }
 
-/* 响应式适配 */
+/* Responsive adaptation */
 @media (max-width: 768px) {
   .info-grid {
     grid-template-columns: 1fr;
@@ -704,7 +704,7 @@ async function copyToClipboard() {
   }
 }
 
-/* 深色模式适配 */
+/* Dark mode adaptation */
 :root.dark {
   .subscription-card.plan-pro { background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%); }
   .subscription-card.plan-teams { background: linear-gradient(135deg, #065f46 0%, #059669 100%); }

@@ -5,7 +5,7 @@
     width="700px"
   >
     <el-tabs v-model="activeTab" type="border-card">
-      <!-- 基础设置标签页 -->
+      <!-- Basic Settings Tab -->
       <el-tab-pane label="Basic" name="basic">
         <el-form :model="settings" label-width="140px">
           <el-form-item label="Auto Refresh Token">
@@ -22,7 +22,7 @@
             </div>
           </el-form-item>
           
-          <!-- 座位数选项 - simple 版本已禁用
+          <!-- Seat Count Options - disabled in simple version
           <el-form-item label="Seat Count Options">
             <el-input
               v-model="seatCountOptionsInput"
@@ -31,7 +31,7 @@
               @blur="parseSeatCountOptions"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              积分重置时轮番使用的座位数，用逗号分隔（如：18, 19, 20）
+              Seat count for rotation during credit reset, comma separated (e.g., 18, 19, 20)
             </div>
           </el-form-item>
           -->
@@ -126,7 +126,7 @@
               </template>
             </el-input>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              支持 HTTP/HTTPS/SOCKS5 代理，格式：http://host:port 或 socks5://host:port
+              Supports HTTP/HTTPS/SOCKS5 proxy, format: http://host:port or socks5://host:port
             </div>
           </el-form-item>
           
@@ -145,7 +145,7 @@
         </el-form>
       </el-tab-pane>
       
-      <!-- 支付设置标签页 -->
+      <!-- Payment Settings Tab -->
       <el-tab-pane label="Payment Settings" name="payment">
         <el-form :model="settings" label-width="140px">
           <el-divider content-position="left">Subscription Plan Settings</el-divider>
@@ -184,7 +184,7 @@
               </el-option-group>
             </el-select>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              选择要订阅的计划类型，Pro 计划需要完成 Turnstile 人机验证
+              Select plan type to subscribe, Pro plan requires Turnstile verification
             </div>
           </el-form-item>
           
@@ -194,18 +194,18 @@
               <el-option label="Yearly" :value="2" />
             </el-select>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              年付通常可享受优惠价格
+              Yearly payment usually has discount
             </div>
           </el-form-item>
           
           <el-form-item label="Start Trial">
             <el-switch 
               v-model="settings.startTrial"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              以试用方式开始订阅，关闭则直接进入付费订阅
+              Start with trial, Off means direct paid subscription
             </div>
           </el-form-item>
           
@@ -215,7 +215,7 @@
               placeholder="Enter team name (required for Teams plan)"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              Teams 类计划需要填写团队名称
+              Teams plan requires team name
             </div>
           </el-form-item>
           
@@ -227,7 +227,7 @@
               style="width: 100%;"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              Teams 计划的席位数量
+              Seat count for Teams plan
             </div>
           </el-form-item>
           
@@ -263,7 +263,7 @@
               <el-radio-button label="normal">Normal Mode</el-radio-button>
             </el-radio-group>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              选择打开外部浏览器时使用的模式（无痕模式更安全，推荐使用）
+              Select mode for external browser (incognito is safer, recommended)
             </div>
           </el-form-item>
           
@@ -294,12 +294,12 @@
           <el-form-item label="Auto Submit Form">
             <el-switch 
               v-model="settings.autoSubmitPaymentForm"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="On"
+              inactive-text="Off"
               :disabled="!settings.autoFillPaymentForm"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，表单填写完成后将自动提交（谨慎使用）
+              After enabling, form will auto-submit after completion (use with caution)
             </div>
           </el-form-item>
           
@@ -312,7 +312,7 @@
               :disabled="!settings.autoFillPaymentForm"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              等待多少秒后开始自动填写表单
+              Wait seconds before auto-filling form
             </div>
           </el-form-item>
           
@@ -328,7 +328,7 @@
               </template>
             </el-input>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              设置虚拟卡的前缀（BIN），必须是4-12位数字，默认为626202
+              Set virtual card prefix (BIN), must be 4-12 digits, default 626202
             </div>
           </el-form-item>
           
@@ -343,7 +343,7 @@
               </template>
             </el-input>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              设置卡段范围后，绑卡时将从范围内随机选择一个BIN。格式：起始BIN-结束BIN
+              After setting BIN range, will randomly select from range. Format: startBIN-endBIN
             </div>
           </el-form-item>
           
@@ -356,7 +356,7 @@
               controls-position="right"
             />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              绑卡失败后自动重新生成卡号重试的次数，设为0则不重试
+              Retry count after card bind failure, set 0 to not retry
             </div>
           </el-form-item>
           
@@ -375,7 +375,7 @@
               </el-button>
             </div>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，按顺序遍历卡BIN范围，并收集成功的BIN（池数量：{{ successBinCount }}）
+              After enabling, iterate through BIN range and collect successful BINs (pool count: {{ successBinCount }})
               <span v-if="testModeProgress" style="color: #67C23A;">
                 <br/>Current Progress: {{ testModeProgress }}
               </span>
@@ -385,7 +385,7 @@
           <el-form-item label="Use Local BIN Pool">
             <el-switch v-model="settings.useLocalSuccessBins" :disabled="successBinCount === 0" />
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              开启后，自动从本地成功BIN池中随机获取卡BIN生成卡号
+              After enabling, randomly get BIN from local success pool
             </div>
           </el-form-item>
           
@@ -409,17 +409,17 @@
           >
             <template #default>
               <div style="font-size: 12px; line-height: 1.6;">
-                <p>🔒 内置浏览器使用隐私模式，不会保存任何浏览数据、Cookies或历史记录。</p>
-                <p>⚠️ 虚拟卡信息生成功能仅用于测试目的，请勿用于实际支付。</p>
-                <p>⚠️ 使用本功能时，请确保遵守Stripe及相关支付服务的使用条款。</p>
-                <p>⚠️ 不要将生成的虚拟卡信息用于任何欺诈或非法用途。</p>
+                <p>🔒 Built-in browser uses privacy mode, won't save browsing data</p>
+                <p>⚠️ Virtual card generation is for testing only, don't use for real payments</p>
+                <p>⚠️ Ensure compliance with Stripe terms when using this feature</p>
+                <p>⚠️ Don't use virtual cards for fraud or illegal purposes</p>
               </div>
             </template>
           </el-alert>
         </el-form>
       </el-tab-pane>
       
-      <!-- 无感换号标签页 -->
+      <!-- Seamless Switch Tab -->
       <el-tab-pane label="Seamless Switch" name="seamless">
         <el-form :model="settings" label-width="140px">
           <el-form-item label="Client Type">
@@ -451,7 +451,7 @@
               </template>
             </el-input>
             <div style="margin-top: 5px; color: #909399; font-size: 12px;">
-              可手动输入路径或从开始菜单自动检测 {{ settings.windsurfClientType === 'windsurf-next' ? 'Windsurf - Next' : 'Windsurf' }} 安装路径
+              Manually enter path or auto-detect from Start menu for {{ settings.windsurfClientType === 'windsurf-next' ? 'Windsurf - Next' : 'Windsurf' }} install path
             </div>
           </el-form-item>
           
@@ -468,7 +468,7 @@
           
           <el-form-item label="Patch Status">
             <div class="patch-status-block">
-              <!-- 汇总 tag + 操作按钮 -->
+              <!-- Summary tag + action buttons -->
               <div class="patch-status-header">
                 <el-tag :type="patchSummary.type">{{ patchSummary.label }}</el-tag>
                 <el-button
@@ -488,7 +488,7 @@
                   Re-detect
                 </el-button>
               </div>
-              <!-- 子项 checklist（有路径且无 IO 错误时展示） -->
+              <!-- Sub-item checklist (show when path exists and no IO error) -->
               <div
                 v-if="windsurfPath && !patchStatus.error"
                 class="patch-checklist"
@@ -520,13 +520,13 @@
           >
             <template #default>
               <div style="font-size: 12px; line-height: 1.6;">
-                <p>🚀 无感换号功能：实现 Windsurf / Windsurf - Next 账号无感切换</p>
-                <p>⚠️ 注意：开启/关闭时若客户端正在运行则自动重启，未运行则不重启</p>
+                <p>🚀 Seamless switch: Switch Windsurf accounts without user awareness</p>
+                <p>⚠️ Note: Auto restart if client running when enable/disable, no restart if not running</p>
               </div>
             </template>
           </el-alert>
           
-          <el-divider content-position="left">Windsurf 伟哥</el-divider>
+          <el-divider content-position="left">Windsurf Geek Feature</el-divider>
           
           <el-form-item label="Enable Geek Feature">
             <el-switch 
@@ -561,15 +561,15 @@
           >
             <template #default>
               <div style="font-size: 12px; line-height: 1.6;">
-                <p>💊 伟哥功能：防止 AI 擅自结束对话，让你掌控对话节奏</p>
-                <p>⚠️ 注意：开启/关闭后需要重启 Windsurf 生效</p>
+                <p>💊 Geek Feature: Prevent AI from ending conversations automatically</p>
+                <p>⚠️ Note: Restart Windsurf after enable/disable to take effect</p>
               </div>
             </template>
           </el-alert>
         </el-form>
       </el-tab-pane>
       
-      <!-- 备份设置标签页 -->
+      <!-- Backup Settings Tab -->
       <el-tab-pane label="Backup Settings" name="backup">
         <el-form :model="settings" label-width="140px">
           <el-form-item label="Auto Backup">
@@ -626,7 +626,7 @@
           </el-alert>
         </el-form>
         
-        <!-- 备份列表对话框 -->
+        <!-- Backup List Dialog -->
         <el-dialog
           v-model="showBackupsDialog"
           title="Backup List"
@@ -681,11 +681,11 @@ const settingsStore = useSettingsStore();
 const uiStore = useUIStore();
 
 const loading = ref(false);
-const activeTab = ref('basic');  // 当前激活的标签页
-const seatCountOptionsInput = ref('18, 19, 20');  // 座位数选项输入框
-const resettingHttp = ref(false);  // HTTP客户端重置中
+const activeTab = ref('basic');  // Current active tab
+const seatCountOptionsInput = ref('18, 19, 20');  // Seat count options input
+const resettingHttp = ref(false);  // HTTP client resetting
 
-// 解析座位数选项
+// Parse seat count options
 function parseSeatCountOptions() {
   const input = seatCountOptionsInput.value.trim();
   if (!input) {
@@ -751,40 +751,40 @@ const settings = reactive<{
   retry_times: 2,
   theme: 'light',
   concurrent_limit: 5,
-  show_seats_result_dialog: false,  // 默认关闭
-  autoOpenPaymentLinkInWebview: false,  // 默认关闭自动打开支付页面
-  autoFillPaymentForm: false,  // 默认关闭自动填写表单
-  autoSubmitPaymentForm: false,  // 默认关闭自动提交
-  paymentPageDelay: 2,  // 默认延迟2秒
-  showVirtualCardInfo: false,  // 默认关闭虚拟卡信息弹窗
-  customCardBin: '626202',  // 默认卡头
-  customCardBinRange: '',  // 默认不使用卡段范围
-  cardBindRetryTimes: 5,  // 默认绑卡重试5次
-  testModeEnabled: false,  // 默认关闭测试模式
-  useLocalSuccessBins: false,  // 默认不使用本地BIN池
-  seamlessSwitchEnabled: false,  // 默认关闭无感换号
-  windsurfClientType: 'windsurf',  // 默认 Windsurf 客户端
-  windsurfPath: null,  // Windsurf路径
-  patchBackupPath: null,  // 补丁备份路径
-  autoOpenBrowser: true,  // 默认自动打开浏览器
-  browserMode: 'incognito',  // 默认无痕模式
-  privacyMode: false,  // 默认关闭隐私模式
-  unlimitedConcurrentRefresh: false,  // 默认关闭全量并发刷新
-  proxyEnabled: false,  // 默认关闭代理
-  proxyUrl: null,  // 默认无代理地址
-  useLightweightApi: true,  // 默认使用轻量级API
-  subscriptionPlan: 2,  // 默认 Pro 计划
-  paymentPeriod: 1,  // 默认月付
-  startTrial: true,  // 默认开启试用
-  teamName: '',  // 默认空团队名称
-  seatCount: 1,  // 默认1个席位
-  cunzhiEnabled: false,  // 默认关闭伟哥功能
-  autoBackupEnabled: true,  // 默认启用自动备份
-  backupInterval: 10,  // 默认10分钟
-  backupMaxCount: 10,  // 默认最多10份
+  show_seats_result_dialog: false,  // Default off
+  autoOpenPaymentLinkInWebview: false,  // Default off auto open payment page
+  autoFillPaymentForm: false,  // Default off auto fill form
+  autoSubmitPaymentForm: false,  // Default off auto submit
+  paymentPageDelay: 2,  // Default delay 2 seconds
+  showVirtualCardInfo: false,  // Default off virtual card info popup
+  customCardBin: '626202',  // Default card BIN
+  customCardBinRange: '',  // Default not use BIN range
+  cardBindRetryTimes: 5,  // Default 5 retry times
+  testModeEnabled: false,  // Default off test mode
+  useLocalSuccessBins: false,  // Default off use local BIN pool
+  seamlessSwitchEnabled: false,  // Default off seamless switch
+  windsurfClientType: 'windsurf',  // Default Windsurf client
+  windsurfPath: null,  // Windsurf path
+  patchBackupPath: null,  // Patch backup path
+  autoOpenBrowser: true,  // Default auto open browser
+  browserMode: 'incognito',  // Default incognito mode
+  privacyMode: false,  // Default off privacy mode
+  unlimitedConcurrentRefresh: false,  // Default off unlimited concurrent refresh
+  proxyEnabled: false,  // Default off proxy
+  proxyUrl: null,  // Default no proxy URL
+  useLightweightApi: true,  // Default use lightweight API
+  subscriptionPlan: 2,  // Default Pro plan
+  paymentPeriod: 1,  // Default monthly
+  startTrial: true,  // Default start trial
+  teamName: '',  // Default empty team name
+  seatCount: 1,  // Default 1 seat
+  cunzhiEnabled: false,  // Default off geek feature
+  autoBackupEnabled: true,  // Default on auto backup
+  backupInterval: 10,  // Default 10 minutes
+  backupMaxCount: 10,  // Default max 10 copies
 });
 
-// 备份相关
+// Backup related
 const backupLoading = ref(false);
 const loadingBackups = ref(false);
 const showBackupsDialog = ref(false);
@@ -826,8 +826,8 @@ async function handleShowBackups() {
 async function handleRestoreBackup(backup: BackupInfo) {
   try {
     await ElMessageBox.confirm(
-      `确定要从备份 "${backup.name}" 恢复数据吗？当前数据将被覆盖（会先自动备份当前数据）。`,
-      '确认恢复',
+      `Restore from backup "${backup.name}"? Current data will be overwritten (will auto backup current data first).`,
+      'Confirm Restore',
       { type: 'warning' }
     );
     
@@ -837,7 +837,7 @@ async function handleRestoreBackup(backup: BackupInfo) {
     await settingsStore.loadSettings();
   } catch (e: any) {
     if (e !== 'cancel') {
-      ElMessage.error(`恢复失败: ${e}`);
+      ElMessage.error(`Restore failed: ${e}`);
     }
   }
 }
@@ -845,17 +845,17 @@ async function handleRestoreBackup(backup: BackupInfo) {
 async function handleDeleteBackup(backup: BackupInfo) {
   try {
     await ElMessageBox.confirm(
-      `确定要删除备份 "${backup.name}" 吗？此操作不可恢复。`,
-      '确认删除',
+      `Delete backup "${backup.name}"? This action cannot be undone.`,
+      'Confirm Delete',
       { type: 'warning' }
     );
     
     await invoke('delete_backup', { backupName: backup.name });
-    ElMessage.success('备份已删除');
+    ElMessage.success('Backup deleted');
     await handleShowBackups();
   } catch (e: any) {
     if (e !== 'cancel') {
-      ElMessage.error(`删除失败: ${e}`);
+      ElMessage.error(`Delete failed: ${e}`);
     }
   }
 }
@@ -867,7 +867,7 @@ function formatFileSize(bytes: number): string {
 }
 
 function formatBackupTime(name: string): string {
-  // 从文件名 accounts_20260109_231500.json 提取时间
+  // Extract time from filename accounts_20260109_231500.json
   const match = name.match(/accounts_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/);
   if (match) {
     return `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]}`;
@@ -875,7 +875,7 @@ function formatBackupTime(name: string): string {
   return name;
 }
 
-// 成功BIN池相关
+// Success BIN pool related
 const successBinCount = ref(0);
 const testModeProgress = ref<string | null>(null);
 
@@ -898,14 +898,14 @@ async function loadTestModeProgress() {
 
 async function resetTestModeProgress() {
   try {
-    await ElMessageBox.confirm('确定要重置测试模式进度吗？下次将从范围起始位置开始。', '确认重置', {
+    await ElMessageBox.confirm('Reset test mode progress? Next will start from range beginning.', 'Confirm Reset', {
       type: 'warning'
     });
     await invoke('reset_test_mode_progress');
     testModeProgress.value = null;
     ElMessage.success('Progress reset');
   } catch (e) {
-    // 用户取消
+    // User cancelled
   }
 }
 
@@ -913,44 +913,44 @@ async function viewSuccessBins() {
   try {
     const bins = await invoke<string[]>('get_success_bins');
     if (bins.length === 0) {
-      ElMessage.info('BIN池为空');
+      ElMessage.info('BIN pool is empty');
       return;
     }
     ElMessageBox.alert(
       `<div style="max-height: 300px; overflow-y: auto;">
-        <p><b>共 ${bins.length} 个成功BIN：</b></p>
+        <p><b>Total ${bins.length} successful BINs:</b></p>
         <p style="font-family: monospace; word-break: break-all;">${bins.join(', ')}</p>
       </div>`,
-      '成功BIN池',
+      'Success BIN Pool',
       { dangerouslyUseHTMLString: true }
     );
   } catch (e) {
-    ElMessage.error('获取BIN池失败');
+    ElMessage.error('Failed to get BIN pool');
   }
 }
 
 async function clearSuccessBins() {
   try {
-    await ElMessageBox.confirm('确定要清空所有成功的卡BIN吗？', '确认清空', {
+    await ElMessageBox.confirm('Clear all successful card BINs?', 'Confirm Clear', {
       type: 'warning'
     });
     await invoke('clear_success_bins');
     successBinCount.value = 0;
     ElMessage.success('BIN pool cleared');
   } catch (e) {
-    // 用户取消
+    // User cancelled
   }
 }
 
-// 无感换号相关
+// Seamless switch related
 const windsurfPath = ref('');
 const detectingPath = ref(false);
 const patchLoading = ref(false);
-// 补丁状态（字段与后端 check_patch_status 返回一一对应）
-// - installed: 三项子补丁全部应用 = true（由后端汇总）
-// - oauthHandler / timeoutRemoved / promptBypassApplied: 三项子补丁各自是否已应用
-// - currentVersion: 文件里是否含有"当前版本注入代码"的特征字符串，用于区分
-//   当前工具 vs 历史/第三方工具打的补丁（见 CURRENT_VERSION_MARKER）
+// Patch status (fields match backend check_patch_status return)
+// - installed: all three sub-patches applied = true (summarized by backend)
+// - oauthHandler / timeoutRemoved / promptBypassApplied: each sub-patch applied status
+// - currentVersion: whether file contains "current version injected code" feature string, to distinguish
+//   current tool vs historical/third-party tool patches (see CURRENT_VERSION_MARKER)
 const patchStatus = reactive({
   installed: false,
   error: '',
@@ -960,50 +960,50 @@ const patchStatus = reactive({
   currentVersion: false,
 });
 
-// 补丁三项子内容的结构化数据，驱动 UI checklist 渲染
-// 顺序与后端 apply 分支保持一致（6.1 / 6.2 / 6.3），方便用户对照
+// Structured data for three sub-patches, drives UI checklist rendering
+// Order matches backend apply branch (6.1 / 6.2 / 6.3), convenient for user comparison
 const patchItems = computed(() => [
-  { key: 'oauthHandler', label: 'OAuth 回调处理器', applied: patchStatus.oauthHandler },
-  { key: 'timeoutRemoved', label: '移除 180 秒超时限制', applied: patchStatus.timeoutRemoved },
-  { key: 'promptBypassApplied', label: '跳过切号确认对话框', applied: patchStatus.promptBypassApplied },
+  { key: 'oauthHandler', label: 'OAuth Callback Handler', applied: patchStatus.oauthHandler },
+  { key: 'timeoutRemoved', label: 'Remove 180s Timeout Limit', applied: patchStatus.timeoutRemoved },
+  { key: 'promptBypassApplied', label: 'Skip Switch Confirm Dialog', applied: patchStatus.promptBypassApplied },
 ]);
 
-// 已应用的子项数（0 ~ 3），UI 汇总文案用
+// Applied sub-item count (0~3), for UI summary text
 const patchAppliedCount = computed(() =>
   patchItems.value.filter(item => item.applied).length
 );
 
-// 是否显示"升级补丁"按钮：文件里已经是"当前版本注入代码"，但某些子项还没应用。
-// 典型场景：用户之前打过旧版工具生成的 1+2 补丁，新工具版本又加了第 3 条，需一键补齐。
+// Whether to show "Upgrade Patch" button: file already has "current version injected code" but some sub-items not applied.
+// Typical scenario: user had patch from old tool (1+2), new tool version adds #3, needs one-click fix.
 const canUpgrade = computed(() =>
   patchStatus.currentVersion &&
   !patchStatus.installed &&
   patchAppliedCount.value > 0
 );
 
-// 汇总 tag：根据三项子状态 + current_version 派生四种呈现
-// - error: 后端上报读取/规则错误
-// - 未安装: 0/3
-// - 已安装: 3/3（installed=true）
-// - 可升级: 是当前版本补丁但不完整 → canUpgrade=true
-// - 第三方补丁: 部分应用但无当前版本特征 → 可能是历史版本或其他工具打的
+// Summary tag: derive four presentations based on three sub-states + current_version
+// - error: backend reports read/rule error
+// - Not Installed: 0/3
+// - Installed: 3/3 (installed=true)
+// - Upgradable: current version patch but incomplete -> canUpgrade=true
+// - Third-party patch: partially applied but no current version feature -> possibly historical or other tool
 const patchSummary = computed<{ type: 'success' | 'info' | 'warning' | 'danger'; label: string }>(() => {
   if (patchStatus.error) {
     return { type: 'danger', label: patchStatus.error };
   }
   if (patchStatus.installed) {
-    return { type: 'success', label: '已安装' };
+    return { type: 'success', label: 'Installed' };
   }
   if (patchAppliedCount.value === 0) {
-    return { type: 'info', label: '未安装' };
+    return { type: 'info', label: 'Not Installed' };
   }
   if (canUpgrade.value) {
-    return { type: 'warning', label: `可升级 ${patchAppliedCount.value}/3` };
+    return { type: 'warning', label: `Upgradable ${patchAppliedCount.value}/3` };
   }
-  return { type: 'warning', label: `第三方补丁 ${patchAppliedCount.value}/3` };
+  return { type: 'warning', label: `Third-party ${patchAppliedCount.value}/3` };
 });
 
-// 伟哥(寸止)相关
+// Geek Feature (Cunzhi) related
 const cunzhiLoading = ref(false);
 const cunzhiStatus = reactive({
   installed: false,
@@ -1014,24 +1014,24 @@ watch(() => uiStore.showSettingsDialog, async (show) => {
   if (show && settingsStore.settings) {
     Object.assign(settings, settingsStore.settings);
     windsurfPath.value = settings.windsurfPath || '';
-    // 同步座位数选项到输入框
+    // Sync seat count options to input
     if (settings.seat_count_options && settings.seat_count_options.length > 0) {
       seatCountOptionsInput.value = settings.seat_count_options.join(', ');
     }
-    // 检查补丁状态
+    // Check patch status
     if (windsurfPath.value) {
       await checkPatchStatus();
     }
-    // 检查伟哥状态
+    // Check cunzhi status
     await checkCunzhiStatus();
-    // 加载成功BIN池数量和测试模式进度
+    // Load success BIN pool count and test mode progress
     await loadSuccessBinCount();
     await loadTestModeProgress();
   }
 });
 
 onMounted(async () => {
-  // 如果已有路径，检查状态
+  // If path exists, check status
   const storedPath = (settingsStore.settings as any)?.windsurfPath;
   if (storedPath) {
     settings.windsurfPath = storedPath;
@@ -1043,7 +1043,7 @@ onMounted(async () => {
 async function handleSave() {
   loading.value = true;
   try {
-    // 确保保存路径设置
+    // Ensure save path settings
     if (windsurfPath.value) {
       settings.windsurfPath = windsurfPath.value;
     }
@@ -1062,56 +1062,56 @@ function handleClose() {
   uiStore.showSettingsDialog = false;
 }
 
-// 验证卡头输入
+// Validate card BIN input
 function validateCardBin(value: string) {
-  // 只允许数字
+  // Only allow numbers
   const cleaned = value.replace(/[^\d]/g, '');
   settings.customCardBin = cleaned;
   
-  // 检查长度
+  // Check length
   if (cleaned.length > 0 && cleaned.length < 4) {
     ElMessage.warning('Card BIN must be 4-12 digits');
   }
 }
 
-// 恢复默认卡头
+// Reset default card BIN
 function resetCardBin() {
   settings.customCardBin = '626202';
   ElMessage.success('Default card BIN restored');
 }
 
-// 验证卡段范围格式
+// Validate card BIN range format
 function validateCardBinRange(value: string) {
-  // 只允许数字和连字符
+  // Only allow numbers and hyphens
   const cleaned = value.replace(/[^\d-]/g, '');
   settings.customCardBinRange = cleaned;
   
-  // 如果输入了内容，验证格式
+  // If content entered, validate format
   if (cleaned && cleaned.includes('-')) {
     const parts = cleaned.split('-');
     if (parts.length === 2) {
       const [start, end] = parts;
-      // 验证两端长度相同且都是数字
+      // Validate both ends have same length and are numbers
       if (start && end && start.length === end.length) {
         const startNum = parseInt(start, 10);
         const endNum = parseInt(end, 10);
         if (startNum > endNum) {
-          ElMessage.warning('起始BIN必须小于或等于结束BIN');
+          ElMessage.warning('Start BIN must be less than or equal to end BIN');
         }
       } else if (start && end && start.length !== end.length) {
-        ElMessage.warning('起始和结束BIN的长度必须相同');
+        ElMessage.warning('Start and end BIN must have same length');
       }
     }
   }
 }
 
-// 清除卡段范围
+// Clear card BIN range
 function clearCardBinRange() {
   settings.customCardBinRange = '';
-  ElMessage.success('已清除卡段范围');
+  ElMessage.success('BIN range cleared');
 }
 
-// 切换客户端类型时清空路径并重新检测
+// Clear path and re-detect when switching client type
 async function handleClientTypeChange() {
   windsurfPath.value = '';
   settings.windsurfPath = null;
@@ -1123,11 +1123,11 @@ async function handleClientTypeChange() {
   patchStatus.promptBypassApplied = false;
   patchStatus.currentVersion = false;
   await settingsStore.updateSettings(settings);
-  // 自动检测新客户端路径
+  // Auto-detect new client path
   await detectWindsurfPath();
 }
 
-// 检测Windsurf路径
+// Detect Windsurf path
 async function detectWindsurfPath() {
   detectingPath.value = true;
   const clientLabel = settings.windsurfClientType === 'windsurf-next' ? 'Windsurf - Next' : 'Windsurf';
@@ -1137,20 +1137,20 @@ async function detectWindsurfPath() {
     });
     windsurfPath.value = path;
     settings.windsurfPath = path;
-    ElMessage.success(`已找到 ${clientLabel} 安装路径`);
-    // 检查补丁状态
+    ElMessage.success(`Found ${clientLabel} install path`);
+    // Check patch status
     await checkPatchStatus();
-    // 保存路径设置到本地
+    // Save path settings to local
     await settingsStore.updateSettings(settings);
   } catch (error) {
-    ElMessage.error(`检测失败: ${error}`);
+    ElMessage.error(`Detection failed: ${error}`);
     windsurfPath.value = '';
   } finally {
     detectingPath.value = false;
   }
 }
 
-// 检查补丁状态
+// Check patch status
 async function checkPatchStatus() {
   if (!windsurfPath.value) return;
   
@@ -1165,10 +1165,10 @@ async function checkPatchStatus() {
     patchStatus.promptBypassApplied = !!status.prompt_bypass_applied;
     patchStatus.currentVersion = !!status.current_version;
     
-    // 同步开关状态与实际补丁状态
+    // Sync switch state with actual patch state
     if (status.installed !== settings.seamlessSwitchEnabled) {
       settings.seamlessSwitchEnabled = status.installed;
-      // 保存同步后的状态
+      // Save synced state
       await settingsStore.updateSettings(settings);
     }
   } catch (error) {
@@ -1181,27 +1181,27 @@ async function checkPatchStatus() {
   }
 }
 
-// 处理路径变化
+// Handle path change
 function handlePathChange() {
   if (windsurfPath.value) {
     settings.windsurfPath = windsurfPath.value;
-    // 检查新路径的补丁状态
+    // Check new path patch status
     checkPatchStatus();
   }
 }
 
-// 浏览选择路径
+// Browse select path
 async function browseWindsurfPath() {
   try {
     const { open } = await import('@tauri-apps/plugin-dialog');
     const selected = await open({
       directory: true,
       multiple: false,
-      title: '选择Windsurf安装目录'
+      title: 'Select Windsurf Install Directory'
     });
     
     if (selected && typeof selected === 'string') {
-      // 验证选择的路径是否包含extension.js文件
+      // Validate selected path contains extension.js file
       const isValid = await invoke<boolean>('validate_windsurf_path', {
         path: selected
       });
@@ -1209,46 +1209,46 @@ async function browseWindsurfPath() {
       if (isValid) {
         windsurfPath.value = selected;
         settings.windsurfPath = selected;
-        ElMessage.success('已选择Windsurf路径');
+        ElMessage.success('Selected Windsurf path');
         await checkPatchStatus();
-        // 保存路径设置到本地
+        // Save path settings to local
         await settingsStore.updateSettings(settings);
       } else {
-        ElMessage.error('所选目录不是有效的Windsurf安装目录');
+        ElMessage.error('Selected directory is not a valid Windsurf install directory');
       }
     }
   } catch (error) {
-    ElMessage.error(`选择路径失败: ${error}`);
+    ElMessage.error(`Select path failed: ${error}`);
   }
 }
 
-// 处理无感换号开关
+// Handle seamless switch toggle
 async function handleSeamlessSwitch(value: boolean) {
   if (!windsurfPath.value) {
-    ElMessage.error('请先检测或设置客户端路径');
+    ElMessage.error('Please detect or set client path first');
     settings.seamlessSwitchEnabled = !value;
     return;
   }
   
-  // 确认对话框
-  const action = value ? '开启' : '关闭';
+  // Confirm dialog
+  const action = value ? 'Enable' : 'Disable';
   const clientLabel = settings.windsurfClientType === 'windsurf-next' ? 'Windsurf - Next' : 'Windsurf';
   const message = value 
-    ? `开启无感换号将修改 ${clientLabel} 的 extension.js 文件，若客户端正在运行则自动重启，是否继续？`
-    : `关闭无感换号将还原原始文件，若客户端正在运行则自动重启，是否继续？`;
+    ? `Enabling seamless switch will modify ${clientLabel}'s extension.js file, auto restart if client running, continue?`
+    : `Disabling seamless switch will restore original file, auto restart if client running, continue?`;
   
   try {
     await ElMessageBox.confirm(
       message,
-      `${action}无感换号`,
+      `${action} Seamless Switch`,
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning',
       }
     );
   } catch {
-    // 用户取消，恢复开关状态
+    // User cancelled, restore switch state
     settings.seamlessSwitchEnabled = !value;
     return;
   }
@@ -1257,43 +1257,43 @@ async function handleSeamlessSwitch(value: boolean) {
   try {
     let result;
     if (value) {
-      // 应用补丁
+      // Apply patch
       result = await invoke<any>('apply_seamless_patch', {
         windsurfPath: windsurfPath.value
       });
     } else {
-      // 还原补丁
+      // Restore patch
       result = await invoke<any>('restore_seamless_patch');
     }
     
     if (result.success) {
-      ElMessage.success(result.message || `无感换号已${action}`);
+      ElMessage.success(result.message || `Seamless switch ${action}`);
       if (result.already_patched) {
-        ElMessage.info('补丁已经应用过了');
+        ElMessage.info('Patch already applied');
       }
-      // 更新状态
+      // Update status
       await checkPatchStatus();
-      // 保存设置到本地
+      // Save settings to local
       settings.windsurfPath = windsurfPath.value;
       settings.patchBackupPath = result.backup_file || settings.patchBackupPath;
-      // 立即保存到本地文件
+      // Save immediately to local file
       await settingsStore.updateSettings(settings);
     } else {
-      ElMessage.error(result.message || `${action}失败`);
+      ElMessage.error(result.message || `${action} failed`);
       settings.seamlessSwitchEnabled = !value;
     }
   } catch (error) {
-    ElMessage.error(`${action}失败: ${error}`);
+    ElMessage.error(`${action} failed: ${error}`);
     settings.seamlessSwitchEnabled = !value;
   } finally {
     patchLoading.value = false;
   }
 }
 
-// 升级补丁（仅在 canUpgrade=true 时显示按钮）
-// 本质就是再跑一次 apply：后端 dry-run 发现三条 pattern 还有尚未替换的，
-// 会走 apply 分支对剩余子项做增量替换；已经改写过的 pattern 会自动跳过，
-// 因此不会重复打已完成部分，也不会产生无效备份（原始结构已不匹配的分支 no-op）。
+// Upgrade patch (only show when canUpgrade=true)
+// Essentially run apply again: backend dry-run finds three patterns still not replaced,
+// will go to apply branch for incremental replace of remaining items; already rewritten patterns skip automatically,
+// so won't repeat completed parts or produce invalid backups (no-op for branches where original structure doesn't match)).
 async function handleUpgradePatch() {
   if (!windsurfPath.value) return;
   patchLoading.value = true;
@@ -1304,49 +1304,49 @@ async function handleUpgradePatch() {
     if (result.success) {
       const mods: string[] = result.modifications || [];
       if (mods.length > 0) {
-        ElMessage.success(`补丁已升级：${mods.join('、')}`);
+        ElMessage.success(`Patch upgraded: ${mods.join(', ')}`);
       } else {
-        ElMessage.info(result.message || '补丁已是最新');
+        ElMessage.info(result.message || 'Patch is already latest');
       }
       await checkPatchStatus();
       settings.windsurfPath = windsurfPath.value;
       settings.patchBackupPath = result.backup_file || settings.patchBackupPath;
       await settingsStore.updateSettings(settings);
     } else {
-      ElMessage.error(result.message || '升级失败');
+      ElMessage.error(result.message || 'Upgrade failed');
     }
   } catch (error) {
-    ElMessage.error(`升级失败: ${error}`);
+    ElMessage.error(`Upgrade failed: ${error}`);
   } finally {
     patchLoading.value = false;
   }
 }
 
-// 重置HTTP客户端
+// Reset HTTP client
 async function handleResetHttpClient() {
   resettingHttp.value = true;
   try {
     const result = await systemApi.resetHttpClient();
     if (result.success) {
-      ElMessage.success(result.message || 'HTTP客户端已重置');
+      ElMessage.success(result.message || 'HTTP client reset');
     } else {
-      ElMessage.error('重置失败');
+      ElMessage.error('Reset failed');
     }
   } catch (error) {
-    ElMessage.error(`重置失败: ${error}`);
+    ElMessage.error(`Reset failed: ${error}`);
   } finally {
     resettingHttp.value = false;
   }
 }
 
-// 检查伟哥(寸止)状态
+// Check Geek Feature status
 async function checkCunzhiStatus() {
   try {
     const status = await invoke<any>('check_cunzhi_status');
     cunzhiStatus.installed = status.installed;
     cunzhiStatus.error = status.error || '';
     
-    // 同步开关状态与实际状态
+    // Sync switch state with actual state
     if (status.installed !== settings.cunzhiEnabled) {
       settings.cunzhiEnabled = status.installed;
       await settingsStore.updateSettings(settings);
@@ -1357,25 +1357,25 @@ async function checkCunzhiStatus() {
   }
 }
 
-// 处理伟哥开关
+// Handle Geek Feature toggle
 async function handleCunzhiSwitch(value: boolean) {
-  const action = value ? '开启' : '关闭';
+  const action = value ? 'Enable' : 'Disable';
   const message = value 
-    ? '开启伟哥功能将安装 MCP 服务器和全局规则，是否继续？'
-    : '关闭伟哥功能将删除 MCP 配置和全局规则，是否继续？';
+    ? 'Enable Geek Feature will install MCP server and global rules, continue?'
+    : 'Disable Geek Feature will delete MCP config and global rules, continue?';
   
   try {
     await ElMessageBox.confirm(
       message,
-      `${action}伟哥功能`,
+      `${action} Geek Feature`,
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning',
       }
     );
   } catch {
-    // 用户取消，恢复开关状态
+    // User cancelled, restore switch state
     settings.cunzhiEnabled = !value;
     return;
   }
@@ -1384,59 +1384,59 @@ async function handleCunzhiSwitch(value: boolean) {
   try {
     let result;
     if (value) {
-      // 安装伟哥
+      // Install Geek Feature
       result = await invoke<any>('install_cunzhi', { windsurfPath: settings.windsurfPath || null });
     } else {
-      // 卸载伟哥
+      // Uninstall Geek Feature
       result = await invoke<any>('uninstall_cunzhi', { windsurfPath: settings.windsurfPath || null });
     }
     
     if (result.success) {
-      ElMessage.success(result.message || `伟哥功能已${action}`);
-      // 更新状态
+      ElMessage.success(result.message || `Geek Feature ${action}`);
+      // Update status
       await checkCunzhiStatus();
-      // 保存设置
+      // Save settings
       await settingsStore.updateSettings(settings);
-      // 提示重启
-      ElMessage.warning('请重启 Windsurf 以使更改生效');
+      // Prompt restart
+      ElMessage.warning('Please restart Windsurf for changes to take effect');
     } else {
-      ElMessage.error(result.message || `${action}失败`);
+      ElMessage.error(result.message || `${action} failed`);
       settings.cunzhiEnabled = !value;
     }
   } catch (error) {
-    ElMessage.error(`${action}失败: ${error}`);
+    ElMessage.error(`${action} failed: ${error}`);
     settings.cunzhiEnabled = !value;
   } finally {
     cunzhiLoading.value = false;
   }
 }
 
-// simple 版本已禁用的功能
+// Function disabled in simple version
 void parseSeatCountOptions;
 </script>
 
 <style scoped>
-/* 深色模式样式 */
+/* Dark mode styles */
 :deep(.el-dialog) {
-  /* 在深色模式下由全局样式控制 */
+  /* Controlled by global styles in dark mode */
 }
 
-/* 深色模式下的描述文字 */
+/* Description text in dark mode */
 :root.dark .el-form-item > div[style*="color: #909399"] {
   color: #94a3b8 !important;
 }
 
-/* 深色模式下的标签页内容 */
+/* Tab content in dark mode */
 :root.dark .el-tabs__content {
   background-color: transparent;
 }
 
-/* 深色模式下的表单项标签 */
+/* Form item labels in dark mode */
 :root.dark .el-form-item__label {
   color: #cfd3dc;
 }
 
-/* 深色模式下的alert */
+/* Alert in dark mode */
 :root.dark .el-alert--warning {
   background-color: rgba(230, 162, 60, 0.1);
   border-color: rgba(230, 162, 60, 0.3);
@@ -1446,7 +1446,7 @@ void parseSeatCountOptions;
   color: #cfd3dc;
 }
 
-/* ==================== 补丁状态区块 ==================== */
+/* ==================== Patch status block ==================== */
 .patch-status-block {
   display: flex;
   flex-direction: column;
@@ -1493,7 +1493,7 @@ void parseSeatCountOptions;
   color: #67C23A;
 }
 
-/* 深色模式适配 */
+/* Dark mode adaptation */
 :root.dark .patch-checklist {
   background-color: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);

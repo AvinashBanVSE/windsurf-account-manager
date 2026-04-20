@@ -8,14 +8,14 @@
     @close="handleClose"
   >
     <div v-loading="loading" class="analytics-container">
-      <!-- 顶部统计卡片 -->
+      <!-- Top stats cards -->
       <div v-if="!loading && analyticsData" class="stats-cards">
         <div class="stat-card blue-gradient">
           <div class="stat-icon">
             <el-icon><Document /></el-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-label">总代码行数</div>
+            <div class="stat-label">Total Code Lines</div>
             <div class="stat-value">{{ formatNumber(analyticsData.summary.total_accepted_lines) }}</div>
           </div>
         </div>
@@ -25,7 +25,7 @@
             <el-icon><TrendCharts /></el-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-label">日均代码行数</div>
+            <div class="stat-label">Avg Daily Code Lines</div>
             <div class="stat-value">{{ analyticsData.summary.avg_daily_accepted_lines.toFixed(1) }}</div>
           </div>
         </div>
@@ -35,7 +35,7 @@
             <el-icon><ChatLineRound /></el-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-label">总会话数</div>
+            <div class="stat-label">Total Sessions</div>
             <div class="stat-value">{{ analyticsData.summary.total_sessions }}</div>
           </div>
         </div>
@@ -45,7 +45,7 @@
             <el-icon><Coin /></el-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-label">总Token消耗</div>
+            <div class="stat-label">Total Tokens</div>
             <div class="stat-value">{{ formatNumber(analyticsData.summary.total_tokens / 100) }}</div>
           </div>
         </div>
@@ -55,7 +55,7 @@
             <el-icon><Cpu /></el-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-label">主要模型</div>
+            <div class="stat-label">Primary Model</div>
             <div class="stat-value small" :title="analyticsData.summary.primary_model">{{ formatModelName(analyticsData.summary.primary_model) }}</div>
           </div>
         </div>
@@ -65,17 +65,17 @@
             <el-icon><Tools /></el-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-label">主要工具</div>
+            <div class="stat-label">Primary Tool</div>
             <div class="stat-value small" :title="analyticsData.summary.primary_tool">{{ formatToolName(analyticsData.summary.primary_tool) }}</div>
           </div>
         </div>
       </div>
 
-      <!-- 新增：AI 贡献统计卡片 -->
+      <!-- AI Contribution Stats -->
       <div v-if="!loading && analyticsData && hasPercentCodeWritten" class="ai-contribution-section">
         <h3 class="section-title">
           <el-icon><Cpu /></el-icon>
-          AI 代码贡献
+AI Code Contribution
         </h3>
         <div class="ai-contribution-cards">
           <div class="contribution-card ai-percent">
@@ -87,14 +87,14 @@
               </svg>
               <div class="percent-text">{{ aiContributionPercent.toFixed(1) }}%</div>
             </div>
-            <div class="contribution-label">AI 代码占比</div>
+            <div class="contribution-label">AI Code Percentage</div>
           </div>
           
           <div class="contribution-breakdown">
             <div class="breakdown-item">
               <div class="breakdown-bar autocomplete" :style="{ width: autocompletePercent + '%' }"></div>
               <div class="breakdown-info">
-                <span class="breakdown-name">自动补全</span>
+                <span class="breakdown-name">Autocomplete</span>
                 <span class="breakdown-value">{{ formatBytes(analyticsData.percent_code_written.codeium_bytes_by_autocomplete) }}</span>
               </div>
             </div>
@@ -108,14 +108,14 @@
             <div class="breakdown-item">
               <div class="breakdown-bar command" :style="{ width: commandPercent + '%' }"></div>
               <div class="breakdown-info">
-                <span class="breakdown-name">命令</span>
+                <span class="breakdown-name">Command</span>
                 <span class="breakdown-value">{{ formatBytes(analyticsData.percent_code_written.codeium_bytes_by_command) }}</span>
               </div>
             </div>
             <div class="breakdown-item">
               <div class="breakdown-bar user" :style="{ width: userPercent + '%' }"></div>
               <div class="breakdown-info">
-                <span class="breakdown-name">用户编写</span>
+                <span class="breakdown-name">User Written</span>
                 <span class="breakdown-value">{{ formatBytes(analyticsData.percent_code_written.user_bytes) }}</span>
               </div>
             </div>
@@ -123,169 +123,169 @@
         </div>
       </div>
 
-      <!-- 新增：补全统计卡片 -->
+      <!-- Completion Stats -->
       <div v-if="!loading && analyticsData && hasCompletionStats" class="completion-stats-section">
         <h3 class="section-title">
           <el-icon><Finished /></el-icon>
-          代码补全统计
+          Code Completion Stats
         </h3>
         <div class="completion-stats-cards">
           <div class="mini-stat-card">
             <div class="mini-stat-value success">{{ formatNumber(analyticsData.completion_stats.num_acceptances) }}</div>
-            <div class="mini-stat-label">接受次数</div>
+            <div class="mini-stat-label">Acceptances</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value warning">{{ formatNumber(analyticsData.completion_stats.num_rejections) }}</div>
-            <div class="mini-stat-label">拒绝次数</div>
+            <div class="mini-stat-label">Rejections</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value primary">{{ analyticsData.completion_stats.acceptance_rate.toFixed(1) }}%</div>
-            <div class="mini-stat-label">接受率</div>
+            <div class="mini-stat-label">Acceptance Rate</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value info">{{ formatNumber(analyticsData.completion_stats.num_lines_accepted) }}</div>
-            <div class="mini-stat-label">接受行数</div>
+            <div class="mini-stat-label">Accepted Lines</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value">{{ analyticsData.completion_stats.active_developer_days }}</div>
-            <div class="mini-stat-label">活跃天数</div>
+            <div class="mini-stat-label">Active Days</div>
           </div>
         </div>
       </div>
 
-      <!-- 新增：Chat 统计卡片 -->
+      <!-- Chat Stats -->
       <div v-if="!loading && analyticsData && hasChatStats" class="chat-stats-section">
         <h3 class="section-title">
           <el-icon><ChatLineRound /></el-icon>
-          Chat 统计
+Chat Stats
         </h3>
         <div class="chat-stats-cards">
           <div class="mini-stat-card">
             <div class="mini-stat-value primary">{{ formatNumber(analyticsData.chat_stats.chats_sent) }}</div>
-            <div class="mini-stat-label">发送消息</div>
+            <div class="mini-stat-label">Messages Sent</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value success">{{ formatNumber(analyticsData.chat_stats.chats_accepted) }}</div>
-            <div class="mini-stat-label">采纳建议</div>
+            <div class="mini-stat-label">Suggestions Accepted</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value info">{{ formatNumber(analyticsData.chat_stats.chat_code_blocks_used) }}</div>
-            <div class="mini-stat-label">代码块使用</div>
+            <div class="mini-stat-label">Code Blocks Used</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value warning">{{ formatNumber(analyticsData.chat_stats.function_explain_count) }}</div>
-            <div class="mini-stat-label">函数解释</div>
+            <div class="mini-stat-label">Function Explain</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value">{{ formatNumber(analyticsData.chat_stats.function_refactor_count) }}</div>
-            <div class="mini-stat-label">函数重构</div>
+            <div class="mini-stat-label">Function Refactor</div>
           </div>
           <div class="mini-stat-card">
             <div class="mini-stat-value danger">{{ formatNumber(analyticsData.chat_stats.function_unit_tests_count) }}</div>
-            <div class="mini-stat-label">单元测试</div>
+            <div class="mini-stat-label">Unit Tests</div>
           </div>
         </div>
       </div>
 
-      <!-- 图表区域 -->
+      <!-- Charts Section -->
       <div v-if="!loading && analyticsData" class="charts-container">
-        <!-- 每日代码行数趋势 -->
+        <!-- Daily Code Lines Trend -->
         <el-card class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><TrendCharts /></el-icon>
-              <span>每日代码行数趋势</span>
+              <span>Daily Code Lines Trend</span>
             </div>
           </template>
           <div ref="dailyChartRef" class="chart"></div>
         </el-card>
 
-        <!-- 工具使用分布 -->
+        <!-- Tool Usage Distribution -->
         <el-card class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><Tools /></el-icon>
-              <span>工具使用分布</span>
+              <span>Tool Usage Distribution</span>
             </div>
           </template>
           <div ref="toolChartRef" class="chart"></div>
         </el-card>
 
-        <!-- 模型使用分布 -->
+        <!-- Model Usage Distribution -->
         <el-card class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><Cpu /></el-icon>
-              <span>模型使用分布</span>
+              <span>Model Usage Distribution</span>
             </div>
           </template>
           <div ref="modelChartRef" class="chart"></div>
         </el-card>
 
-        <!-- Token消耗趋势 -->
+        <!-- Token Usage Trend -->
         <el-card class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><Coin /></el-icon>
-              <span>Token消耗趋势</span>
+              <span>Token Usage Trend</span>
             </div>
           </template>
           <div ref="tokenChartRef" class="chart"></div>
         </el-card>
 
-        <!-- 按语言的补全统计 -->
+        <!-- Completions by Language -->
         <el-card v-if="analyticsData.completions_by_language?.length > 0" class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><Document /></el-icon>
-              <span>按语言补全统计</span>
+              <span>Completions by Language</span>
             </div>
           </template>
           <div ref="languageChartRef" class="chart"></div>
         </el-card>
 
-        <!-- 按模型的Chat统计 -->
+        <!-- Chat by Model -->
         <el-card v-if="analyticsData.chats_by_model?.length > 0" class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><ChatLineRound /></el-icon>
-              <span>按模型Chat统计</span>
+              <span>Chat by Model</span>
             </div>
           </template>
           <div ref="chatModelChartRef" class="chart"></div>
         </el-card>
 
-        <!-- 每日补全趋势 -->
+        <!-- Daily Completions Trend -->
         <el-card v-if="analyticsData.completions_by_day?.length > 0" class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><Finished /></el-icon>
-              <span>每日补全趋势</span>
+              <span>Daily Completions Trend</span>
             </div>
           </template>
           <div ref="completionsByDayChartRef" class="chart"></div>
         </el-card>
 
-        <!-- 每日Chat趋势 -->
+        <!-- Daily Chat Trend -->
         <el-card v-if="analyticsData.chats_by_day?.length > 0" class="chart-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><ChatLineRound /></el-icon>
-              <span>每日Chat趋势</span>
+              <span>Daily Chat Trend</span>
             </div>
           </template>
           <div ref="chatsByDayChartRef" class="chart"></div>
         </el-card>
       </div>
 
-      <!-- 空状态 -->
+      <!-- Empty state -->
       <el-empty v-if="!loading && !analyticsData" description="No data" />
     </div>
 
     <template #footer>
       <el-button @click="handleClose">Close</el-button>
       <el-button type="primary" @click="handleRefresh" :loading="loading">
-        <el-icon class="el-icon--left"><Refresh /></el-icon>刷新
+        <el-icon class="el-icon--left"><Refresh /></el-icon>Refresh
       </el-button>
     </template>
   </el-dialog>
@@ -324,61 +324,61 @@ const visible = ref(false);
 const loading = ref(false);
 const analyticsData = ref<AnalyticsData | null>(null);
 
-// ===== 新增计算属性 =====
+// ===== Computed Properties =====
 
-// 是否有代码贡献百分比数据
+// Has code contribution percentage data
 const hasPercentCodeWritten = computed(() => {
   const pcw = analyticsData.value?.percent_code_written;
   return pcw && pcw.total_bytes && pcw.total_bytes > 0;
 });
 
-// 是否有补全统计数据
+// Has completion stats
 const hasCompletionStats = computed(() => {
   const stats = analyticsData.value?.completion_stats;
   return stats && (stats.num_acceptances > 0 || stats.num_rejections > 0);
 });
 
-// 是否有 Chat 统计数据
+// Has Chat stats
 const hasChatStats = computed(() => {
   const stats = analyticsData.value?.chat_stats;
   return stats && stats.chats_sent > 0;
 });
 
-// AI 代码贡献百分比 (API 返回的是小数形式 0.9999，需要乘以 100)
+// AI Code Contribution Percent (API returns decimal form 0.9999, needs multiply by 100)
 const aiContributionPercent = computed(() => {
   const raw = analyticsData.value?.percent_code_written?.percent_code_written || 0;
   return raw * 100;
 });
 
-// 自动补全占比
+// Autocomplete percentage
 const autocompletePercent = computed(() => {
   const pcw = analyticsData.value?.percent_code_written;
   if (!pcw || pcw.total_bytes === 0) return 0;
   return (pcw.codeium_bytes_by_autocomplete / pcw.total_bytes) * 100;
 });
 
-// Cascade 占比
+// Cascade percentage
 const cascadePercent = computed(() => {
   const pcw = analyticsData.value?.percent_code_written;
   if (!pcw || pcw.total_bytes === 0) return 0;
   return (pcw.codeium_bytes_by_cascade / pcw.total_bytes) * 100;
 });
 
-// 命令占比
+// Command percentage
 const commandPercent = computed(() => {
   const pcw = analyticsData.value?.percent_code_written;
   if (!pcw || pcw.total_bytes === 0) return 0;
   return (pcw.codeium_bytes_by_command / pcw.total_bytes) * 100;
 });
 
-// 用户编写占比
+// User Written percentage
 const userPercent = computed(() => {
   const pcw = analyticsData.value?.percent_code_written;
   if (!pcw || pcw.total_bytes === 0) return 0;
   return (pcw.user_bytes / pcw.total_bytes) * 100;
 });
 
-// 图表引用
+// Chart refs
 const dailyChartRef = ref<HTMLElement>();
 const toolChartRef = ref<HTMLElement>();
 const modelChartRef = ref<HTMLElement>();
@@ -388,7 +388,7 @@ const chatModelChartRef = ref<HTMLElement>();
 const completionsByDayChartRef = ref<HTMLElement>();
 const chatsByDayChartRef = ref<HTMLElement>();
 
-// 图表实例
+// Chart instances
 let dailyChart: ECharts | null = null;
 let toolChart: ECharts | null = null;
 let modelChart: ECharts | null = null;
@@ -398,7 +398,7 @@ let chatModelChart: ECharts | null = null;
 let completionsByDayChart: ECharts | null = null;
 let chatsByDayChart: ECharts | null = null;
 
-// 监听 modelValue 变化
+// Watch modelValue change
 watch(() => props.modelValue, (val) => {
   visible.value = val;
   if (val) {
@@ -406,7 +406,7 @@ watch(() => props.modelValue, (val) => {
   }
 });
 
-// 监听 visible 变化
+// Watch visible change
 watch(visible, (val) => {
   emit('update:modelValue', val);
   if (!val) {
@@ -414,7 +414,7 @@ watch(visible, (val) => {
   }
 });
 
-// 加载分析数据
+// Load analytics data
 const loadAnalytics = async () => {
   loading.value = true;
   try {
@@ -429,13 +429,13 @@ const loadAnalytics = async () => {
     initCharts();
   } catch (error: any) {
     console.error('[AnalyticsDialog] Error loading analytics:', error);
-    ElMessage.error(error || '加载分析数据失败');
+    ElMessage.error(error || 'Failed to load analytics data');
   } finally {
     loading.value = false;
   }
 };
 
-// 初始化所有图表
+// Initialize all charts
 const initCharts = () => {
   if (!analyticsData.value) {
     console.error('[initCharts] No analytics data available');
@@ -450,7 +450,7 @@ const initCharts = () => {
     model_usage_details: analyticsData.value.model_usage_details?.length || 0
   });
 
-  // 使用 setTimeout 确保 DOM 已完全渲染
+  // Use setTimeout to ensure DOM is fully rendered
   setTimeout(() => {
     console.log('[initCharts] DOM refs status:', {
       dailyChartRef: !!dailyChartRef.value,
@@ -474,7 +474,7 @@ const initCharts = () => {
   }, 100);
 };
 
-// 初始化每日代码行数趋势图
+// Initialize Daily Code Lines Trend chart
 const initDailyChart = () => {
   console.log('[initDailyChart] Starting initialization');
 
@@ -496,7 +496,7 @@ const initDailyChart = () => {
   console.log('[initDailyChart] Cascade lines data:', analyticsData.value.daily_cascade_lines);
 
   try {
-    // 销毁旧图表实例
+    // Destroy old chart instance
     if (dailyChart) {
       dailyChart.dispose();
     }
@@ -528,7 +528,7 @@ const initDailyChart = () => {
         }
       },
       legend: {
-        data: ['接受的代码行数', '建议的代码行数'],
+        data: ['Accepted Lines', 'Suggested Lines'],
         top: 0,
         right: 10,
         itemGap: 20,
@@ -551,7 +551,7 @@ const initDailyChart = () => {
           rotate: 0,
           color: '#909399',
           formatter: (value: string) => {
-            // 只显示月-日
+            // Show only month-day
             const date = new Date(value);
             return `${date.getMonth() + 1}-${date.getDate()}`;
           }
@@ -590,7 +590,7 @@ const initDailyChart = () => {
       },
       series: [
         {
-          name: '接受的代码行数',
+          name: 'Accepted Lines',
           type: 'line',
           data: acceptedLines,
           smooth: true,
@@ -624,7 +624,7 @@ const initDailyChart = () => {
           }
         },
         {
-          name: '建议的代码行数',
+          name: 'Suggested Lines',
           type: 'line',
           data: suggestedLines,
           smooth: true,
@@ -651,14 +651,14 @@ const initDailyChart = () => {
     dailyChart.setOption(option);
     console.log('[initDailyChart] Chart option set successfully');
 
-    // 强制重绘
+    // Force redraw
     dailyChart.resize();
   } catch (error) {
     console.error('[initDailyChart] Error initializing chart:', error);
   }
 };
 
-// 初始化工具使用分布图
+// Initialize Tool Usage Distribution chart
 const initToolChart = () => {
   console.log('[initToolChart] Starting initialization');
 
@@ -680,7 +680,7 @@ const initToolChart = () => {
   console.log('[initToolChart] Tool usage data:', analyticsData.value.tool_usage);
 
   try {
-    // 销毁旧图表实例
+    // Destroy old chart instance
     if (toolChart) {
       toolChart.dispose();
     }
@@ -714,7 +714,7 @@ const initToolChart = () => {
       },
       series: [
         {
-          name: '工具使用',
+          name: 'Tool Usage',
           type: 'pie',
           radius: ['40%', '70%'],
           center: ['40%', '50%'],
@@ -751,14 +751,14 @@ const initToolChart = () => {
     toolChart.setOption(option);
     console.log('[initToolChart] Chart option set successfully');
 
-    // 强制重绘
+    // Force redraw
     toolChart.resize();
   } catch (error) {
     console.error('[initToolChart] Error initializing chart:', error);
   }
 };
 
-// 初始化模型使用分布图
+// Initialize Model Usage Distribution chart
 const initModelChart = () => {
   console.log('[initModelChart] Starting initialization');
 
@@ -780,7 +780,7 @@ const initModelChart = () => {
   console.log('[initModelChart] Model usage summary:', analyticsData.value.model_usage_summary);
 
   try {
-    // 销毁旧图表实例
+    // Destroy old chart instance
     if (modelChart) {
       modelChart.dispose();
     }
@@ -807,8 +807,8 @@ const initModelChart = () => {
           const count = counts[dataIndex];
           const percentage = percentages[dataIndex];
           return `<div style="font-weight:bold;margin-bottom:5px">${modelName}</div>
-                  使用次数: <span style="color:#409EFF">${count}</span><br/>
-                  占比: <span style="color:#409EFF">${percentage.toFixed(2)}%</span>`;
+                  Usage: <span style="color:#409EFF">${count}</span><br/>
+                  Percentage: <span style="color:#409EFF">${percentage.toFixed(2)}%</span>`;
         }
       },
       grid: {
@@ -884,14 +884,14 @@ const initModelChart = () => {
     modelChart.setOption(option);
     console.log('[initModelChart] Chart option set successfully');
 
-    // 强制重绘
+    // Force redraw
     modelChart.resize();
   } catch (error) {
     console.error('[initModelChart] Error initializing chart:', error);
   }
 };
 
-// 初始化Token消耗趋势图
+// Initialize Token Usage Trend chart
 const initTokenChart = () => {
   console.log('[initTokenChart] Starting initialization');
 
@@ -913,7 +913,7 @@ const initTokenChart = () => {
   console.log('[initTokenChart] Model usage details:', analyticsData.value.model_usage_details);
 
   try {
-    // 销毁旧图表实例
+    // Destroy old chart instance
     if (tokenChart) {
       tokenChart.dispose();
     }
@@ -921,7 +921,7 @@ const initTokenChart = () => {
     tokenChart = echarts.init(tokenChartRef.value);
     console.log('[initTokenChart] ECharts instance created');
 
-    // 按日期聚合Token消耗（除以 100 进行单位转换）
+    // Aggregate token usage by date (divide by 100 for unit conversion)
     const tokenByDate = new Map<string, number>();
     analyticsData.value.model_usage_details.forEach(entry => {
       const current = tokenByDate.get(entry.date) || 0;
@@ -931,7 +931,7 @@ const initTokenChart = () => {
     const dates = Array.from(tokenByDate.keys()).sort();
     const tokens = dates.map(date => {
       const value = tokenByDate.get(date) || 0;
-      return Math.round(value * 10) / 10; // 保留 1 位小数
+      return Math.round(value * 10) / 10; // Keep 1 decimal place
     });
 
     console.log('[initTokenChart] Token chart data (converted):', { dates, tokens });
@@ -1041,14 +1041,14 @@ const initTokenChart = () => {
     tokenChart.setOption(option);
     console.log('[initTokenChart] Chart option set successfully');
 
-    // 强制重绘
+    // Force redraw
     tokenChart.resize();
   } catch (error) {
     console.error('[initTokenChart] Error initializing chart:', error);
   }
 };
 
-// 初始化按语言补全统计图
+// Initialize Completions by Language chart
 const initLanguageChart = () => {
   if (!languageChartRef.value || !analyticsData.value?.completions_by_language?.length) {
     return;
@@ -1088,7 +1088,7 @@ const initLanguageChart = () => {
       },
       yAxis: {
         type: 'value',
-        name: '接受次数',
+        name: 'Acceptances',
         axisLabel: { color: '#909399' }
       },
       series: [{
@@ -1111,7 +1111,7 @@ const initLanguageChart = () => {
   }
 };
 
-// 初始化按模型Chat统计图
+// Initialize Chat by Model chart
 const initChatModelChart = () => {
   if (!chatModelChartRef.value || !analyticsData.value?.chats_by_model?.length) {
     return;
@@ -1174,7 +1174,7 @@ const initChatModelChart = () => {
   }
 };
 
-// 初始化每日补全趋势图
+// Initialize Daily Completions Trend chart
 const initCompletionsByDayChart = () => {
   if (!completionsByDayChartRef.value || !analyticsData.value?.completions_by_day?.length) {
     return;
@@ -1198,7 +1198,7 @@ const initCompletionsByDayChart = () => {
         axisPointer: { type: 'cross' }
       },
       legend: {
-        data: ['接受', '拒绝'],
+        data: ['Accept', 'Reject'],
         top: 0
       },
       grid: {
@@ -1219,14 +1219,14 @@ const initCompletionsByDayChart = () => {
       },
       series: [
         {
-          name: '接受',
+          name: 'Accept',
           type: 'bar',
           stack: 'total',
           data: acceptances,
           itemStyle: { color: '#67c23a' }
         },
         {
-          name: '拒绝',
+          name: 'Reject',
           type: 'bar',
           stack: 'total',
           data: rejections,
@@ -1242,7 +1242,7 @@ const initCompletionsByDayChart = () => {
   }
 };
 
-// 初始化每日Chat趋势图
+// Initialize Daily Chat Trend chart
 const initChatsByDayChart = () => {
   if (!chatsByDayChartRef.value || !analyticsData.value?.chats_by_day?.length) {
     return;
@@ -1307,7 +1307,7 @@ const initChatsByDayChart = () => {
   }
 };
 
-// 销毁所有图表
+// Destroy all charts
 const destroyCharts = () => {
   if (dailyChart) {
     dailyChart.dispose();
@@ -1343,18 +1343,18 @@ const destroyCharts = () => {
   }
 };
 
-// 格式化数字
+// Format number
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
     return (num / 1000000).toFixed(1) + 'M';
   } else if (num >= 1000) {
     return (num / 1000).toFixed(1) + 'K';
   }
-  // 保留 1 位小数
+  // Keep 1 decimal place
   return num.toFixed(1);
 };
 
-// 格式化字节数
+// Format bytes
 const formatBytes = (bytes: number): string => {
   if (bytes >= 1073741824) {
     return (bytes / 1073741824).toFixed(1) + ' GB';
@@ -1366,7 +1366,7 @@ const formatBytes = (bytes: number): string => {
   return bytes + ' B';
 };
 
-// 格式化模型名称
+// Format model name
 const formatModelName = (name: string): string => {
   if (name.length > 15) {
     return name.substring(0, 12) + '...';
@@ -1374,9 +1374,9 @@ const formatModelName = (name: string): string => {
   return name;
 };
 
-// 格式化工具名称
-const formatToolName = (name: string): string => {
-  // 移除常见的长前缀
+// Format tool name
+  const formatToolName = (name: string): string => {
+    // Remove common long prefixes
   const cleanName = name.replace(/^mcp\d+_/, '').replace(/_exa$/, '');
   if (cleanName.length > 15) {
     return cleanName.substring(0, 12) + '...';
@@ -1384,12 +1384,12 @@ const formatToolName = (name: string): string => {
   return cleanName;
 };
 
-// 刷新数据
+// Refresh data
 const handleRefresh = () => {
   loadAnalytics();
 };
 
-// 关闭对话框
+// Close dialog
 const handleClose = () => {
   visible.value = false;
 };
@@ -1459,7 +1459,7 @@ const handleClose = () => {
   }
 }
 
-/* 渐变背景色 */
+/* Gradient background colors */
 .blue-gradient {
   background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
 }
@@ -1525,7 +1525,7 @@ const handleClose = () => {
   }
 }
 
-/* ===== 新增样式 ===== */
+/* ===== New Styles ===== */
 
 .section-title {
   display: flex;
@@ -1539,7 +1539,7 @@ const handleClose = () => {
   border-bottom: 2px solid #409EFF;
 }
 
-/* AI 贡献统计 */
+/* AI Contribution Stats */
 .ai-contribution-section {
   margin-bottom: 24px;
   padding: 20px;
@@ -1645,7 +1645,7 @@ const handleClose = () => {
   color: #606266;
 }
 
-/* 补全统计和 Chat 统计 */
+/* Completion Stats and Chat Stats */
 .completion-stats-section,
 .chat-stats-section {
   margin-bottom: 24px;
