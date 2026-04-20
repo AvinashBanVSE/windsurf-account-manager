@@ -92,7 +92,7 @@
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-name">Fast Context</span>
-            <span class="setting-desc">启用快速上下文功能</span>
+            <span class="setting-desc">Enable fast context functionality</span>
           </div>
           <el-switch v-model="settings.enableFastContext" @change="handleSettingChange" />
         </div>
