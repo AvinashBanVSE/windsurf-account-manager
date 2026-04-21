@@ -14,33 +14,33 @@
           <el-icon><Trophy /></el-icon>
         </div>
         <div class="header-text">
-          <h3>批量更换订阅</h3>
-          <p>并发执行，快速更换多个账号的订阅计划</p>
+          <h3>Batch Update Subscription</h3>
+          <p>Execute concurrently to quickly change the subscription plans of multiple accounts</p>
         </div>
       </div>
     </template>
 
     <div class="batch-plan-content">
-      <!-- 选中账号信息 -->
+      <!-- Selected account information -->
       <div class="selected-accounts-card">
         <div class="card-icon">
           <el-icon><User /></el-icon>
         </div>
         <div class="card-info">
-          <span class="label">已选择账号</span>
+          <span class=\"label\">Selected Accounts</span>
           <span class="count">{{ selectedAccountIds.length }}</span>
         </div>
         <div class="card-badge" v-if="loopMode">
           <el-icon><Refresh /></el-icon>
-          循环模式
+          Loop Mode
         </div>
       </div>
       
-      <!-- 计划选择 -->
+      <!-- Plan selection -->
       <div class="plan-selection">
         <div class="section-header">
           <el-icon><Medal /></el-icon>
-          <span>选择目标计划</span>
+          <span>Select Target Plan</span>
         </div>
         <div class="plan-cards">
           <div 
@@ -64,33 +64,33 @@
         </div>
       </div>
       
-      <!-- 付款周期选择 -->
+      <!-- Payment period selection -->
       <div class="payment-period-section">
         <div class="period-label">
           <el-icon><Calendar /></el-icon>
-          <span>付款周期</span>
+          <span>Payment Period</span>
         </div>
         <el-radio-group v-model="paymentPeriod" :disabled="isRunning" size="small">
           <el-radio-button :value="1">
             <el-icon><Clock /></el-icon>
-            月付
+            Monthly
           </el-radio-button>
           <el-radio-button :value="2">
             <el-icon><Calendar /></el-icon>
-            年付
+            Yearly
           </el-radio-button>
         </el-radio-group>
       </div>
 
-      <!-- 循环模式设置 -->
+      <!-- Loop mode settings -->
       <div class="loop-settings" :class="{ active: loopMode }">
         <div class="loop-content">
           <div class="loop-icon">
             <el-icon><Refresh /></el-icon>
           </div>
           <div class="loop-info">
-            <div class="loop-title">循环更换模式</div>
-            <div class="loop-desc">每个账号独立循环执行，连续3次失败后自动停止</div>
+            <div class=\"loop-title\">Loop Mode</div>
+            <div class=\"loop-desc\">Each account executes in an independent loop, stopping automatically after 3 consecutive failures</div>
           </div>
         </div>
         <el-switch 

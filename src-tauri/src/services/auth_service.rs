@@ -96,13 +96,13 @@ pub struct AuthService {
 
 impl AuthService {
     pub fn new() -> Self {
-        // 使用专门用于 googleapis 的 HTTP 客户端（支持代理）
+        // Use HTTP client specifically for googleapis (supports proxy)
         Self {
             client: super::get_google_api_client(),
         }
     }
     
-    /// 重新获取客户端（用于代理配置更新后）
+    /// Re-fetch client (used after proxy configuration update)
     pub fn refresh_client(&mut self) {
         self.client = super::get_google_api_client();
     }
@@ -145,7 +145,7 @@ impl AuthService {
                 resp
             }
             Err(e) => {
-                // 检查是否是超时错误
+                // Check if it's a timeout error
                 if e.is_timeout() || e.is_connect() {
                     super::report_timeout_error();
                 } else {
@@ -158,15 +158,15 @@ impl AuthService {
         if !response.status().is_success() {
             let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
             
-            // 解析Firebase错误并提供友好提示
+            // Parse Firebase errors and provide friendly prompts
             if error_text.contains("TOO_MANY_ATTEMPTS_TRY_LATER") {
-                return Err(AppError::AuthFailed("登录尝试次数过多，请15-30分钟后再试".to_string()));
+                return Err(AppError::AuthFailed("Too many login attempts, please try again in 15-30 minutes".to_string()));
             } else if error_text.contains("INVALID_LOGIN_CREDENTIALS") {
-                return Err(AppError::AuthFailed("邮箱或密码错误，请检查后重试".to_string()));
+                return Err(AppError::AuthFailed("Incorrect email or password, please check and try again".to_string()));
             } else if error_text.contains("EMAIL_NOT_FOUND") {
-                return Err(AppError::AuthFailed("该邮箱未注册".to_string()));
+                return Err(AppError::AuthFailed("This email is not registered".to_string()));
             } else if error_text.contains("USER_DISABLED") {
-                return Err(AppError::AuthFailed("该账号已被禁用".to_string()));
+                return Err(AppError::AuthFailed("This account has been disabled".to_string()));
             }
             
             return Err(AppError::AuthFailed(error_text));
@@ -174,7 +174,7 @@ impl AuthService {
 
         let sign_in_response: SignInResponse = response.json().await?;
         
-        // 计算Token过期时间
+        // Calculate token expiration time
         let expires_in_secs: i64 = sign_in_response.expires_in.parse()
             .unwrap_or(3600);
         let expires_at = Utc::now() + Duration::seconds(expires_in_secs);
@@ -220,7 +220,7 @@ impl AuthService {
                 resp
             }
             Err(e) => {
-                // 检查是否是超时错误
+                // Check if it's a timeout error
                 if e.is_timeout() || e.is_connect() {
                     super::report_timeout_error();
                 } else {
@@ -233,7 +233,7 @@ impl AuthService {
         if !response.status().is_success() {
             let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
             
-            // 如果refresh token失败，返回特定错误
+            // If refresh token fails, return specific error
             if error_text.contains("TOKEN_EXPIRED") || error_text.contains("INVALID_REFRESH_TOKEN") {
                 return Err(AppError::TokenExpired);
             }
@@ -243,7 +243,7 @@ impl AuthService {
 
         let refresh_response: RefreshTokenResponse = response.json().await?;
         
-        // 计算Token过期时间
+        // Calculate token expiration time
         let expires_in_secs: i64 = refresh_response.expires_in.parse()
             .unwrap_or(3600);
         let expires_at = Utc::now() + Duration::seconds(expires_in_secs);
@@ -276,7 +276,7 @@ impl AuthService {
                 resp
             }
             Err(e) => {
-                // 检查是否是超时错误
+                // Check if it's a timeout error
                 if e.is_timeout() || e.is_connect() {
                     super::report_timeout_error();
                 } else {
@@ -309,7 +309,7 @@ impl AuthService {
     }
 
     pub fn should_refresh_token(expires_at: &DateTime<Utc>) -> bool {
-        // 如果Token在5分钟内过期，则刷新
+        // If token expires within 5 minutes, refresh it
         let buffer = Duration::minutes(5);
         Utc::now() + buffer >= *expires_at
     }

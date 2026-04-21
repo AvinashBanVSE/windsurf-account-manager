@@ -752,7 +752,7 @@ watch(() => uiStore.showAccountInfoDialog, (show) => {
   visible.value = show;
   if (show && uiStore.currentViewingAccountId) {
     loadAccountInfo();
-    // 延迟加载用户详情，确保账户信息先加载
+    // Delay loading user details to ensure account info is loaded first
     setTimeout(() => {
       loadUserDetails();
     }, 500);
@@ -782,21 +782,21 @@ async function loadAccountInfo() {
     if (result.success) {
       accountInfo.value = result;
     } else {
-      error.value = result.error || '获取失败';
+      error.value = result.error || 'Failed to fetch';
     }
   } catch (err: any) {
     error.value = err.toString();
-    ElMessage.error(`获取账号信息失败: ${err}`);
+    ElMessage.error(`Failed to get account info: ${err}`);
   } finally {
     loading.value = false;
   }
 }
 
-// 获取用户详细信息
+// Get user details
 async function loadUserDetails() {
   if (!uiStore.currentViewingAccountId) return;
   
-  console.log('开始获取用户详情, ID:', uiStore.currentViewingAccountId);
+  console.log('Start getting user details, ID:', uiStore.currentViewingAccountId);
   
   loadingUserDetails.value = true;
   userDetails.value = null;
@@ -804,24 +804,24 @@ async function loadUserDetails() {
   
   try {
     const result = await apiService.getCurrentUserParsed(uiStore.currentViewingAccountId);
-    console.log('API返回结果:', result);
+    console.log('API returned result:', result);
     
     if (result && result.success && result.data) {
       userDetails.value = result.data;
       parsedData.value = result.parsed_data;
-      console.log('用户详情已设置:', userDetails.value);
+      console.log('User details have been set:', userDetails.value);
     } else {
-      console.warn('API返回失败或没有数据:', result);
-      // 显示错误信息
+      console.warn('API return failed or no data:', result);
+      // Show error message
       if (result && result.error) {
-        ElMessage.warning(`获取用户详情失败: ${result.error}`);
+        ElMessage.warning(`Failed to get user details: ${result.error}`);
       } else {
-        console.log('未获取到用户详情数据');
+        console.log('No user details data obtained');
       }
     }
   } catch (err: any) {
-    console.error('获取用户详情失败:', err);
-    ElMessage.error(`获取用户详情失败: ${err.message || err}`);
+    console.error('Failed to get user details:', err);
+    ElMessage.error(`Failed to get user details: ${err.message || err}`);
   } finally {
     loadingUserDetails.value = false;
   }
@@ -843,13 +843,13 @@ function formatDate(date: string | null | undefined) {
 }
 
 
-// 格式化日期时间（从时间戳）
+// Format date and time (from timestamp)
 function formatDateTime(timestamp: number | undefined | null) {
   if (!timestamp) return 'N/A';
   return dayjs(timestamp * 1000).format('YYYY-MM-DD HH:mm:ss');
 }
 
-// 格式化时间戳为日期（计费周期等使用）
+// Format timestamp to date (for billing cycle, etc.)
 function formatTimestamp(timestamp: number | undefined | null) {
   if (!timestamp) return 'N/A';
   return dayjs(timestamp * 1000).format('YYYY-MM-DD HH:mm');
@@ -883,7 +883,7 @@ function getExpireCountdown(timestamp: number | undefined | null): string {
   }
 }
 
-// 获取到期状态样式类
+// Get expiry status style class
 function getExpireClass(timestamp: number | undefined | null): string {
   if (!timestamp) return '';
   const expireDate = dayjs(timestamp * 1000);
@@ -901,7 +901,7 @@ function getExpireClass(timestamp: number | undefined | null): string {
   }
 }
 
-// 获取配额使用状态样式类
+// Get quota usage status style class
 function getQuotaClass(percentage: number): string {
   if (percentage >= 90) {
     return 'critical';
@@ -912,7 +912,7 @@ function getQuotaClass(percentage: number): string {
   }
 }
 
-// 格式化大数字（转换为K/M/B格式）
+// Format large numbers (to K/M/B)
 function formatLargeNumber(num: number | undefined | null) {
   if (!num) return '0';
   if (num >= 1000000000) return `${(num / 1000000000).toFixed(1)}B`;

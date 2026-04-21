@@ -30,7 +30,7 @@
     </div>
     
     <div v-if="tags.length === 0" class="no-tags-hint">
-      暂无标签，请先添加标签
+      No tags yet, please add tags first
     </div>
   </div>
 </template>
@@ -49,7 +49,7 @@ const emit = defineEmits<{
   'update:tagColors': [colors: TagWithColor[]];
 }>();
 
-// 预定义颜色
+// Predefined colors
 const predefineColors = [
   '#ff4500',
   '#ff8c00',
@@ -73,10 +73,10 @@ const predefineColors = [
   'rgba(144, 238, 144, 0.8)',
 ];
 
-// 标签颜色映射
+// Tag color mapping
 const tagColorMap = reactive<Record<string, string>>({});
 
-// 初始化标签颜色映射
+// Initialize tag color mapping
 function initTagColorMap() {
   props.tags.forEach(tag => {
     const existing = props.tagColors.find(tc => tc.name === tag);
@@ -88,18 +88,18 @@ function initTagColorMap() {
   });
 }
 
-// 监听 tags 和 tagColors 变化
+// Watch tags and tagColors changes
 watch([() => props.tags, () => props.tagColors], () => {
   initTagColorMap();
 }, { immediate: true, deep: true });
 
-// 获取标签颜色
+// Get tag color
 function getTagColor(tagName: string): string | null {
   const tagWithColor = props.tagColors.find(t => t.name === tagName);
   return tagWithColor?.color || null;
 }
 
-// 获取标签预览样式
+// Get tag preview style
 function getTagPreviewStyle(tagName: string): Record<string, string> {
   const color = getTagColor(tagName);
   if (!color) {
@@ -110,7 +110,7 @@ function getTagPreviewStyle(tagName: string): Record<string, string> {
     };
   }
   
-  // 解析颜色（支持hex和rgba）
+  // Parse color (supports hex and rgba)
   let r = 0, g = 0, b = 0, a = 1;
   
   if (color.startsWith('rgba')) {
@@ -143,7 +143,7 @@ function getTagPreviewStyle(tagName: string): Record<string, string> {
   };
 }
 
-// 处理颜色变化
+// Handle color change
 function handleColorChange(tagName: string, color: string | null) {
   if (!color) {
     removeTagColor(tagName);
@@ -162,20 +162,20 @@ function handleColorChange(tagName: string, color: string | null) {
   emit('update:tagColors', newColors);
 }
 
-// 移除标签颜色
+// Remove tag color
 function removeTagColor(tagName: string) {
   const newColors = props.tagColors.filter(t => t.name !== tagName);
   tagColorMap[tagName] = '';
   emit('update:tagColors', newColors);
 }
 
-// 当标签列表变化时，清理已删除标签的颜色
+// Clean up colors for deleted tags when tag list changes
 watch(() => props.tags, (newTags) => {
   const validColors = props.tagColors.filter(tc => newTags.includes(tc.name));
   if (validColors.length !== props.tagColors.length) {
     emit('update:tagColors', validColors);
   }
-  // 清理 tagColorMap 中不存在的标签
+  // Clean up tags in tagColorMap that no longer exist
   Object.keys(tagColorMap).forEach(key => {
     if (!newTags.includes(key)) {
       delete tagColorMap[key];
@@ -237,7 +237,7 @@ watch(() => props.tags, (newTags) => {
   padding: 20px 0;
 }
 
-/* 颜色选择器样式调整 */
+/* Color picker style adjustment */
 :deep(.el-color-picker__trigger) {
   width: 32px;
   height: 32px;
@@ -252,7 +252,7 @@ watch(() => props.tags, (newTags) => {
   border-radius: 4px;
 }
 
-/* 深色模式 */
+/* Dark mode */
 :root.dark .tag-item {
   background: #2a2a2a;
 }

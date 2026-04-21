@@ -8,11 +8,11 @@
     class="team-management-dialog"
   >
     <div v-loading="loading" class="team-container">
-      <!-- 标签页 -->
+      <!-- Tabs -->
       <el-tabs v-model="activeTab" type="border-card">
-        <!-- 团队成员列表 -->
+        <!-- Team members list -->
         <el-tab-pane label="Team Members" name="members">
-          <!-- 邀请链接区域 -->
+          <!-- Invite link area -->
           <div v-if="teamInviteId" class="invite-link-section">
             <div class="invite-link-label">
               <el-icon><Link /></el-icon>
@@ -121,7 +121,7 @@
           </div>
         </el-tab-pane>
         
-        <!-- 待处理邀请 -->
+        <!-- Pending invites -->
         <el-tab-pane label="Pending Invites" name="invitations">
           <div class="tab-header">
             <el-button size="small" @click="loadPendingInvitations">
@@ -161,7 +161,7 @@
           </div>
         </el-tab-pane>
         
-        <!-- 我的邀请（普通用户） -->
+        <!-- My invites (regular user) -->
         <el-tab-pane label="My Invites" name="my-invitation">
           <div class="my-invitation-section">
             <div v-if="myInvitation" class="invitation-card">
@@ -189,13 +189,13 @@
           </div>
         </el-tab-pane>
 
-        <!-- 申请加入团队 -->
+        <!-- Apply to join team -->
         <el-tab-pane label="Join Team" name="join-team">
           <div class="join-team-section">
             <el-alert
               title="Join team via invite link"
               type="info"
-              description="输入团队管理员分享的邀请ID，申请加入团队。申请提交后需等待管理员审批。"
+              description="Enter the invite ID shared by the team administrator to apply to join the team. Application requires admin approval."
               :closable="false"
               show-icon
               style="margin-bottom: 20px"
@@ -217,7 +217,7 @@
           </div>
         </el-tab-pane>
 
-        <!-- 待审批申请（管理员） -->
+        <!-- Pending applications (admin) -->
         <el-tab-pane label="Pending Approval" name="pending-requests">
           <div class="tab-header">
             <el-button size="small" @click="loadTeamMembers">
@@ -253,7 +253,7 @@
       </el-tabs>
     </div>
     
-    <!-- 邀请成员对话框 -->
+    <!-- Invite member dialog -->
     <el-dialog
       v-model="showInviteDialog"
       title="Invite Member"
@@ -286,11 +286,11 @@
           Add More
         </el-button>
         
-        <!-- 自动加入开关 -->
+        <!-- Auto join switch -->
         <div class="auto-join-section">
           <el-switch v-model="autoJoinEnabled" />
           <span class="auto-join-label">Auto Join</span>
-          <el-tooltip content="邀请后，如果成员邮箱在账号管理器中，将自动接受邀请加入团队" placement="top">
+          <el-tooltip content="After invitation, if member email is in account manager, automatically accept invitation to join team" placement="top">
             <el-icon class="help-icon"><QuestionFilled /></el-icon>
           </el-tooltip>
         </div>
@@ -303,7 +303,7 @@
       </template>
     </el-dialog>
     
-    <!-- 转让订阅对话框 -->
+    <!-- Transfer subscription dialog -->
     <el-dialog
       v-model="showTransferDialog"
       title="Transfer Subscription"
@@ -314,7 +314,7 @@
       <el-alert
         title="Transfer Subscription Info"
         type="warning"
-        description="转让后，您将被移出团队，订阅将转移给目标用户。此操作不可撤销！"
+        description="After transfer, you will be removed from the team and subscription will be transferred to the target user. This action cannot be undone!"
         :closable="false"
         show-icon
         style="margin-bottom: 20px"
@@ -342,7 +342,7 @@
         </el-form-item>
       </el-form>
       
-      <!-- 转让进度显示 -->
+      <!-- Transfer progress display -->
       <div v-if="transferring" class="transfer-progress">
         <el-steps :active="transferStep" finish-status="success" simple>
           <el-step title="Disable Access" />
@@ -361,7 +361,7 @@
       </template>
     </el-dialog>
 
-    <!-- 成员详情对话框 -->
+    <!-- Member details dialog -->
     <el-dialog
       v-model="showMemberDetail"
       :title="selectedMember?.name || 'Member Details'"
@@ -371,7 +371,7 @@
       class="member-detail-dialog"
     >
       <div v-if="selectedMember" class="member-detail-content">
-        <!-- 用户基本信息卡片 -->
+        <!-- User basic info card -->
         <div class="info-card">
           <div class="info-header">
             <el-avatar :size="48" class="member-avatar">
@@ -395,7 +395,7 @@
               class="api-key-input"
             >
               <template #append>
-                <el-tooltip content="复制" placement="top">
+                <el-tooltip content="Copy" placement="top">
                   <el-button :icon="CopyDocument" @click="copyApiKey" />
                 </el-tooltip>
               </template>
@@ -461,10 +461,10 @@ const dialogVisible = computed({
 const loading = ref(false)
 const activeTab = ref('members')
 
-// 团队邀请ID
+// Team invite ID
 const teamInviteId = ref('')
 
-// 团队成员数据
+// Team member data
 interface TeamMember {
   api_key: string
   name: string
@@ -477,7 +477,7 @@ interface TeamMember {
 }
 const members = ref<TeamMember[]>([])
 
-// 成员详情对话框
+// Member details dialog
 const showMemberDetail = ref(false)
 const selectedMember = ref<TeamMember | null>(null)
 const memberDetailLoading = ref(false)
@@ -486,7 +486,7 @@ const memberDetailForm = ref({
   disableAccess: false
 })
 
-// 待处理邀请
+// Pending invites
 interface PendingInvitation {
   id: string
   name: string
@@ -495,7 +495,7 @@ interface PendingInvitation {
 }
 const pendingInvitations = ref<PendingInvitation[]>([])
 
-// 我的邀请
+// My invites
 interface MyInvitation {
   approval_id: string
   team_name?: string
@@ -503,27 +503,27 @@ interface MyInvitation {
 }
 const myInvitation = ref<MyInvitation | null>(null)
 
-// 邀请表单
+// Invite form
 const showInviteDialog = ref(false)
 const inviting = ref(false)
 const inviteForm = ref({
   users: [{ name: '', email: '' }]
 })
-const autoJoinEnabled = ref(true)  // 自动加入开关，默认开启
+const autoJoinEnabled = ref(true)  // Auto-join switch, enabled by default
 
-// 申请加入团队
+// Apply to join team
 const joining = ref(false)
 const joinForm = ref({
   inviteId: ''
 })
 
-// 待审批成员（team_status = PENDING）
+// Pending members (team_status = PENDING)
 const pendingMembers = ref<TeamMember[]>([])
 
-// 批量重置积分状态
+// Batch reset credits status
 const batchResettingCredits = ref(false)
 
-// 转让订阅相关
+// Subscription transfer related
 const showTransferDialog = ref(false)
 const transferring = ref(false)
 const transferStep = ref(0)
@@ -533,15 +533,15 @@ const transferForm = ref({
   name: ''
 })
 
-// 当前账号邮箱（用于排除自己）
+// Current account email (for excluding self)
 const currentAccountEmail = ref('')
 
-// 计算其他成员列表（排除自己）
+// Compute list of other members (excluding self)
 const otherMembers = computed(() => {
   return members.value.filter(m => m.email?.toLowerCase() !== currentAccountEmail.value?.toLowerCase())
 })
 
-// 加载团队成员
+// Load team members
 async function loadTeamMembers() {
   if (!props.accountId) return
   
@@ -555,9 +555,9 @@ async function loadTeamMembers() {
     if (result.success) {
       const data = result.data || {}
       
-      // subMesssage_1 是 User[] 数组（可能是单个对象）
+      // subMesssage_1 is a User[] array (can be a single object)
       let users = data.subMesssage_1 || []
-      // 如果是单个对象，转换为数组
+      // If it's a single object, convert to an array
       if (users && !Array.isArray(users)) {
         users = [users]
       }
@@ -569,11 +569,11 @@ async function loadTeamMembers() {
       // subMesssage_4 是 UserCascadeDetails，可能是数组或单个对象
       const cascadeDetails = data.subMesssage_4 || []
       
-      // 构建成员列表
+      // Build member list
       const approvedList: TeamMember[] = []
       const pendingList: TeamMember[] = []
       
-      // 遍历用户数组
+      // Iterate through user array
       if (Array.isArray(users) && users.length > 0) {
         for (const user of users) {
           const apiKey = user.string_1 || ''
@@ -585,7 +585,7 @@ async function loadTeamMembers() {
           const signUpTime = user.subMesssage_4?.int_1 || 0
           // last_update_time: field 26 是 Timestamp
           const lastUpdateTime = user.subMesssage_26?.int_1 || 0
-          // disable_codeium: field 16，bool 类型，解析为 int_16
+          // disable_codeium: field 16, bool type, parsed as int_16
           const disableCodeium = user.int_16 === 1
           
           // 查找角色
@@ -600,13 +600,13 @@ async function loadTeamMembers() {
           // 查找使用量（通过 firebase_id 关联）
           let promptsUsed = 0
           if (Array.isArray(cascadeDetails)) {
-            // 如果是数组
+            // If it's an array
             const usageInfo = cascadeDetails.find((c: any) => c.string_1 === firebaseId)
             if (usageInfo) {
               promptsUsed = usageInfo.int_2 || 0
             }
           } else if (cascadeDetails && typeof cascadeDetails === 'object') {
-            // 如果是单个对象
+            // If it's a single object
             if (cascadeDetails.string_1 === firebaseId) {
               promptsUsed = cascadeDetails.int_2 || 0
             }
@@ -653,7 +653,7 @@ async function loadTeamMembers() {
   }
 }
 
-// 移除成员
+// Remove member
 async function removeMember(member: TeamMember) {
   loading.value = true
   try {
@@ -666,7 +666,7 @@ async function removeMember(member: TeamMember) {
       ElMessage.success('Member removed')
       loadTeamMembers()
     } else {
-      ElMessage.error(result.error || '移除成员失败')
+      ElMessage.error(result.error || 'Failed to remove member')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -734,15 +734,15 @@ function formatLastUsed(timestamp?: number): string {
   return new Date(time).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
 }
 
-// ==================== update_codeium_access 错误映射 ====================
+// ==================== update_codeium_access Error Mapping ====================
 
 /**
- * 后端 Connect Protocol 错误码 → 中文友好提示。
+ * Backend Connect Protocol error codes to user-friendly messages.
  *
- * 这些 code 来自 `update_codeium_access` 命令 400 响应 `parsed_error.code`，
+ * These codes come from the 400 response `parsed_error.code` of the `update_codeium_access` command,
  * 由 `windsurf_service.rs::update_codeium_access` 在 400 分支解析而来。
  *
- * 典型场景：
+ * Typical scenarios:
  * - `failed_precondition`: Devin 套餐门槛（仅 Teams-v2 支持 Windsurf 访问管理）
  * - `permission_denied`:   当前账号非团队管理员
  * - `unauthenticated`:     主认证 token 失效
@@ -755,7 +755,7 @@ const UPDATE_ACCESS_ERROR_MESSAGES: Record<string, string> = {
   not_found: 'Target member not found, may have been removed',
 }
 
-/** 从后端失败返回体中提取一条友好中文错误消息，兜底到服务端原文或通用文案 */
+/** Extracts a friendly error message from the backend failure response, falling back to the server's original message or a generic one */
 function extractUpdateAccessErrorMessage(result: any): string {
   const code = result?.parsed_error?.code as string | undefined
   const serverMsg = result?.parsed_error?.message as string | undefined
@@ -894,12 +894,12 @@ async function rejoinMember(member: TeamMember) {
     })
     
     if (!inviteResult.success) {
-      ElMessage.error(inviteResult.error || '重新邀请失败')
+      ElMessage.error(inviteResult.error || 'Failed to re-invite')
       loadTeamMembers()
       return
     }
     
-    // Step 3: 自动接受邀请（如果邮箱在管理器中）
+    // Step 3: Auto-accept invitation (if email is in the manager)
     const autoJoinResults = await autoAcceptInvitations([member.email])
     const joined = autoJoinResults.some(r => r.success)
     
@@ -960,7 +960,7 @@ async function batchResetMemberCredits() {
           continue
         }
         
-        // Step 2: 重新邀请
+// Step 2: Re-invite
         const inviteResult = await invoke<any>('invite_team_members', {
           id: props.accountId,
           users: [{ name: member.name, email: member.email }]
@@ -972,7 +972,7 @@ async function batchResetMemberCredits() {
           continue
         }
         
-        // Step 3: 自动接受邀请
+        // Step 3: Auto-accept invitation
         const autoJoinResults = await autoAcceptInvitations([member.email])
         const joined = autoJoinResults.some(r => r.success)
         
@@ -983,7 +983,7 @@ async function batchResetMemberCredits() {
           successCount++
         }
       } catch (error) {
-        console.error(`处理成员 ${member.name} 时出错:`, error)
+        console.error(`Error processing member ${member.name}:`, error)
         failCount++
       }
     }
@@ -1099,7 +1099,7 @@ async function loadMyInvitation() {
   }
 }
 
-// 接受邀请
+// Accept invitation
 async function acceptInvitation() {
   if (!myInvitation.value) return
   
@@ -1199,7 +1199,7 @@ async function submitInvite() {
       loadPendingInvitations()
       loadTeamMembers()
     } else {
-      ElMessage.error(result.error || '邀请失败')
+      ElMessage.error(result.error || 'Failed to invite')
     }
   } catch (error: any) {
     ElMessage.error(error.toString())
@@ -1217,7 +1217,7 @@ async function autoAcceptInvitations(emails: string[]): Promise<{ email: string;
     const accounts = await invoke<any[]>('get_all_accounts')
     
     for (const email of emails) {
-      // 查找邮箱匹配的账号（忽略大小写）
+      // Find account with matching email (case-insensitive)
       const matchedAccount = accounts.find((acc: any) => 
         acc.email?.toLowerCase() === email.toLowerCase()
       )
@@ -1229,7 +1229,7 @@ async function autoAcceptInvitations(emails: string[]): Promise<{ email: string;
           // 使用该账号接受邀请
           const acceptResult = await invoke<any>('accept_invitation', {
             id: matchedAccount.id,
-            approvalId: '' // 空字符串表示接受最新的邀请
+            approvalId: '' // Empty string means accept the latest invitation
           })
           
           results.push({ email, success: acceptResult.success === true })
@@ -1253,11 +1253,11 @@ async function autoAcceptInvitations(emails: string[]): Promise<{ email: string;
   return results
 }
 
-// 格式化时间
+// Format time
 function formatTime(timestamp?: number): string {
   if (!timestamp) return '-'
   const date = new Date(timestamp * 1000)
-  return date.toLocaleString('zh-CN')
+  return date.toLocaleString('en-US')
 }
 
 // 申请加入团队
@@ -1338,7 +1338,7 @@ async function executeTransfer() {
     const targetEmail = transferForm.value.email.trim()
     const targetName = transferForm.value.name.trim() || targetEmail.split('@')[0]
     
-    // Step 1: 禁用自己的访问权限
+    // Step 1: Disable your own access permissions
     transferStatus.value = 'Disabling your access...'
     transferStep.value = 0
     
@@ -1355,14 +1355,14 @@ async function executeTransfer() {
     // 查找目标用户是否已在团队中
     const existingMember = members.value.find(m => m.email?.toLowerCase() === targetEmail.toLowerCase())
     
-    // Step 2: 邀请用户加入团队
+    // Step 2: Invite user to the team
     transferStatus.value = 'Inviting user...'
     transferStep.value = 1
     
     let memberApiKey = existingMember?.api_key
     
     if (!existingMember) {
-      // 用户不在团队中，发送邀请
+      // User is not in the team, send invitation
       const inviteResult = await invoke<any>('invite_team_members', {
         id: props.accountId,
         users: [{ name: targetName, email: targetEmail }]
@@ -1394,7 +1394,7 @@ async function executeTransfer() {
       memberApiKey = newMember.api_key
     }
     
-    // Step 3: 赋予用户管理员权限
+    // Step 3: Grant user admin permissions
     transferStatus.value = 'Granting admin permissions...'
     transferStep.value = 2
     
@@ -1501,7 +1501,7 @@ async function copyInviteUrl() {
   }
 }
 
-// 监听对话框打开
+// Watch for dialog opening
 watch(dialogVisible, (val) => {
   if (val) {
     loadTeamInfo()
@@ -1950,6 +1950,4 @@ watch(dialogVisible, (val) => {
     margin-top: 12px;
     text-align: center;
     color: #64748b;
-    font-size: 14px;
-  }
-</style>
+    fo                

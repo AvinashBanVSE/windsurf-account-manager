@@ -7,7 +7,7 @@
     @close="handleClose"
   >
     <div class="tag-manage-container">
-      <!-- 添加新标签 -->
+      <!-- Add new tag -->
       <div class="add-tag-section">
         <el-input
           v-model="newTagName"
@@ -26,20 +26,20 @@
           </template>
           <template #append>
             <el-button :icon="Plus" @click="handleAddTag" :loading="adding">
-              添加
+Add
             </el-button>
           </template>
         </el-input>
       </div>
 
-      <!-- 标签列表 -->
+      <!-- Tag list -->
       <div class="tags-section">
         <div class="section-header">
-          <span class="section-title">全局标签 ({{ settingsStore.tags.length }})</span>
+          <span class="section-title">Global Tags ({{ settingsStore.tags.length }})</span>
         </div>
         
         <div v-if="settingsStore.tags.length === 0" class="empty-hint">
-          暂无标签，请添加新标签
+          No tags available, please add a new tag
         </div>
 
         <el-scrollbar max-height="300px">
@@ -57,7 +57,7 @@
                   {{ tag.name }}
                 </span>
                 <span class="tag-usage">
-                  使用: {{ getTagUsageCount(tag.name) }} 个账号
+                  Usage: {{ getTagUsageCount(tag.name) }} accounts
                 </span>
               </div>
               <div class="tag-actions">
@@ -87,15 +87,15 @@
         </el-scrollbar>
       </div>
 
-      <!-- 批量操作区域 -->
+      <!-- Batch operations area -->
       <div class="batch-section" v-if="selectedAccountIds.length > 0">
         <div class="section-header">
-          <span class="section-title">批量操作 (已选 {{ selectedAccountIds.length }} 个账号)</span>
+          <span class="section-title">Batch Operations ({{ selectedAccountIds.length }} accounts selected)</span>
         </div>
         
         <div class="batch-content">
           <div class="batch-row">
-            <span class="batch-label">添加标签:</span>
+            <span class="batch-label">Add tags:</span>
             <el-select
               v-model="batchAddTags"
               multiple
@@ -114,7 +114,7 @@
             </el-select>
           </div>
           <div class="batch-row">
-            <span class="batch-label">移除标签:</span>
+            <span class="batch-label">Remove tags:</span>
             <el-select
               v-model="batchRemoveTags"
               multiple
@@ -138,13 +138,13 @@
             :loading="batchUpdating"
             :disabled="batchAddTags.length === 0 && batchRemoveTags.length === 0"
           >
-            应用批量修改
+            Apply Batch Changes
           </el-button>
         </div>
       </div>
     </div>
 
-    <!-- 编辑标签对话框 -->
+    <!-- Edit tag dialog -->
     <el-dialog
       v-model="editDialogVisible"
       title="Edit Tag"
@@ -152,10 +152,10 @@
       append-to-body
     >
       <el-form :model="editForm" label-width="80px">
-        <el-form-item label="标签名称">
+        <el-form-item label="Tag Name">
           <el-input v-model="editForm.name" />
         </el-form-item>
-        <el-form-item label="标签颜色">
+        <el-form-item label="Tag Color">
           <el-color-picker
             v-model="editForm.color"
             show-alpha
@@ -164,15 +164,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button @click="editDialogVisible = false">Cancel</el-button>
         <el-button type="primary" @click="handleUpdateTag" :loading="updating">
-          保存
+          Save
         </el-button>
       </template>
     </el-dialog>
 
     <template #footer>
-      <el-button @click="handleClose">关闭</el-button>
+      <el-button @click="handleClose">Close</el-button>
     </template>
   </el-dialog>
 </template>
@@ -204,7 +204,7 @@ const visible = computed({
 
 const selectedAccountIds = computed(() => props.selectedAccountIds || []);
 
-// 预定义颜色
+// Predefined colors
 const predefineColors = [
   '#ff4500',
   '#ff8c00',
@@ -224,12 +224,12 @@ const predefineColors = [
   '#a0522d',
 ];
 
-// 添加新标签
+// Add new tag
 const newTagName = ref('');
 const newTagColor = ref('#1e90ff');
 const adding = ref(false);
 
-// 编辑标签
+// Edit tag
 const editDialogVisible = ref(false);
 const editForm = reactive({
   originalName: '',
@@ -238,44 +238,44 @@ const editForm = reactive({
 });
 const updating = ref(false);
 
-// 批量操作
+// Batch operations
 const batchAddTags = ref<string[]>([]);
 const batchRemoveTags = ref<string[]>([]);
 const batchUpdating = ref(false);
 
-// 获取选中账号
+// Get selected accounts
 const selectedAccounts = computed(() => {
   return accountsStore.accounts.filter(a => selectedAccountIds.value.includes(a.id));
 });
 
-// 可添加的标签：排除所有选中账号都已有的标签
+// Tags that can be added: exclude tags that all selected accounts already have
 const availableTagsToAdd = computed(() => {
   if (selectedAccounts.value.length === 0) return settingsStore.tags;
   
-  // 获取所有选中账号都有的标签（交集）
-  const commonTags = settingsStore.tags
-    .map(t => t.name)
-    .filter(tagName => selectedAccounts.value.every(account => account.tags.includes(tagName)));
-  
-  // 返回不在交集中的标签（即至少有一个账号没有的标签）
+// Get the intersection of tags that all selected accounts have
+   const commonTags = settingsStore.tags
+     .map(t => t.name)
+     .filter(tagName => selectedAccounts.value.every(account => account.tags.includes(tagName)));
+   
+   // Return tags that are not in the intersection (i.e., tags that at least one account does not have)
   return settingsStore.tags.filter(tag => !commonTags.includes(tag.name));
 });
 
-// 可移除的标签：只显示至少一个选中账号有的标签
+// Tags that can be removed: only show tags that at least one selected account has
 const availableTagsToRemove = computed(() => {
   if (selectedAccounts.value.length === 0) return [];
   
-  // 获取所有选中账号拥有的标签（并集）
-  const allOwnedTags = new Set<string>();
-  selectedAccounts.value.forEach(account => {
-    account.tags.forEach(tag => allOwnedTags.add(tag));
-  });
-  
-  // 只返回选中账号拥有的标签
+// Get the union of tags from all selected accounts
+   const allOwnedTags = new Set<string>();
+   selectedAccounts.value.forEach(account => {
+     account.tags.forEach(tag => allOwnedTags.add(tag));
+   });
+   
+   // Only return tags that are owned by the selected accounts
   return settingsStore.tags.filter(tag => allOwnedTags.has(tag.name));
 });
 
-// 获取标签样式
+// Get tag style
 function getTagStyle(color: string): Record<string, string> {
   if (!color) {
     return {
@@ -288,7 +288,7 @@ function getTagStyle(color: string): Record<string, string> {
   let r = 0, g = 0, b = 0, a = 1;
   let parsed = false;
   
-  // 解析 rgba 或 rgb 格式
+  // Parse rgba or rgb format
   if (color.startsWith('rgba') || color.startsWith('rgb')) {
     const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
     if (match) {
@@ -299,7 +299,7 @@ function getTagStyle(color: string): Record<string, string> {
       parsed = true;
     }
   } 
-  // 解析 HEX 格式
+  // Parse HEX format
   if (!parsed && color.startsWith('#')) {
     const hex = color.slice(1);
     if (hex.length >= 6) {
@@ -310,7 +310,7 @@ function getTagStyle(color: string): Record<string, string> {
     }
   }
   
-  // 如果解析失败，返回默认样式
+  // If parsing fails, return default style
   if (!parsed) {
     return {
       backgroundColor: '#f0f2f5',
@@ -329,21 +329,21 @@ function getTagStyle(color: string): Record<string, string> {
   };
 }
 
-// 获取标签使用次数
+// Get tag usage count
 function getTagUsageCount(tagName: string): number {
   return accountsStore.accounts.filter(a => a.tags.includes(tagName)).length;
 }
 
-// 添加标签
+// Add tag
 async function handleAddTag() {
   const name = newTagName.value.trim();
   if (!name) {
-    ElMessage.warning('请输入标签名称');
+    ElMessage.warning('Please enter a tag name');
     return;
   }
   
   if (settingsStore.tags.some(t => t.name === name)) {
-    ElMessage.warning('标签已存在');
+    ElMessage.warning('Tag already exists');
     return;
   }
   
@@ -353,16 +353,16 @@ async function handleAddTag() {
       name,
       color: newTagColor.value
     });
-    ElMessage.success('标签添加成功');
+    ElMessage.success('Tag added successfully');
     newTagName.value = '';
   } catch (e) {
-    ElMessage.error(`添加失败: ${e}`);
+    ElMessage.error(`Failed to add: ${e}`);
   } finally {
     adding.value = false;
   }
 }
 
-// 打开编辑对话框
+// Open edit dialog
 function openEditDialog(tag: GlobalTag) {
   editForm.originalName = tag.name;
   editForm.name = tag.name;
@@ -370,7 +370,7 @@ function openEditDialog(tag: GlobalTag) {
   editDialogVisible.value = true;
 }
 
-// 更新颜色
+// Update color
 async function handleUpdateColor(tagName: string, color: string | null) {
   if (!color) return;
   
@@ -379,23 +379,23 @@ async function handleUpdateColor(tagName: string, color: string | null) {
       name: tagName,
       color
     });
-    ElMessage.success('颜色更新成功');
+    ElMessage.success('Color updated successfully');
   } catch (e) {
-    ElMessage.error(`更新失败: ${e}`);
+    ElMessage.error(`Update failed: ${e}`);
   }
 }
 
-// 更新标签
+// Update tag
 async function handleUpdateTag() {
   const name = editForm.name.trim();
   if (!name) {
-    ElMessage.warning('请输入标签名称');
+    ElMessage.warning('Please enter a tag name');
     return;
   }
   
-  // 如果名称改变，检查是否重复
+  // If the name is changed, check for duplicates
   if (name !== editForm.originalName && settingsStore.tags.some(t => t.name === name)) {
-    ElMessage.warning('标签名称已存在');
+    ElMessage.warning('Tag name already exists');
     return;
   }
   
@@ -405,50 +405,53 @@ async function handleUpdateTag() {
       name,
       color: editForm.color
     });
-    ElMessage.success('标签更新成功');
+    ElMessage.success('Tag updated successfully');
     editDialogVisible.value = false;
     
-    // 如果名称改变，刷新账号列表
+    // If the name has changed, refresh the account list
     if (name !== editForm.originalName) {
       emit('refresh');
     }
   } catch (e) {
-    ElMessage.error(`更新失败: ${e}`);
+    ElMessage.error(`Update failed: ${e}`);
   } finally {
     updating.value = false;
   }
 }
 
-// 删除标签
+// Delete tag
 async function handleDeleteTag(name: string) {
   const usageCount = getTagUsageCount(name);
   
-  let message = `确定要删除标签 "${name}" 吗？`;
+  let message = `Are you sure you want to delete the tag \\"${name}\\"?`;
   if (usageCount > 0) {
-    message += `\n\n该标签正被 ${usageCount} 个账号使用，删除后这些账号将移除此标签。`;
+    message += `\\n\\nThis tag is being used by ${usageCount} accounts. After deletion, this tag will be removed from these accounts.`;
   }
   
   try {
-    await ElMessageBox.confirm(message, '删除确认', {
+    await ElMessageBox.confirm(message, 'Confirm Deletion', {
       type: 'warning',
-      confirmButtonText: '删除',
-      cancelButtonText: '取消'
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
     });
     
     await settingsStore.deleteTag(name);
-    ElMessage.success('标签删除成功');
+    ElMessage.success('Tag deleted successfully');
     emit('refresh');
   } catch (e) {
     if (e !== 'cancel') {
-      ElMessage.error(`删除失败: ${e}`);
+      ElMessage.error(`Deletion failed: ${e}`);
     }
   }
 }
 
-// 批量更新账户标签
+// Delete tag
+
+
+// Batch update account tags
 async function handleBatchUpdate() {
   if (batchAddTags.value.length === 0 && batchRemoveTags.value.length === 0) {
-    ElMessage.warning('请选择要添加或移除的标签');
+    ElMessage.warning('Please select tags to add or remove');
     return;
   }
   
@@ -459,12 +462,12 @@ async function handleBatchUpdate() {
       batchAddTags.value,
       batchRemoveTags.value
     );
-    ElMessage.success(`批量更新完成: 成功 ${result.success_count} 个`);
+    ElMessage.success(`Batch update completed: ${result.success_count} successful`);
     batchAddTags.value = [];
     batchRemoveTags.value = [];
     emit('refresh');
   } catch (e) {
-    ElMessage.error(`批量更新失败: ${e}`);
+    ElMessage.error(`Batch update failed: ${e}`);
   } finally {
     batchUpdating.value = false;
   }
@@ -582,7 +585,7 @@ function handleClose() {
   color: #606266;
 }
 
-/* 深色模式 */
+/* Dark mode */
 :root.dark .section-title {
   color: #cfd3dc;
 }

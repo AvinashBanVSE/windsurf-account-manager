@@ -116,7 +116,7 @@ async function loadStats() {
   try {
     stats.value = await settingsApi.getStats();
   } catch (error) {
-    ElMessage.error(`加载统计信息失败: ${error}`);
+    ElMessage.error(`Failed to load statistics: ${error}`);
   } finally {
     loading.value = false;
   }

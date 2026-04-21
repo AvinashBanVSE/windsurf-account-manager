@@ -1,18 +1,18 @@
-# 🛑 Windsurf 寸止 MCP
+# 🛑 Windsurf Cunzhi MCP
 
-> **AI 对话"早泄"终结者，让交流持续到底** - 专为 Windsurf 优化
+> **AI Conversation Continuation Tool** - Optimized for Windsurf
 
-当 AI 想要"草草了事"时，寸止会及时弹出对话框，让你能够继续深入交流，直到真正解决问题为止。
+When AI wants to rush through tasks, Cunzhi automatically prompts a dialog to let you continue the conversation deeply until the problem is truly resolved.
 
-## 🌟 核心特性
+## 🌟 Key Features
 
-- 🛑 **智能拦截**：AI 想结束时自动弹出继续选项
-- ⚡ **轻量设计**：专为 Windsurf 优化，无冗余功能
-- 🎯 **预定义选项**：快速选择常用回复
-- ✏️ **自由输入**：支持自定义反馈内容
-- 🔧 **可配置**：自定义提示词和选项
+- 🛑 **Smart Interception**: Auto-prompt continuation options when AI wants to end
+- ⚡ **Lightweight Design**: Optimized for Windsurf, no redundant features
+- 🎯 **Predefined Options**: Quick selection of common responses
+- ✏️ **Free Input**: Support custom feedback content
+- 🔧 **Configurable**: Customize prompts and options
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
 ### 安装
 

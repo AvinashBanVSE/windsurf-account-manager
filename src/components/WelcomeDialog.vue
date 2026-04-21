@@ -8,66 +8,66 @@
     @closed="handleClosed"
   >
     <div class="welcome-content">
-      <!-- 背景装饰 -->
+      <!-- Background decoration -->
       <div class="bg-decoration">
         <div class="circle circle-1"></div>
         <div class="circle circle-2"></div>
       </div>
       
-      <!-- 警告图标 -->
+      <!-- Warning icon -->
       <div class="warning-section">
         <div class="warning-icon">
           <el-icon :size="48"><WarningFilled /></el-icon>
         </div>
-        <h2 class="warning-title">重要提醒</h2>
+        <h2 class="warning-title">Important Notice</h2>
       </div>
 
-      <!-- 免费声明 -->
+      <!-- Free notice -->
       <div class="free-notice">
         <div class="notice-card">
           <div class="notice-icon">
             <el-icon :size="24"><InfoFilled /></el-icon>
           </div>
           <div class="notice-content">
-            <p class="notice-main">本软件为 <span class="highlight">完全免费</span> 的开源软件</p>
-            <p class="notice-sub">如果你是花钱购买的，那么 <span class="warning-text">你被骗了！</span></p>
+            <p class="notice-main">This software is <span class="highlight">completely free</span> open source software</p>
+            <p class="notice-sub">If you paid for it, then <span class="warning-text">you were scammed!</span></p>
           </div>
         </div>
       </div>
 
-      <!-- 提示列表 -->
+      <!-- Tips list -->
       <div class="tips-section">
         <div class="tip-item">
           <el-icon class="tip-icon"><CircleCheck /></el-icon>
-          <span>本软件仅供学习交流使用</span>
+          <span>This software is for learning and communication only</span>
         </div>
         <div class="tip-item">
           <el-icon class="tip-icon"><CircleCheck /></el-icon>
-          <span>请勿用于任何商业用途</span>
+          <span>Do not use for any commercial purposes</span>
         </div>
         <div class="tip-item">
           <el-icon class="tip-icon"><CircleCheck /></el-icon>
-          <span>禁止倒卖，发现必究</span>
+          <span>Reselling is prohibited and will be prosecuted</span>
         </div>
       </div>
 
-      <!-- 交流群 -->
+      <!-- Community group -->
       <div class="group-section">
         <h3 class="section-title">
           <el-icon><ChatDotRound /></el-icon>
-          <span>加入交流群</span>
+          <span>Join Community</span>
         </h3>
         <div class="qr-container">
-          <img src="/交流群.png" alt="交流群二维码" class="qr-image" />
-          <p class="qr-tip">微信扫码加入交流群</p>
+          <img src="/community-group.png" alt="Community QR Code" class="qr-image" />
+          <p class="qr-tip">Scan QR code to join community</p>
         </div>
       </div>
 
-      <!-- 确认按钮 -->
+      <!-- Confirm button -->
       <div class="action-section">
         <el-button type="primary" size="large" @click="handleConfirm" class="confirm-btn">
           <el-icon><Select /></el-icon>
-          <span>我已知晓</span>
+          <span>I Understand</span>
         </el-button>
       </div>
     </div>
@@ -123,7 +123,7 @@ function handleClosed() {
   border-radius: 8px;
 }
 
-/* 背景装饰 */
+/* Background decoration */
 .bg-decoration {
   position: absolute;
   top: 0;
@@ -154,7 +154,7 @@ function handleClosed() {
   left: -75px;
 }
 
-/* 警告区域 */
+/* Warning area */
 .warning-section {
   text-align: center;
   margin-bottom: 20px;
@@ -187,7 +187,7 @@ function handleClosed() {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* 免费声明 */
+/* Free notice */
 .free-notice {
   margin-bottom: 20px;
 }
@@ -242,7 +242,7 @@ function handleClosed() {
   font-weight: 700;
 }
 
-/* 提示列表 */
+/* Tips list */
 .tips-section {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
@@ -268,7 +268,7 @@ function handleClosed() {
   font-size: 18px;
 }
 
-/* 交流群 */
+/* Community group */
 .group-section {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
@@ -314,7 +314,7 @@ function handleClosed() {
   margin: 0;
 }
 
-/* 确认按钮 */
+/* Confirm button */
 .action-section {
   text-align: center;
 }
@@ -340,7 +340,7 @@ function handleClosed() {
   margin-right: 8px;
 }
 
-/* 暗色主题适配 */
+/* Dark theme adaptation */
 :root.dark .welcome-content {
   background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%);
 }

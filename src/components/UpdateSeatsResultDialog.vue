@@ -6,7 +6,7 @@
     @close="handleClose"
   >
     <div v-if="resultData">
-      <!-- 主要信息卡片 -->
+      <!-- Main info card -->
       <el-card v-if="resultData.success" class="result-card" shadow="never">
         <template #header>
           <div class="card-header">
@@ -18,7 +18,7 @@
           </div>
         </template>
         
-        <!-- 座位信息 -->
+        <!-- Seat info -->
         <div class="seats-section" v-if="lastAttempt">
           <el-descriptions :column="2" border>
             <el-descriptions-item label="Total Seats">
@@ -35,7 +35,7 @@
             </el-descriptions-item>
           </el-descriptions>
           
-          <!-- 立即应付金额（如果有） -->
+          <!-- Amount due immediately (if any) -->
           <div v-if="lastAttempt.amount_due_immediately > 0" style="margin-top: 15px;">
             <el-alert
               :title="`Due now: $${lastAttempt.amount_due_immediately}`"
@@ -46,7 +46,7 @@
           </div>
         </div>
         
-        <!-- 时间信息 -->
+        <!-- Time info -->
         <div class="time-section" v-if="lastAttempt && (lastAttempt.billing_start_time || lastAttempt.next_billing_time)">
           <h4>Billing Cycle</h4>
           <el-descriptions :column="1" border>
@@ -60,7 +60,7 @@
         </div>
       </el-card>
       
-      <!-- 错误信息 -->
+      <!-- Error info -->
       <el-alert
         v-if="!resultData.success"
         title="Seat Update Failed"
@@ -70,7 +70,7 @@
         show-icon
       />
       
-      <!-- 尝试记录 -->
+      <!-- Attempt records -->
       <div class="attempts-section" v-if="resultData.attempts?.length > 0">
         <h4>Attempt Records ({{ resultData.attempts.length }} times)</h4>
         <el-collapse>
@@ -128,7 +128,7 @@ watch(visible, (val) => {
   emit('update:modelValue', val);
 });
 
-// 获取最后一次尝试的解析数据
+// Get parsed data from last attempt
 const lastAttempt = computed(() => {
   if (!props.resultData?.attempts?.length) return null;
   const last = props.resultData.attempts[props.resultData.attempts.length - 1];
@@ -143,14 +143,14 @@ const lastAttempt = computed(() => {
 });
 
 
-// 获取错误信息
+// Get error message
 function getErrorMessage() {
   if (!props.resultData?.attempts?.length) return 'Unknown error';
   const lastAttempt = props.resultData.attempts[props.resultData.attempts.length - 1];
   return lastAttempt?.error || `HTTP ${lastAttempt?.status_code || 'Unknown status code'}`;
 }
 
-// 格式化响应数据
+// Format response data
 function formatResponse(response: string) {
   try {
     const parsed = JSON.parse(response);
@@ -227,7 +227,7 @@ async function copyToClipboard() {
   overflow-y: auto;
 }
 
-/* 暗色主题支持 */
+/* Dark theme support */
 :root.dark .result-card {
   background: #1e1e1e;
 }

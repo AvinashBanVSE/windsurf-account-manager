@@ -8,10 +8,10 @@
     @close="handleClose"
   >
     <div class="plan-selection">
-      <!-- 当前套餐信息 -->
+      <!-- Current Plan Info -->
       <div v-if="account?.plan_name" class="current-plan-info">
         <div class="info-left">
-          <div class="info-label">当前订阅套餐</div>
+          <div class="info-label">Current Subscription Plan</div>
           <div class="info-value">
             <el-tag :class="['plan-tag', `plan-${account.plan_name?.toLowerCase()}`]" effect="dark">
               <el-icon><Trophy /></el-icon>
@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="info-right" v-if="account.total_quota">
-          <div class="quota-label">配额使用情况</div>
+          <div class="quota-label">Quota Usage</div>
           <div class="quota-value">
             <span class="used">{{ formatQuota(account.used_quota) }}</span>
             <span class="separator">/</span>
@@ -77,28 +77,28 @@
               round
               size="small"
             >
-              {{ isCurrentPlan(plan.key) ? '当前套餐' : (selectedPlan === plan.key ? '已选择' : '选择') }}
+              {{ isCurrentPlan(plan.key) ? 'Current Plan' : (selectedPlan === plan.key ? 'Selected' : 'Select') }}
             </el-button>
           </div>
           
-          <div v-if="isCurrentPlan(plan.key)" class="current-badge">当前使用</div>
+          <div v-if="isCurrentPlan(plan.key)" class="current-badge">In Use</div>
         </div>
       </div>
       
-      <!-- 付款周期选择 -->
+      <!-- Payment PeriodSelect -->
       <div class="payment-period-section">
         <div class="section-title">
           <el-icon><Calendar /></el-icon>
-          <span>付款周期</span>
+          <span>Payment Period</span>
         </div>
         <el-radio-group v-model="paymentPeriod" :disabled="isLooping">
           <el-radio-button :value="1">
             <el-icon><Clock /></el-icon>
-            月付
+            Monthly
           </el-radio-button>
           <el-radio-button :value="2">
             <el-icon><Calendar /></el-icon>
-            年付
+            Yearly
           </el-radio-button>
         </el-radio-group>
         <el-button
@@ -111,39 +111,39 @@
           style="margin-left: 16px;"
         >
           <el-icon><View /></el-icon>
-          预览计费
+          Preview Billing
         </el-button>
       </div>
 
-      <!-- 计费预览结果 -->
+      <!-- Billing Preview Result -->
       <div v-if="billingPreview" class="billing-preview">
         <div class="preview-header">
           <el-icon><Ticket /></el-icon>
-          <span>计费预览</span>
+          <span>Billing Preview</span>
         </div>
         <div class="preview-content">
           <div class="preview-item" v-if="billingPreview.amount_due_immediately !== undefined">
-            <span class="label">立即应付</span>
+            <span class="label">Amount Due Immediately</span>
             <span class="value">${{ billingPreview.amount_due_immediately?.toFixed(2) }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.price_per_seat !== undefined">
-            <span class="label">每席位价格</span>
+            <span class="label">Price Per Seat</span>
             <span class="value">${{ billingPreview.price_per_seat?.toFixed(2) }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.num_seats !== undefined">
-            <span class="label">席位数</span>
+            <span class="label">Number of Seats</span>
             <span class="value">{{ billingPreview.num_seats }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.amount_per_interval !== undefined">
-            <span class="label">每周期费用</span>
-            <span class="value">${{ billingPreview.amount_per_interval?.toFixed(2) }}/{{ billingPreview.sub_interval_name === 'yearly' ? '年' : '月' }}</span>
+            <span class="label">Cost Per Period</span>
+            <span class="value">${{ billingPreview.amount_per_interval?.toFixed(2) }}/{{ billingPreview.sub_interval_name === 'yearly' ? 'year' : 'month' }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.billing_start">
-            <span class="label">计费开始</span>
+            <span class="label">Billing Start</span>
             <span class="value">{{ billingPreview.billing_start }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.billing_end">
-            <span class="label">计费结束</span>
+            <span class="label">Billing End</span>
             <span class="value">{{ billingPreview.billing_end }}</span>
           </div>
         </div>
@@ -158,36 +158,36 @@
         />
       </div>
 
-      <!-- 循环更换设置 -->
+      <!-- Loop Update Settings -->
       <div class="loop-settings">
         <div class="loop-header">
           <div class="loop-title">
             <el-icon><Refresh /></el-icon>
-            <span>循环更换模式</span>
+            <span>Loop Update Mode</span>
           </div>
           <el-switch v-model="loopMode" :disabled="isLooping" />
         </div>
-        <p class="loop-desc">开启后将持续执行订阅更换，直到连续3次失败或手动停止</p>
+        <p class="loop-desc">After enabling, subscription updates will continue until 3 consecutive failures or manually stopped</p>
         
-        <!-- 循环执行状态 -->
+        <!-- Loop Execution Status -->
         <div v-if="isLooping || loopStats.totalAttempts > 0" class="loop-status">
           <div class="status-row">
             <div class="stat-item success">
               <el-icon><SuccessFilled /></el-icon>
-              <span>成功: {{ loopStats.successCount }}</span>
+              <span>Success: {{ loopStats.successCount }}</span>
             </div>
             <div class="stat-item failed">
               <el-icon><CircleCloseFilled /></el-icon>
-              <span>失败: {{ loopStats.failedCount }}</span>
+              <span>Failed: {{ loopStats.failedCount }}</span>
             </div>
             <div class="stat-item total">
               <el-icon><DataLine /></el-icon>
-              <span>总计: {{ loopStats.totalAttempts }}</span>
+              <span>Total: {{ loopStats.totalAttempts }}</span>
             </div>
           </div>
           <div v-if="loopStats.consecutiveFailures > 0" class="consecutive-warn">
             <el-icon><Warning /></el-icon>
-            连续失败: {{ loopStats.consecutiveFailures }} / 3
+            ConsecutiveFailed: {{ loopStats.consecutiveFailures }} / 3
           </div>
           <div v-if="loopStats.lastError" class="last-error">
             <el-icon><InfoFilled /></el-icon>
@@ -196,11 +196,11 @@
         </div>
       </div>
 
-      <!-- 订阅管理区域 -->
+      <!-- Subscription Management Area -->
       <div class="subscription-management">
         <div class="management-header">
-          <span class="title">订阅管理</span>
-          <span class="subtitle">管理您的订阅状态</span>
+          <span class="title">Subscription Management</span>
+          <span class="subtitle">Manage Your Subscription Status</span>
         </div>
 
         <div class="subscription-actions">
@@ -212,7 +212,7 @@
             class="action-btn"
           >
             <el-icon><CircleClose /></el-icon>
-            取消订阅
+            Cancel Subscription
           </el-button>
 
           <el-button
@@ -223,7 +223,7 @@
             class="action-btn"
           >
             <el-icon><CircleCheck /></el-icon>
-            恢复订阅
+            Resume Subscription
           </el-button>
         </div>
       </div>
@@ -231,14 +231,14 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose" :disabled="isLooping">取消</el-button>
+        <el-button @click="handleClose" :disabled="isLooping">Cancel</el-button>
         <el-button
           v-if="isLooping"
           type="danger"
           @click="stopLoop"
         >
           <el-icon><VideoPause /></el-icon>
-          停止循环
+          Stop Loop
         </el-button>
         <el-button
           v-else
@@ -247,7 +247,7 @@
           :loading="loading"
           :disabled="!selectedPlan"
         >
-          {{ loopMode ? '开始循环更换' : '确认更换' }}
+          {{ loopMode ? 'Start Loop Update' : 'Confirm Update' }}
         </el-button>
       </div>
     </template>
@@ -279,60 +279,60 @@ const emit = defineEmits<{
 }>();
 
 const visible = ref(props.modelValue);
-// 所有可用的订阅计划类型
+// All available subscription plan types
 type PlanType = 'free' | 'teams' | 'pro' | 'enterprise_saas' | 'hybrid' | 'enterprise_self_hosted' | 'waitlist_pro' | 'teams_ultimate' | 'pro_ultimate' | 'trial' | 'enterprise_self_serve' | 'enterprise_saas_pooled' | 'devin_enterprise' | 'devin_teams' | 'devin_teams_v2' | 'devin_pro' | 'devin_max' | 'max' | 'devin_free' | 'devin_trial' | '';
 const selectedPlan = ref<PlanType>('');
-// 付款周期: 1=月付, 2=年付
+// Payment Period: 1=Monthly, 2=Yearly
 const paymentPeriod = ref<number>(1);
 
-// 订阅计划配置
+// Subscription plan configuration
 const planConfigs = [
-  { key: 'free', name: 'Free', tier: 0, icon: 'Present', color: '#6b7280', desc: '免费版', features: ['基础功能', '免费使用', '社区支持'] },
-  { key: 'teams', name: 'Teams', tier: 1, icon: 'UserFilled', color: '#10b981', desc: '团队版', features: ['团队协作', '多用户管理', '集中计费'] },
-  { key: 'pro', name: 'Pro', tier: 2, icon: 'Star', color: '#3b82f6', desc: '专业版', features: ['个人专业版', '高级功能', '优先支持'] },
-  { key: 'enterprise_saas', name: 'Enterprise SaaS', tier: 3, icon: 'OfficeBuilding', color: '#8b5cf6', desc: '企业SaaS版', features: ['企业级安全', 'SaaS部署', 'API访问'] },
-  { key: 'hybrid', name: 'Hybrid', tier: 4, icon: 'Connection', color: '#f59e0b', desc: '混合部署版', features: ['混合云部署', '灵活配置', '数据隔离'] },
-  { key: 'enterprise_self_hosted', name: 'Enterprise Self-Hosted', tier: 5, icon: 'Monitor', color: '#ec4899', desc: '企业自托管版', features: ['本地部署', '完全控制', '数据自主'] },
-  { key: 'waitlist_pro', name: 'Waitlist Pro', tier: 6, icon: 'Clock', color: '#6366f1', desc: '等待列表Pro', features: ['预约访问', '优先体验', '特别优惠'] },
-  { key: 'teams_ultimate', name: 'Teams Ultimate', tier: 7, icon: 'Trophy', color: '#14b8a6', desc: '团队旗舰版', features: ['全部团队功能', '无限额度', 'VIP支持'] },
-  { key: 'pro_ultimate', name: 'Pro Ultimate', tier: 8, icon: 'Medal', color: '#f97316', desc: 'Pro旗舰版', features: ['全部Pro功能', '无限额度', 'VIP支持'] },
-  { key: 'trial', name: 'Trial', tier: 9, icon: 'Promotion', color: '#84cc16', desc: '试用版', features: ['限时体验', '全部功能', '无需付费'] },
-  { key: 'enterprise_self_serve', name: 'Enterprise Self-Serve', tier: 10, icon: 'Briefcase', color: '#a855f7', desc: '企业自助版', features: ['企业级功能', '自助管理', 'SLA保障'] },
-  { key: 'enterprise_saas_pooled', name: 'Enterprise SaaS Pooled', tier: 11, icon: 'Grid', color: '#0891b2', desc: '企业SaaS池化版', features: ['共享资源池', '弹性扩展', '成本优化'] },
-  { key: 'devin_enterprise', name: 'Devin Enterprise', tier: 12, icon: 'Cpu', color: '#dc2626', desc: 'Devin企业版', features: ['AI代理', '企业级', '团队管理'] },
-  { key: 'devin_teams', name: 'Devin Teams', tier: 14, icon: 'Cpu', color: '#e11d48', desc: 'Devin团队版', features: ['AI代理', '团队协作', '多用户'] },
-  { key: 'devin_teams_v2', name: 'Devin Teams V2', tier: 15, icon: 'Cpu', color: '#be123c', desc: 'Devin团队V2', features: ['AI代理', '团队V2', '增强功能'] },
-  { key: 'devin_pro', name: 'Devin Pro', tier: 16, icon: 'Cpu', color: '#ea580c', desc: 'Devin专业版', features: ['AI代理', '专业功能', '个人使用'] },
-  { key: 'devin_max', name: 'Devin Max', tier: 17, icon: 'Cpu', color: '#c2410c', desc: 'Devin旗舰版', features: ['AI代理', '无限功能', '最高配置'] },
-  { key: 'max', name: 'Max', tier: 18, icon: 'StarFilled', color: '#7c3aed', desc: '旗舰版', features: ['最高配置', '无限额度', '全功能解锁'] },
-  { key: 'devin_free', name: 'Devin Free', tier: 19, icon: 'Cpu', color: '#9ca3af', desc: 'Devin免费版', features: ['AI代理', '基础功能', '免费使用'] },
-  { key: 'devin_trial', name: 'Devin Trial', tier: 20, icon: 'Cpu', color: '#f472b6', desc: 'Devin试用版', features: ['AI代理', '限时体验', '全部功能'] },
+  { key: 'free', name: 'Free', tier: 0, icon: 'Present', color: '#6b7280', desc: 'Free', features: ['Basic features', 'Free usage', 'Community support'] },
+  { key: 'teams', name: 'Teams', tier: 1, icon: 'UserFilled', color: '#10b981', desc: 'Teams', features: ['Team collaboration', 'Multi-user management', 'Centralized billing'] },
+  { key: 'pro', name: 'Pro', tier: 2, icon: 'Star', color: '#3b82f6', desc: 'Pro', features: ['Personal Pro', 'Advanced features', 'Priority support'] },
+  { key: 'enterprise_saas', name: 'Enterprise SaaS', tier: 3, icon: 'OfficeBuilding', color: '#8b5cf6', desc: 'Enterprise SaaS', features: ['Enterprise-grade security', 'SaaS deployment', 'API access'] },
+  { key: 'hybrid', name: 'Hybrid', tier: 4, icon: 'Connection', color: '#f59e0b', desc: 'Hybrid', features: ['Hybrid cloud deployment', 'Flexible configuration', 'Data isolation'] },
+  { key: 'enterprise_self_hosted', name: 'Enterprise Self-Hosted', tier: 5, icon: 'Monitor', color: '#ec4899', desc: 'Enterprise Self-Hosted', features: ['Local deployment', 'Full control', 'Data autonomy'] },
+  { key: 'waitlist_pro', name: 'Waitlist Pro', tier: 6, icon: 'Clock', color: '#6366f1', desc: 'Waitlist Pro', features: ['Priority access', 'Priority experience', 'Special offer'] },
+  { key: 'teams_ultimate', name: 'Teams Ultimate', tier: 7, icon: 'Trophy', color: '#14b8a6', desc: 'Teams Ultimate', features: ['All team features', 'Unlimited quota', 'VIP Support'] },
+  { key: 'pro_ultimate', name: 'Pro Ultimate', tier: 8, icon: 'Medal', color: '#f97316', desc: 'Pro Ultimate', features: ['All Pro features', 'Unlimited quota', 'VIP Support'] },
+  { key: 'trial', name: 'Trial', tier: 9, icon: 'Promotion', color: '#84cc16', desc: 'Trial', features: ['Limited-time experience', 'All features', 'No payment required'] },
+  { key: 'enterprise_self_serve', name: 'Enterprise Self-Serve', tier: 10, icon: 'Briefcase', color: '#a855f7', desc: 'Enterprise Self-Serve', features: ['Enterprise-grade features', 'Self-service management', 'SLA guarantee'] },
+  { key: 'enterprise_saas_pooled', name: 'Enterprise SaaS Pooled', tier: 11, icon: 'Grid', color: '#0891b2', desc: 'Enterprise SaaS Pooled', features: ['Shared resource pool', 'Elastic scaling', 'Cost optimization'] },
+  { key: 'devin_enterprise', name: 'Devin Enterprise', tier: 12, icon: 'Cpu', color: '#dc2626', desc: 'Devin Enterprise', features: ['AI agent', 'Enterprise-grade', 'Team management'] },
+  { key: 'devin_teams', name: 'Devin Teams', tier: 14, icon: 'Cpu', color: '#e11d48', desc: 'Devin Teams', features: ['AI agent', 'Team collaboration', 'Multiple users'] },
+  { key: 'devin_teams_v2', name: 'Devin Teams V2', tier: 15, icon: 'Cpu', color: '#be123c', desc: 'Devin Teams V2', features: ['AI agent', 'Team V2', 'Enhanced features'] },
+  { key: 'devin_pro', name: 'Devin Pro', tier: 16, icon: 'Cpu', color: '#ea580c', desc: 'Devin Pro', features: ['AI agent', 'Professional features', 'Personal use'] },
+  { key: 'devin_max', name: 'Devin Max', tier: 17, icon: 'Cpu', color: '#c2410c', desc: 'Devin Max', features: ['AI agent', 'Unlimited features', 'Highest configuration'] },
+  { key: 'max', name: 'Max', tier: 18, icon: 'StarFilled', color: '#7c3aed', desc: 'Max', features: ['Highest configuration', 'Unlimited quota', 'All features unlocked'] },
+  { key: 'devin_free', name: 'Devin Free', tier: 19, icon: 'Cpu', color: '#9ca3af', desc: 'Devin Free', features: ['AI agent', 'Basic features', 'Free usage'] },
+  { key: 'devin_trial', name: 'Devin Trial', tier: 20, icon: 'Cpu', color: '#f472b6', desc: 'Devin Trial', features: ['AI agent', 'Limited-time experience', 'All features'] },
 ];
 const loading = ref(false);
 const cancelLoading = ref(false);
 const resumeLoading = ref(false);
 const error = ref('');
 
-// 图标组件映射
+// Icon component mapping
 const iconMap: Record<string, Component> = {
   UserFilled, OfficeBuilding, Star, StarFilled, Trophy, Connection, Monitor, Clock, Medal, Promotion, Briefcase, Check, Grid, Present, Cpu
 };
 
-// 获取图标组件
+// Get icon component
 function getIconComponent(iconName: string): Component {
   return iconMap[iconName] || Star;
 }
 
-// 判断是否为当前套餐
+// Check ifCurrent Plan
 function isCurrentPlan(planKey: string): boolean {
   const currentPlan = props.account?.plan_name?.toLowerCase();
   if (!currentPlan) return false;
-  // 处理一些特殊映射
+  // Handle some special mappings
   if (planKey === 'enterprise' && currentPlan.includes('enterprise')) return true;
   return currentPlan === planKey || currentPlan.replace(/[_-]/g, '') === planKey.replace(/[_-]/g, '');
 }
 
-// 循环更换相关状态
+// Loop update related state
 const loopMode = ref(false);
 const isLooping = ref(false);
 const shouldStopLoop = ref(false);
@@ -344,7 +344,7 @@ const loopStats = reactive({
   lastError: ''
 });
 
-// 预览模式
+// Preview mode
 const previewMode = ref(false);
 const billingPreview = ref<{
   amount_due_immediately?: number;
@@ -356,13 +356,13 @@ const billingPreview = ref<{
   billing_end?: string;
 } | null>(null);
 
-// 取消原因选项
+// Cancellation reason options
 const cancelReasons = [
-  { value: 'too_expensive', label: '价格太贵' },
-  { value: 'not_using', label: '不再使用' },
-  { value: 'missing_features', label: '缺少功能' },
-  { value: 'switching_service', label: '切换到其他服务' },
-  { value: 'other', label: '其他原因' }
+  { value: 'too_expensive', label: 'Too expensive' },
+  { value: 'not_using', label: 'No longer using' },
+  { value: 'missing_features', label: 'Missing features' },
+  { value: 'switching_service', label: 'Switching to another service' },
+  { value: 'other', label: 'Other reasons' }
 ];
 
 watch(() => props.modelValue, (val) => {
@@ -389,7 +389,7 @@ function getQuotaStatus(percentage: number) {
   return 'success';
 }
 
-// 重置循环统计
+// Reset loop statistics
 function resetLoopStats() {
   loopStats.successCount = 0;
   loopStats.failedCount = 0;
@@ -398,14 +398,14 @@ function resetLoopStats() {
   loopStats.lastError = '';
 }
 
-// 停止循环
+// Stop Loop
 function stopLoop() {
   shouldStopLoop.value = true;
-  ElMessage.info('正在停止循环...');
+  ElMessage.info('Stopping loop...');
 }
 
-// 执行单次更换
-// 返回: success=是否成功, hasReason=失败时是否有明确原因
+// Execute single update
+// Returns: success=whether successful, hasReason=whether there is a clear reason on failure
 async function executeSingleUpdate(): Promise<{ success: boolean; hasReason: boolean }> {
   try {
     const result = await apiService.updatePlan(props.accountId, selectedPlan.value, paymentPeriod.value, false);
@@ -413,20 +413,20 @@ async function executeSingleUpdate(): Promise<{ success: boolean; hasReason: boo
       return { success: true, hasReason: false };
     } else {
       const reason = result.payment_failure_reason;
-      loopStats.lastError = reason || '更换计划失败';
-      // 有明确原因表示支付问题（如卡号错误），不计入连续失败
+      loopStats.lastError = reason || 'Failed to update plan';
+      // Having a clear reason indicates payment issue（e.g., wrong card number），not countedConsecutive Failures
       return { success: false, hasReason: !!reason };
     }
   } catch (err: any) {
     loopStats.lastError = err.toString();
-    return { success: false, hasReason: true }; // 异常也算有原因
+    return { success: false, hasReason: true }; // Exceptions also count as having a reason
   }
 }
 
-// 执行预览
+// Execute preview
 async function executePreview(): Promise<void> {
   if (!selectedPlan.value) {
-    ElMessage.warning('请先选择订阅计划');
+    ElMessage.warning('PleasefirstSelectSubscriptionPlan');
     return;
   }
   
@@ -438,33 +438,33 @@ async function executePreview(): Promise<void> {
     const result = await apiService.updatePlan(props.accountId, selectedPlan.value, paymentPeriod.value, true);
     if (result.success && result.billing_update) {
       billingPreview.value = result.billing_update;
-      ElMessage.success('预览成功，请查看计费详情');
+      ElMessage.success('Preview successful, please check billing details');
     } else if (result.payment_failure_reason) {
-      error.value = `支付失败: ${result.payment_failure_reason}`;
+      error.value = `PaymentFailed: ${result.payment_failure_reason}`;
       ElMessage.error(error.value);
     } else {
-      ElMessage.info('预览完成，无计费变更');
+      ElMessage.info('Preview complete, no billing changes');
     }
   } catch (err: any) {
     error.value = err.toString();
-    ElMessage.error(`预览失败: ${err}`);
+    ElMessage.error(`PreviewFailed: ${err}`);
   } finally {
     loading.value = false;
   }
 }
 
-// 延迟函数
+// Delay function
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function handleConfirm() {
   if (!selectedPlan.value) {
-    ElMessage.warning('请选择订阅计划');
+    ElMessage.warning('Please select a subscription plan');
     return;
   }
 
-  // 如果开启循环模式
+  // If loop mode is enabled
   if (loopMode.value) {
     isLooping.value = true;
     shouldStopLoop.value = false;
@@ -478,77 +478,77 @@ async function handleConfirm() {
       
       if (result.success) {
         loopStats.successCount++;
-        loopStats.consecutiveFailures = 0; // 重置连续失败计数
+        loopStats.consecutiveFailures = 0; // Reset consecutive failure count
         loopStats.lastError = '';
       } else {
         loopStats.failedCount++;
-        // 只有无明确原因的失败才计入连续失败次数
-        // 有明确原因（如卡号错误）的失败不计入
+        // Only failures without clear reason are counted toward consecutive failures times
+        // Failures with clear reason (e.g., wrong card) do not count
         if (!result.hasReason) {
           loopStats.consecutiveFailures++;
         } else {
-          // 有原因的失败重置计数器
+          // Failures with reason reset the counter
           loopStats.consecutiveFailures = 0;
         }
       }
 
-      // 检查是否应该停止
+      // Check if should stop
       if (shouldStopLoop.value) {
-        ElMessage.warning('循环已被手动停止');
+        ElMessage.warning('Loop has been manually stopped');
         break;
       }
 
       if (loopStats.consecutiveFailures >= 3) {
-        ElMessage.error('连续3次无原因失败，循环已停止');
-        error.value = `连续3次无原因失败: ${loopStats.lastError}`;
+        ElMessage.error('3 consecutive failures without reason, loop stopped');
+        error.value = `3 consecutive failures without reason:: ${loopStats.lastError}`;
         break;
       }
 
-      // 短暂延迟，避免请求过快
+      // Brief delay to avoid requests too fast
       await delay(500);
     }
 
     isLooping.value = false;
     
-    // 显示最终统计
+    // Show final statistics
     if (loopStats.successCount > 0) {
-      ElMessage.success(`循环结束: 成功 ${loopStats.successCount} 次，失败 ${loopStats.failedCount} 次`);
+      ElMessage.success(`Loop ended: Success ${loopStats.successCount}  times, Failed ${loopStats.failedCount} times`);
       emit('success');
     }
   } else {
-    // 单次执行模式
+    // Single execution mode
     loading.value = true;
     error.value = '';
-    const periodName = paymentPeriod.value === 2 ? '年付' : '月付';
+    const periodName = paymentPeriod.value === 2 ? 'Yearly' : 'Monthly';
 
     try {
       const result = await apiService.updatePlan(props.accountId, selectedPlan.value, paymentPeriod.value, false);
       if (result.success) {
-        ElMessage.success(`成功更换到 ${selectedPlan.value.toUpperCase()} 计划（${periodName}）`);
+        ElMessage.success(`Successfully changed to ${selectedPlan.value.toUpperCase()} Plan（${periodName}）`);
         emit('success');
         handleClose();
       } else {
-        error.value = result.payment_failure_reason || '更换计划失败';
+        error.value = result.payment_failure_reason || 'Failed to update plan';
         ElMessage.error(error.value);
       }
     } catch (err: any) {
       error.value = err.toString();
-      ElMessage.error(`更换计划失败: ${err}`);
+      ElMessage.error(`UpdatePlanFailed: ${err}`);
     } finally {
       loading.value = false;
     }
   }
 }
 
-// 取消订阅
+// Cancel Subscription
 async function handleCancelSubscription() {
   try {
-    // 第一步：选择取消原因
-    let selectedReason = 'too_expensive'; // 默认值
+    // Step 1: Select cancellation reason
+    let selectedReason = 'too_expensive'; // Default value
 
     const reasonHtml = `
       <div style="text-align: left; padding: 10px 0;">
-        <p style="margin-bottom: 12px; color: #606266;">请选择取消订阅的原因：</p>
+        <p style="margin-bottom: 12px; color: #606266;">Please select cancellation reason：</p>
         <el-radio-group id="cancel-reason-group" style="display: flex; flex-direction: column; gap: 8px;">
           ${cancelReasons.map(r => `
             <label style="display: flex; align-items: center; padding: 8px; cursor: pointer; border-radius: 4px; transition: background 0.2s;"
@@ -564,12 +564,12 @@ async function handleCancelSubscription() {
       </div>
     `;
 
-    // 初始化全局变量
+    // Initialize global variable
     (window as any).__selectedCancelReason = 'too_expensive';
 
-    await ElMessageBox.confirm(reasonHtml, '取消订阅确认', {
-      confirmButtonText: '确认取消',
-      cancelButtonText: '返回',
+    await ElMessageBox.confirm(reasonHtml, 'Cancel Subscription Confirmation', {
+      confirmButtonText: 'Confirm cancellation',
+      cancelButtonText: 'Back',
       type: 'warning',
       dangerouslyUseHTMLString: true,
       beforeClose: async (action, instance, done) => {
@@ -577,54 +577,54 @@ async function handleCancelSubscription() {
           selectedReason = (window as any).__selectedCancelReason || 'too_expensive';
 
           instance.confirmButtonLoading = true;
-          instance.confirmButtonText = '取消中...';
+          instance.confirmButtonText = 'Cancelling...';
 
           try {
-            console.log('取消订阅，原因:', selectedReason);
+            console.log('Cancel Subscription，reason:', selectedReason);
             const result = await apiService.cancelSubscription(props.accountId, selectedReason);
 
             if (result.success) {
-              ElMessage.success('订阅已成功取消');
+              ElMessage.success('Subscription successfully cancelled');
               emit('success');
               done();
               handleClose();
             } else {
-              ElMessage.error(result.raw_response || '取消订阅失败');
+              ElMessage.error(result.raw_response || 'Failed to cancel subscription');
               instance.confirmButtonLoading = false;
-              instance.confirmButtonText = '确认取消';
+              instance.confirmButtonText = 'Confirm cancellation';
             }
           } catch (err: any) {
-            ElMessage.error(`取消订阅失败: ${err}`);
+            ElMessage.error(`Failed to cancel subscription: ${err}`);
             instance.confirmButtonLoading = false;
-            instance.confirmButtonText = '确认取消';
+            instance.confirmButtonText = 'Confirm cancellation';
           } finally {
-            // 清理全局变量
+            // Cleanup global variable
             delete (window as any).__selectedCancelReason;
           }
         } else {
-          // 清理全局变量
+          // Cleanup global variable
           delete (window as any).__selectedCancelReason;
           done();
         }
       }
     });
   } catch (err) {
-    // 用户取消了操作
-    console.log('用户取消了取消订阅操作');
-    // 清理全局变量
+    // User cancelled operation
+    console.log('UserCancelCancel Subscriptionoperation');
+    // Cleanup global variable
     delete (window as any).__selectedCancelReason;
   }
 }
 
-// 恢复订阅
+// Resume Subscription
 async function handleResumeSubscription() {
   try {
     await ElMessageBox.confirm(
-      '确认要恢复订阅吗？恢复后将继续按原计划收费。',
-      '恢复订阅确认',
+      'Confirm to resume subscription? After resuming, will continue with original plan billing。',
+      'Resume SubscriptionConfirm',
       {
-        confirmButtonText: '确认恢复',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm resume',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }
     );
@@ -635,24 +635,24 @@ async function handleResumeSubscription() {
       const result = await apiService.resumeSubscription(props.accountId);
 
       if (result.success) {
-        ElMessage.success('订阅已成功恢复');
+        ElMessage.success('Subscription successfully resumed');
         emit('success');
         handleClose();
       } else {
-        ElMessage.error(result.raw_response || '恢复订阅失败');
+        ElMessage.error(result.raw_response || 'Failed to resume subscription');
       }
     } catch (err: any) {
-      ElMessage.error(`恢复订阅失败: ${err}`);
+      ElMessage.error(`Failed to resume subscription: ${err}`);
     } finally {
       resumeLoading.value = false;
     }
   } catch (err) {
-    // 用户取消了操作
-    console.log('用户取消了恢复订阅操作');
+    // User cancelled operation
+    console.log('User cancelled resume subscription operation');
   }
 }
 
-// 格式化配额（除以100并显示两位小数）
+// Format quota (divide by 100 and display two decimals)
 function formatQuota(num: number | undefined | null) {
   if (!num) return '0.00';
   return (num / 100).toFixed(2);
@@ -668,7 +668,7 @@ function handleClose() {
   padding: 10px;
 }
 
-/* 当前套餐信息 */
+/* Current PlanInformation */
 .current-plan-info {
   background: white;
   border: 1px solid #e4e7ed;
@@ -730,7 +730,7 @@ function handleClose() {
   }
 }
 
-/* 套餐卡片容器 - 适应更多卡片 */
+/* Plan Card Container - Fit More Cards */
 .plans-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -741,7 +741,7 @@ function handleClose() {
   padding: 4px;
 }
 
-/* 套餐卡片基础样式 - 紧凑版 */
+/* Plan Card Basic Style - Compact */
 .plan-card {
   position: relative;
   background: #fff;
@@ -800,7 +800,7 @@ function handleClose() {
   }
 }
 
-/* 卡片头部 - 紧凑版 */
+/* Card Header - Compact */
 .card-header {
   text-align: center;
   margin-bottom: 10px;
@@ -836,7 +836,7 @@ function handleClose() {
   transform: scale(1.1);
 }
 
-/* 卡片主体 - 紧凑版 */
+/* Card Body - Compact */
 .card-body {
   flex: 1;
   margin-bottom: 10px;
@@ -860,7 +860,7 @@ function handleClose() {
   }
 }
 
-/* 卡片底部 - 紧凑版 */
+/* Card Footer - Compact */
 .card-footer {
   text-align: center;
   
@@ -878,9 +878,9 @@ function handleClose() {
   }
 }
 
-/* 动态主题已通过内联样式应用 */
+/* Dynamic theme already applied via inline styles */
 
-/* 付款周期选择 */
+/* Payment PeriodSelect */
 .payment-period-section {
   display: flex;
   align-items: center;
@@ -915,7 +915,7 @@ function handleClose() {
   }
 }
 
-/* 循环更换设置 */
+/* Loop Update Settings */
 .loop-settings {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border: 1px solid #bae6fd;
@@ -1018,7 +1018,7 @@ function handleClose() {
   }
 }
 
-/* 计费预览 */
+/* Billing Preview */
 .billing-preview {
   background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
   border: 1px solid #81c784;
@@ -1073,12 +1073,12 @@ function handleClose() {
   }
 }
 
-/* 错误提示 */
+/* Error Message */
 .error-container {
   margin-bottom: 30px;
 }
 
-/* 订阅管理 */
+/* Subscription Management */
 .subscription-management {
   background: linear-gradient(to right, #fdf6ec, #fff);
   border-left: 4px solid #e6a23c;
@@ -1115,7 +1115,7 @@ function handleClose() {
   }
 }
 
-/* 响应式适配 */
+/* Responsive Adaptation */
 @media (max-width: 1200px) {
   .plans-container {
     grid-template-columns: repeat(4, 1fr);

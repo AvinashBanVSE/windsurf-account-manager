@@ -7,10 +7,10 @@
     @close="handleClose"
   >
     <div class="import-container">
-      <!-- 认证流派（devin_session_token 模式下无关，所以隐藏） -->
+      <!-- Auth type (hidden for devin_session_token mode) -->
       <div class="mode-section" v-if="importMode !== 'devin_session_token'">
-        <span class="mode-label">认证流派：</span>
-        <div class="mode-grid mode-grid--3col" role="radiogroup" aria-label="认证流派">
+        <span class="mode-label">Auth Type:</span>
+        <div class="mode-grid mode-grid--3col" role="radiogroup" aria-label="Auth Type">
           <div
             v-for="opt in authProviderOptions"
             :key="opt.value"
@@ -44,10 +44,10 @@
         </div>
       </div>
 
-      <!-- 导入模式切换（Devin / 智能不支持 Refresh Token；devin_session_token 仅走 Devin） -->
+      <!-- Import mode switch (Devin / smart doesn't support Refresh Token; devin_session_token only goes to Devin) -->
       <div class="mode-section">
-        <span class="mode-label">导入模式：</span>
-        <div class="mode-grid mode-grid--3col" role="radiogroup" aria-label="导入模式">
+        <span class="mode-label">Import Mode:</span>
+        <div class="mode-grid mode-grid--3col" role="radiogroup" aria-label="Import Mode">
           <div
             v-for="opt in importModeOptions"
             :key="opt.value"
@@ -85,7 +85,7 @@
         </div>
       </div>
 
-      <!-- 格式说明 -->
+      <!-- Format instructions -->
       <el-alert
         :type="importMode === 'devin_session_token' ? 'warning' : (authProvider === 'firebase' ? 'info' : 'success')"
         :closable="false"
@@ -94,33 +94,33 @@
       >
         <template #title>
           <span v-if="importMode === 'devin_session_token'">
-            [Devin Session Token] 每行一个 token，格式：<code>devin-session-token$... 备注(可选)</code>。
-            系统逐条调 GetCurrentUser 反查 email / 配额 / api_key 并落库；无效或过期的 token 会归入导入失败。
+            [Devin Session Token] One token per line, format: <code>devin-session-token$... Remarks(optional)</code>.
+            System calls GetCurrentUser for each line to get email / quota / api_key; invalid or expired tokens will be counted as import failures.
           </span>
           <span v-else-if="importMode === 'password' && authProvider === 'smart'">
-            [智能识别] 每行一个账号，格式：<code>邮箱 密码 备注(可选)</code>。
-            系统对每行并发嗅探 <strong>Firebase</strong> / <strong>Devin Auth1</strong> 并自动分派；
-            SSO / 未设密码 / 未注册的账号会归入导入失败。
+            [Smart Detection] One account per line, format: <code>Email Password Remarks(optional)</code>.
+            System concurrently detects <strong>Firebase</strong> / <strong>Devin Auth1</strong> for each line and auto-routes;
+            SSO / no password set / unregistered accounts will be counted as import failures.
           </span>
           <span v-else-if="importMode === 'password' && authProvider === 'devin'">
-            [Devin] 每行一个账号，格式：<code>邮箱 密码 备注(可选)</code>。
-            多组织账号将自动选择首个组织完成导入。
+            [Devin] One account per line, format: <code>Email Password Remarks(optional)</code>.
+            Multi-organization accounts will automatically select the first organization to complete import.
           </span>
           <span v-else-if="importMode === 'password'">
-            每行一个账号，支持空格或连字符分隔：
-            <code>邮箱 密码 备注(可选)</code> 或 <code>邮箱---密码---备注(可选)</code>
+            One account per line, supports space or hyphen separator:
+            <code>Email Password Remarks(optional)</code> or <code>Email---Password---Remarks(optional)</code>
           </span>
-          <span v-else>每行一个 Token，格式：<code>refresh_token 备注(可选)</code></span>
+          <span v-else>One token per line, format: <code>refresh_token Remarks(optional)</code></span>
         </template>
       </el-alert>
 
-      <!-- 输入区域 -->
+      <!-- Input area -->
       <div class="input-section">
         <div class="section-header">
           <span class="section-title">{{ sectionTitle }}</span>
           <el-button type="primary" link @click="handleFileImport">
             <el-icon><Upload /></el-icon>
-            从文件导入
+Import from file
           </el-button>
         </div>
         <el-input
@@ -139,19 +139,19 @@
         />
       </div>
 
-      <!-- 解析预览 -->
+      <!-- Parse preview -->
       <div class="preview-section" v-if="inputText.trim()">
         <div class="section-header">
-          <span class="section-title">解析预览</span>
+          <span class="section-title">Parse Preview</span>
           <div class="stats">
-            <el-tag type="success" size="small">有效: {{ validAccounts.length }}</el-tag>
+            <el-tag type="success" size="small">Valid: {{ validAccounts.length }}</el-tag>
             <el-tag v-if="invalidLines.length > 0" type="danger" size="small">
-              无效: {{ invalidLines.length }}
+              Invalid: {{ invalidLines.length }}
             </el-tag>
           </div>
         </div>
         
-        <!-- 有效账号表格 -->
+        <!-- Valid account table -->
         <el-table
           v-if="validAccounts.length > 0"
           :data="validAccounts.slice(0, 10)"
@@ -159,23 +159,23 @@
           max-height="200"
           stripe
         >
-          <el-table-column prop="email" label="邮箱" min-width="180" />
-          <el-table-column prop="password" label="密码" width="120">
+          <el-table-column prop="email" label="Email" min-width="180" />
+          <el-table-column prop="password" label="Password" width="120">
             <template #default="{ row }">
               <span class="password-mask">{{ maskPassword(row.password) }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" min-width="100">
+          <el-table-column prop="remark" label="Remarks" min-width="100">
             <template #default="{ row }">
               <span class="remark-text">{{ row.remark || '-' }}</span>
             </template>
           </el-table-column>
         </el-table>
         <div v-if="validAccounts.length > 10" class="more-hint">
-          ... 还有 {{ validAccounts.length - 10 }} 个账号
+          ... and {{ validAccounts.length - 10 }} more accounts
         </div>
 
-        <!-- 无效行提示 -->
+        <!-- Invalid line hints -->
         <el-alert
           v-if="invalidLines.length > 0"
           type="warning"
@@ -183,21 +183,21 @@
           style="margin-top: 12px;"
         >
           <template #title>
-            格式错误的行: {{ invalidLines.slice(0, 5).join(', ') }}
-            <span v-if="invalidLines.length > 5">... 等 {{ invalidLines.length }} 行</span>
+            Invalid lines: {{ invalidLines.slice(0, 5).join(', ') }}
+            <span v-if="invalidLines.length > 5">... and {{ invalidLines.length }} more lines</span>
           </template>
         </el-alert>
       </div>
 
-      <!-- 导入设置 -->
+      <!-- Import settings -->
       <div class="settings-section">
         <div class="section-header">
-          <span class="section-title">导入设置</span>
+          <span class="section-title">Import Settings</span>
         </div>
         <div class="settings-content">
-          <!-- 分组选择 -->
+          <!-- Group selection -->
           <div class="setting-item">
-            <span class="setting-label">分组:</span>
+            <span class="setting-label">Group:</span>
             <el-select
               v-model="selectedGroup"
               placeholder="Select group (optional)"
@@ -211,12 +211,12 @@
                 :value="group"
               />
             </el-select>
-            <span class="setting-hint">留空则使用默认分组</span>
+            <span class="setting-hint">Leave empty to use default group</span>
           </div>
           
-          <!-- 标签选择 -->
+          <!-- Tag selection -->
           <div class="setting-item">
-            <span class="setting-label">标签:</span>
+            <span class="setting-label">Tags:</span>
             <el-select
               v-model="selectedTags"
               multiple
@@ -235,18 +235,18 @@
                 <span :style="{ color: tag.color }">{{ tag.name }}</span>
               </el-option>
             </el-select>
-            <span class="setting-hint">留空则不添加标签</span>
+            <span class="setting-hint">Leave empty to not add tags</span>
           </div>
           
           <div class="setting-item">
-            <span class="setting-label">并发模式:</span>
+            <span class="setting-label">Concurrent Mode:</span>
             <el-tag :type="unlimitedConcurrent ? 'danger' : 'primary'" size="small">
-              {{ unlimitedConcurrent ? '全量并发' : `限制并发 (${concurrencyLimit})` }}
+              {{ unlimitedConcurrent ? 'Full Concurrency' : `Limited Concurrency (${concurrencyLimit})` }}
             </el-tag>
-            <span class="setting-hint">可在设置中修改</span>
+            <span class="setting-hint">Can modify in settings</span>
           </div>
           <div class="setting-item">
-            <el-checkbox v-model="autoLogin">导入后自动登录</el-checkbox>
+            <el-checkbox v-model="autoLogin">Auto login after import</el-checkbox>
           </div>
         </div>
       </div>
@@ -254,14 +254,14 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">取消</el-button>
+        <el-button @click="handleClose">Cancel</el-button>
         <el-button
           type="primary"
           :disabled="validAccounts.length === 0"
           :loading="importing"
           @click="handleImport"
         >
-          {{ importing ? '导入中...' : `导入 ${validAccounts.length} 个账号` }}
+          {{ importing ? 'Importing...' : `Import ${validAccounts.length} accounts` }}
         </el-button>
       </div>
     </template>
@@ -315,13 +315,13 @@ const fileInputRef = ref<HTMLInputElement | null>(null);
 const selectedGroup = ref<string>('');
 const selectedTags = ref<string[]>([]);
 const importMode = ref<'password' | 'refresh_token' | 'devin_session_token'>('password');
-/// 认证流派：
-/// - `smart`（默认，推荐）：逐行嗅探 Firebase / Devin 自动分派到对应命令
-/// - `firebase`：手动强制走原有 add_account + login_account
+/// Auth provider:
+/// - `smart` (default, recommended): Sniffs each line for Firebase / Devin and automatically dispatches to the corresponding command
+/// - `firebase`: Manually forces the original add_account + login_account flow
 /// - `devin`：手动强制走 add_account_by_devin_login，多组织自动选 orgs[0]
 const authProvider = ref<'firebase' | 'devin' | 'smart'>('smart');
 
-// 切到 Devin / smart 后，Refresh Token 模式不适用（smart 模式因 Token 无 email 无法嗅探）
+// After switching to Devin / smart, Refresh Token mode is not applicable (smart mode cannot sniff tokens without an email)
 // 自动回落到邮箱密码模式并清空输入
 watch(authProvider, (val) => {
   if ((val === 'devin' || val === 'smart') && importMode.value === 'refresh_token') {
@@ -331,51 +331,51 @@ watch(authProvider, (val) => {
 });
 
 /**
- * 认证流派卡片选项（3 项固定）
+ * Auth provider card options (3 fixed items)
  *
- * - smart：推荐流派，逐行嗅探自动分派
- * - firebase：强制走传统 Firebase 体系
- * - devin：强制走 Devin Session 新体系
+ * - smart: Recommended provider, sniffs and dispatches automatically
+ * - firebase: Forces the traditional Firebase system
+ * - devin: Forces the new Devin Session system
  */
 const authProviderOptions = [
   {
     value: 'smart' as const,
-    title: '智能识别',
-    desc: '逐行并发嗅探 Firebase / Devin，自动分派到对应模式',
+    title: 'Smart Detection',
+    desc: 'Concurrent detection for Firebase / Devin, auto-routes to corresponding mode',
     icon: MagicStick,
-    tag: '推荐',
+    tag: 'Recommended',
     tagType: 'primary' as const,
   },
   {
     value: 'firebase' as const,
-    title: 'Firebase（官方）',
-    desc: '手动强制走原有 add_account + login_account（Firebase 体系）',
+    title: 'Firebase (Official)',
+    desc: 'Force use original add_account + login_account (Firebase system)',
     icon: Platform,
     tag: '',
     tagType: 'info' as const,
   },
   {
     value: 'devin' as const,
-    title: 'Devin（新版）',
-    desc: '强制走 add_account_by_devin_login，多组织自动选 orgs[0]',
+    title: 'Devin (New)',
+    desc: 'Force use add_account_by_devin_login, multi-organization auto-select orgs[0]',
     icon: User,
-    tag: '新',
+    tag: 'New',
     tagType: 'success' as const,
   },
 ];
 
 /**
- * 导入模式卡片选项（3 项，按 authProvider 动态 disabled）
+ * Import mode card options (3 items, dynamically disabled by authProvider)
  *
- * - password：邮箱 + 密码 + 可选备注
- * - refresh_token：Firebase refresh_token；只在 authProvider === 'firebase' 时可用
- * - devin_session_token：devin-session-token$... 迁入
+ * - password: Email + Password + optional remarks
+ * - refresh_token: Firebase refresh_token; only available when authProvider === 'firebase'
+ * - devin_session_token: devin-session-token$... import
  */
 const importModeOptions = computed(() => [
   {
     value: 'password' as const,
-    title: '邮箱密码',
-    desc: '每行一个账号：邮箱 密码 [备注]',
+    title: 'Email & Password',
+    desc: 'One account per line: Email Password [Remarks]',
     icon: Lock,
     tag: '',
     tagType: 'info' as const,
@@ -385,24 +385,24 @@ const importModeOptions = computed(() => [
   {
     value: 'refresh_token' as const,
     title: 'Refresh Token',
-    desc: '每行一个 Firebase refresh_token（+ 可选备注）',
+    desc: 'One Firebase refresh_token per line (+ optional remarks)',
     icon: Refresh,
     tag: '',
     tagType: 'info' as const,
     disabled: authProvider.value === 'devin' || authProvider.value === 'smart',
     disabledReason:
       authProvider.value === 'devin'
-        ? 'Devin 体系不适用 refresh_token'
+        ? 'Refresh token is not applicable for Devin system'
         : authProvider.value === 'smart'
-          ? '智能识别需要 email，Token 格式无法嗅探'
+          ? 'Smart detection requires email, Token format cannot be detected'
           : '',
   },
   {
     value: 'devin_session_token' as const,
     title: 'Devin Session Token',
-    desc: '粘贴 devin-session-token$... 直接迁入，无需邮箱密码',
+    desc: 'Paste devin-session-token$... to import directly, no email/password needed',
     icon: Connection,
-    tag: '迁入',
+    tag: 'Import',
     tagType: 'warning' as const,
     disabled: false,
     disabledReason: '',
@@ -410,8 +410,8 @@ const importModeOptions = computed(() => [
 ]);
 
 /**
- * 切换认证流派：等价原 v-model="authProvider"。
- * 保留同值点击早返以避免触发 watch 側效应。
+ * Select auth provider: equivalent to the original v-model="authProvider".
+ * Returns early on same-value clicks to avoid watch side effects.
  */
 function selectAuthProvider(value: 'smart' | 'firebase' | 'devin') {
   if (authProvider.value === value) return;
@@ -419,8 +419,8 @@ function selectAuthProvider(value: 'smart' | 'firebase' | 'devin') {
 }
 
 /**
- * 切换导入模式：等价原 v-model + @change="handleModeChange"。
- * disabled 项已在模板层拦截，本函数只处理合法切换。
+ * Select import mode: equivalent to the original v-model + @change="handleModeChange".
+ * Disabled items are intercepted at the template layer; this function only handles valid switches.
  */
 function selectImportMode(value: 'password' | 'refresh_token' | 'devin_session_token') {
   if (importMode.value === value) return;
@@ -431,20 +431,20 @@ function selectImportMode(value: 'password' | 'refresh_token' | 'devin_session_t
 const unlimitedConcurrent = computed(() => settingsStore.settings?.unlimitedConcurrentRefresh || false);
 const concurrencyLimit = computed(() => settingsStore.settings?.concurrent_limit || 5);
 
-// 按当前模式生成输入区的标题与占位符
+// Generate section title and placeholder based on current mode
 const sectionTitle = computed(() => {
-  if (importMode.value === 'devin_session_token') return 'Devin Session Token 列表';
-  return importMode.value === 'password' ? '账号数据' : 'Refresh Token 列表';
+  if (importMode.value === 'devin_session_token') return 'Devin Session Token List';
+  return importMode.value === 'password' ? 'Account Data' : 'Refresh Token List';
 });
 const inputPlaceholder = computed(() => {
   if (importMode.value === 'password') {
-    return 'user1@example.com password123 测试账号1\nuser2@example.com---password456\nuser3@example.com---password789---备注信息';
+    return 'user1@example.com password123 Test Account 1\nuser2@example.com---password456\nuser3@example.com---password789---Remarks Info';
   }
   if (importMode.value === 'refresh_token') {
-    return 'AMf-vBx...长token... 测试账号1\nAMf-vBy...长token...\nAMf-vBz...长token... 备注信息';
+    return 'AMf-vBx...longtoken... Test Account 1\nAMf-vBy...longtoken...\nAMf-vBz...longtoken... Remarks Info';
   }
   // devin_session_token
-  return 'devin-session-token$eyJhbGciOi... 测试账号1\ndevin-session-token$eyJhbGciOi...\ndevin-session-token$eyJhbGciOi... 备注信息';
+  return 'devin-session-token$eyJhbGciOi... Test Account 1\ndevin-session-token$eyJhbGciOi...\ndevin-session-token$eyJhbGciOi... Remarks Info';
 });
 
 /**
@@ -470,14 +470,14 @@ function handleModeChange() {
   invalidLines.value = [];
 }
 
-// 解析账号数据
+// Parse account data
 function parseAccounts() {
   const lines = inputText.value.split('\n').filter(line => line.trim());
   validAccounts.value = [];
   invalidLines.value = [];
 
   if (importMode.value === 'password') {
-    // 邮箱密码模式：支持 `email password remark` 与 `email---password---remark` 两种格式
+    // Email/password mode: supports both `email password remark` and `email---password---remark` formats
     lines.forEach((line, index) => {
       const parts = splitLine(line);
       if (parts.length >= 2) {
@@ -496,7 +496,7 @@ function parseAccounts() {
       }
     });
   } else if (importMode.value === 'devin_session_token') {
-    // Devin Session Token 模式：首个非空白段为 session_token，必须以 devin-session-token$ 开头
+    // Devin Session Token mode: the first non-whitespace segment is the session_token, must start with devin-session-token$
     lines.forEach((line, index) => {
       const parts = splitLine(line);
       if (parts.length >= 1 && parts[0].startsWith('devin-session-token$')) {
@@ -568,14 +568,14 @@ function handleImport() {
     'import',
     [...validAccounts.value],
     autoLogin.value,
-    selectedGroup.value || '默认分组',
+    selectedGroup.value || 'Default Group',
     [...selectedTags.value],
     importMode.value,
     authProvider.value,
   );
 }
 
-// 关闭对话框
+// Close dialog
 function handleClose() {
   if (!importing.value) {
     inputText.value = '';
@@ -655,7 +655,7 @@ defineExpose({
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* 单张卡片：单行 flex，矮版 34px；说明载于原生 title tooltip */
+/* Single card: single-line flex, 34px height; description is in the native title tooltip */
 .mode-card {
   display: flex;
   align-items: center;
@@ -836,5 +836,4 @@ code {
   padding: 2px 6px;
   border-radius: 4px;
   font-family: monospace;
-}
-</style>
+}                                

@@ -17,25 +17,25 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
-            // 初始化数据存储
+            // Initialize data store
             let store = DataStore::new(app.handle())
                 .expect("Failed to initialize data store");
             let store = Arc::new(store);
             
-            // 将数据存储注入到应用状态
+            // Inject data store into application state
             app.manage(store.clone());
             
-            // 初始化自动重置配置存储
+            // Initialize auto reset config store
             let auto_reset_store = AutoResetStore::new(app.handle())
                 .expect("Failed to initialize auto reset store");
             app.manage(Arc::new(auto_reset_store));
             
-            // 初始化重置记录存储
+            // Initialize reset record store
             let reset_record_store = ResetRecordStore::new(app.handle())
                 .expect("Failed to initialize reset record store");
             app.manage(Arc::new(reset_record_store));
             
-            // 初始化代理配置
+            // Initialize proxy configuration
             let store_for_proxy = store.clone();
             tauri::async_runtime::spawn(async move {
                 if let Ok(settings) = store_for_proxy.get_settings().await {
@@ -50,7 +50,7 @@ pub fn run() {
                 }
             });
             
-            // 获取版本号并设置窗口标题
+            // Get version number and set window title
             let version = app.package_info().version.to_string();
             if let Some(window) = app.get_webview_window("main") {
                 let title = format!("windsurf-account-manager-simple v{}", version);
@@ -60,7 +60,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            // 账号管理命令
+            // Account management commands
             commands::add_account,
             commands::add_account_by_refresh_token,
             commands::get_all_accounts,
@@ -72,7 +72,7 @@ pub fn run() {
             commands::filter_accounts_by_group,
             commands::filter_accounts_by_tags,
             
-            // API操作命令
+            // API operation commands
             commands::login_account,
             commands::refresh_token,
             commands::get_plan_status,
@@ -97,7 +97,7 @@ pub fn run() {
             commands::get_available_mcp_plugins,
             commands::delete_windsurf_user,
             
-            // 支付相关命令
+            // Payment related commands
             commands::generate_virtual_card,
             commands::open_payment_window,
             commands::inject_card_info,
@@ -115,15 +115,15 @@ pub fn run() {
             commands::reset_test_mode_progress,
             commands::get_test_mode_progress,
             
-            // Protobuf解析API命令（返回解析后的数据）
+            // Protobuf parsing API commands (return parsed data)
             commands::get_current_user_parsed,
             commands::get_billing_parsed,
             commands::batch_get_users_parsed,
 
-            // Analytics 分析命令
+            // Analytics analysis commands
             commands::get_account_analytics,
 
-            // 设置管理命令
+            // Settings management commands
             commands::get_settings,
             commands::update_settings,
             commands::get_groups,
@@ -140,32 +140,32 @@ pub fn run() {
             commands::get_stats,
             commands::export_data,
             
-            // 切号相关命令
+            // Account switching related commands
             commands::switch_account,
             commands::reset_machine_id,
             commands::check_admin_privileges,
             
-            // Windsurf信息命令
+            // Windsurf information commands
             commands::get_current_windsurf_info,
             
-            // 应用信息命令
+            // Application information commands
             commands::get_app_version,
             commands::get_app_title,
             commands::reset_http_client,
             
-            // 无感换号补丁命令
+            // Seamless account switching patch commands
             commands::get_windsurf_path,
             commands::apply_seamless_patch,
             commands::restore_seamless_patch,
             commands::check_patch_status,
             commands::validate_windsurf_path,
             
-            // 伟哥(寸止)命令
+            // Cunzhi commands
             commands::check_cunzhi_status,
             commands::install_cunzhi,
             commands::uninstall_cunzhi,
             
-            // 数据备份命令
+            // Data backup commands
             commands::create_backup,
             commands::list_backups,
             commands::restore_backup,
@@ -174,13 +174,13 @@ pub fn run() {
             commands::import_data_from_file,
             commands::get_data_directory,
             
-            // 排序命令
+            // Sorting commands
             commands::get_sorted_accounts,
             commands::update_accounts_order,
             commands::update_sort_config,
             commands::get_sort_config,
             
-            // 团队管理命令
+            // Team management commands
             commands::get_team_members,
             commands::invite_team_members,
             commands::remove_team_member,
@@ -191,16 +191,16 @@ pub fn run() {
             commands::reject_invitation,
             commands::request_team_access,
             commands::approve_team_join_request,
-            // 自动充值管理
+            // Auto top-up management
             commands::get_credit_top_up_settings,
             commands::update_credit_top_up_settings,
-            // 成员权限管理
+            // Member permission management
             commands::update_codeium_access,
             commands::add_user_role,
             commands::remove_user_role,
             commands::transfer_subscription,
             
-            // 自动重置命令
+            // Auto reset commands
             commands::get_auto_reset_configs,
             commands::add_auto_reset_config,
             commands::update_auto_reset_config,
@@ -211,7 +211,7 @@ pub fn run() {
             commands::get_reset_stats,
             commands::clear_reset_records,
 
-            // Devin Session 账密登录
+            // Devin Session password login
             commands::devin_check_connections,
             commands::devin_password_login,
             commands::devin_windsurf_post_auth,
@@ -220,11 +220,11 @@ pub fn run() {
             commands::refresh_devin_session,
             commands::add_account_by_devin_session_token,
 
-            // 登录流派智能嗅探（方案 B：自动嗅探 + 统一入口）
+            // Login method intelligent sniffing (Plan B: automatic sniffing + unified entry)
             commands::devin_check_user_login_method,
             commands::sniff_login_method,
 
-            // Devin 邮箱注册 / 无密码邮件登录 / 忘记密码
+            // Devin email registration / passwordless email login / forgot password
             commands::devin_email_start,
             commands::devin_email_complete,
             commands::devin_password_reset_start,

@@ -9,21 +9,21 @@ pub struct AnalyticsService {
 
 impl AnalyticsService {
     pub fn new() -> Self {
-        // 使用全局共享的 HTTP 客户端，避免每次请求都创建新实例
+        // Use globally shared HTTP client to avoid creating new instance for each request
         Self {
             client: super::get_http_client(),
         }
     }
 
-    /// 构建 GetAnalytics 请求体
+    /// Build GetAnalytics request body
     ///
-    /// 请求格式:
-    /// - field 2 (repeated QueryRequest): 查询请求数组
-    /// - field 3 (start_timestamp): 开始时间
-    /// - field 4 (end_timestamp): 结束时间
-    /// 注意: api_key 不在请求体中，通过 x-auth-token 头认证
+    /// Request format:
+    /// - field 2 (repeated QueryRequest): query request array
+    /// - field 3 (start_timestamp): start time
+    /// - field 4 (end_timestamp): end time
+    /// Note: api_key is not in request body, authenticated via x-auth-token header
     ///
-    /// QueryRequest 字段编号:
+    /// QueryRequest field numbers:
     /// - 1: completion_stats
     /// - 2: completions_by_day
     /// - 3: completions_by_language
@@ -31,19 +31,19 @@ impl AnalyticsService {
     /// - 12: chats_by_model
     /// - 15: percent_code_written
     /// - 17: chat_stats
-    /// - 20: cascade_stats (官网请求3用的)
+    /// - 20: cascade_stats (used in official website request 3)
     /// - 23: cascade_lines
     /// - 24: cascade_tool_usage
     /// - 25: cascade_runs
     /// - 29: daily_active_user_counts
-    /// - 31: cascade_summary (官网请求2用的，包含 conversations, credits, commands 等)
-    /// 构建完整请求体（包含所有查询类型）
+    /// - 31: cascade_summary (used in official website request 2, includes conversations, credits, commands, etc.)
+    /// Build complete request body (includes all query types)
     fn build_get_analytics_body(&self, start_timestamp: i64, end_timestamp: i64, is_team: bool) -> Vec<u8> {
         let mut body = Vec::new();
 
-        // ===== Cascade 相关查询 =====
+        // ===== Cascade-related queries =====
         
-        // Field 2: QueryRequest - cascade_stats (field 20 in QueryRequest) - 官网请求3
+        // Field 2: QueryRequest - cascade_stats (field 20 in QueryRequest) - Official website request 3
         // Tag: (20 << 3) | 2 = 0xA2 0x01
         body.extend_from_slice(&[0x12, 0x03, 0xA2, 0x01, 0x00]);
 
@@ -59,12 +59,12 @@ impl AnalyticsService {
         // Tag: (25 << 3) | 2 = 0xCA 0x01
         body.extend_from_slice(&[0x12, 0x03, 0xCA, 0x01, 0x00]);
 
-        // Field 2: QueryRequest - cascade_summary (field 31 in QueryRequest) - 官网请求2
-        // 包含 conversations, credits, commands, workflows, memories, terminal messages 等
+        // Field 2: QueryRequest - cascade_summary (field 31 in QueryRequest) - official website request 2
+        // Includes conversations, credits, commands, workflows, memories, terminal messages, etc.
         // Tag: (31 << 3) | 2 = 0xFA 0x01
         body.extend_from_slice(&[0x12, 0x03, 0xFA, 0x01, 0x00]);
 
-        // ===== 基础统计查询（缺失数据将被忽略）=====
+        // ===== Basic statistics queries (missing data will be ignored) =====
         // completion_stats (field 1)
         body.extend_from_slice(&[0x12, 0x02, 0x0A, 0x00]);
         // completions_by_language (field 3)
@@ -72,7 +72,7 @@ impl AnalyticsService {
         // chats_by_model (field 12)
         body.extend_from_slice(&[0x12, 0x02, 0x62, 0x00]);
         
-        // ===== 带 time_zone 参数的查询 =====
+        // ===== Queries with time_zone parameter =====
         let tz = b"Asia/Shanghai";
         let tz_msg_len = 2 + tz.len(); // 0x0A + len + tz_bytes
         let query_msg_len = 2 + tz_msg_len; // field_tag + len + inner_msg
@@ -95,7 +95,7 @@ impl AnalyticsService {
         body.push(tz.len() as u8);
         body.extend_from_slice(tz);
 
-        // ===== 仅团队账户可用的查询 =====
+        // ===== Queries available only for team accounts =====
         if is_team {
             // percent_code_written (field 15)
             body.extend_from_slice(&[0x12, 0x02, 0x7A, 0x00]);
@@ -115,29 +115,29 @@ impl AnalyticsService {
         body.push(end_ts_bytes.len() as u8);
         body.extend_from_slice(&end_ts_bytes);
 
-        // 注意: api_key 不在请求体中，认证通过 x-auth-token 头完成
+        // Note: api_key is not in request body, authentication is completed via x-auth-token header
 
         body
     }
 
-    /// 构建简化请求体（仅 cascade 数据，用于降级）
+    /// Build simplified request body (only cascade data, for fallback)
     fn build_cascade_only_body(&self, start_timestamp: i64, end_timestamp: i64) -> Vec<u8> {
         let mut body = Vec::new();
 
-        // 只请求 cascade 相关查询（与官网一致）
+        // Only request cascade-related queries (consistent with official website)
         body.extend_from_slice(&[0x12, 0x03, 0xA2, 0x01, 0x00]); // cascade_stats (field 20)
         body.extend_from_slice(&[0x12, 0x03, 0xBA, 0x01, 0x00]); // cascade_lines (field 23)
         body.extend_from_slice(&[0x12, 0x03, 0xC2, 0x01, 0x00]); // cascade_tool_usage (field 24)
         body.extend_from_slice(&[0x12, 0x03, 0xCA, 0x01, 0x00]); // cascade_runs (field 25)
         body.extend_from_slice(&[0x12, 0x03, 0xFA, 0x01, 0x00]); // cascade_summary (field 31)
 
-        // start_timestamp (不含 nanos)
+        // start_timestamp (without nanos)
         body.push(0x1A);
         let start_ts_bytes = Self::encode_timestamp(start_timestamp);
         body.push(start_ts_bytes.len() as u8);
         body.extend_from_slice(&start_ts_bytes);
 
-        // end_timestamp (含 nanos，与官网一致)
+        // end_timestamp (with nanos, consistent with official website)
         body.push(0x22);
         let end_ts_bytes = Self::encode_timestamp_with_nanos(end_timestamp, 999999000);
         body.push(end_ts_bytes.len() as u8);
@@ -146,17 +146,17 @@ impl AnalyticsService {
         body
     }
 
-    /// 构建无时间戳请求体（最终降级，模仿官网请求1）
+    /// Build request body without timestamp (final fallback, imitating official website request 1)
     fn build_no_timestamp_body(&self) -> Vec<u8> {
         let mut body = Vec::new();
-        // cascade 相关查询（无时间戳）
+        // cascade-related queries (without timestamp)
         body.extend_from_slice(&[0x12, 0x03, 0xA2, 0x01, 0x00]); // cascade_stats (field 20)
         body.extend_from_slice(&[0x12, 0x03, 0xCA, 0x01, 0x00]); // cascade_runs (field 25)
         body.extend_from_slice(&[0x12, 0x03, 0xFA, 0x01, 0x00]); // cascade_summary (field 31)
         body
     }
 
-    /// 编码 Timestamp 为 Protobuf 格式（仅 seconds，用于 start_timestamp）
+    /// Encode Timestamp to Protobuf format (only seconds, for start_timestamp)
     fn encode_timestamp(timestamp: i64) -> Vec<u8> {
         let mut ts_body = Vec::new();
         // Field 1: seconds - Tag: (1 << 3) | 0 = 0x08
@@ -165,8 +165,8 @@ impl AnalyticsService {
         ts_body
     }
 
-    /// 编码 Timestamp 为 Protobuf 格式（包含 nanos，用于 end_timestamp）
-    /// 官网的 end_timestamp 包含 nanos 字段，值通常是一个固定值
+    /// Encode Timestamp to Protobuf format (includes nanos, for end_timestamp)
+    /// Official website's end_timestamp includes nanos field, value is usually a fixed value
     fn encode_timestamp_with_nanos(timestamp: i64, nanos: i32) -> Vec<u8> {
         let mut ts_body = Vec::new();
         // Field 1: seconds
@@ -180,7 +180,7 @@ impl AnalyticsService {
         ts_body
     }
 
-    /// 编码 varint
+    /// Encode varint
     fn encode_varint(mut value: u64) -> Vec<u8> {
         let mut result = Vec::new();
         loop {
@@ -197,9 +197,9 @@ impl AnalyticsService {
         result
     }
 
-    /// 调用 GetAnalytics API
-    /// auth_token: Firebase JWT Token (用于 x-auth-token 头)
-    /// is_team: 是否是团队账户，团队账户会额外请求 percent_code_written
+    /// Call GetAnalytics API
+    /// auth_token: Firebase JWT Token (for x-auth-token header)
+    /// is_team: whether it's a team account, team accounts will additionally request percent_code_written
     pub async fn get_analytics(&self, auth_token: &str, start_timestamp: i64, end_timestamp: i64, is_team: bool) -> AppResult<Vec<u8>> {
         let url = format!("{}/exa.user_analytics_pb.UserAnalyticsService/GetAnalytics", WINDSURF_BASE_URL);
         
@@ -239,7 +239,7 @@ impl AnalyticsService {
         println!("[GetAnalytics] Response body length: {} bytes", response_body.len());
 
         if status_code != 200 {
-            // 尝试解析错误响应
+            // Try to parse error response
             if let Ok(error_text) = String::from_utf8(response_body.clone()) {
                 println!("[GetAnalytics] Error response: {}", error_text);
                 return Err(AppError::Api(format!("API returned status code {}: {}", status_code, error_text)));
@@ -250,7 +250,7 @@ impl AnalyticsService {
         Ok(response_body)
     }
 
-    /// 降级请求：仅获取 cascade 数据（当完整请求失败时使用）
+    /// Fallback request: only get cascade data (used when complete request fails)
     pub async fn get_analytics_cascade_only(&self, auth_token: &str, start_timestamp: i64, end_timestamp: i64) -> AppResult<Vec<u8>> {
         let url = format!("{}/exa.user_analytics_pb.UserAnalyticsService/GetAnalytics", WINDSURF_BASE_URL);
         
@@ -298,7 +298,7 @@ impl AnalyticsService {
         Ok(response_body)
     }
 
-    /// 最终降级请求：无时间戳，仅 cascade_runs（模仿官网请求1）
+    /// Final fallback request: no timestamp, only cascade_runs (imitating official website request 1)
     pub async fn get_analytics_no_timestamp(&self, auth_token: &str) -> AppResult<Vec<u8>> {
         let url = format!("{}/exa.user_analytics_pb.UserAnalyticsService/GetAnalytics", WINDSURF_BASE_URL);
         

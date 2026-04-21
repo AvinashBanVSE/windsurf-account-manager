@@ -13,7 +13,7 @@
       label-width="100px"
       autocomplete="off"
     >
-      <el-form-item label="邮箱">
+      <el-form-item label="Email">
         <el-input
           v-model="formData.email"
           disabled
@@ -22,7 +22,7 @@
         />
       </el-form-item>
       
-      <el-form-item label="备注名称" prop="nickname">
+      <el-form-item label="Nickname" prop="nickname">
         <el-input
           v-model="formData.nickname"
           placeholder="Enter nickname"
@@ -30,7 +30,7 @@
         />
       </el-form-item>
       
-      <el-form-item label="修改密码" prop="newPassword">
+      <el-form-item label="Change Password" prop="newPassword">
         <el-input 
           v-model="formData.newPassword" 
           type="password"
@@ -40,7 +40,7 @@
         />
       </el-form-item>
       
-      <el-form-item label="确认密码" prop="confirmPassword" v-if="formData.newPassword">
+      <el-form-item label="Confirm Password" prop="confirmPassword" v-if="formData.newPassword">
         <el-input 
           v-model="formData.confirmPassword" 
           type="password"
@@ -92,7 +92,7 @@
         </el-select>
       </el-form-item>
       
-      <el-form-item label="标签颜色" v-if="formData.tags.length > 0">
+      <el-form-item label="Tag Colors" v-if="formData.tags.length > 0">
         <TagColorPicker
           :tags="formData.tags"
           v-model:tagColors="formData.tagColors"
@@ -154,7 +154,7 @@ watch(currentAccount, (account) => {
 
 const validatePassword = (_rule: any, value: any, callback: any) => {
   if (value && formData.newPassword && value !== formData.newPassword) {
-    callback(new Error('两次输入密码不一致'));
+    callback(new Error('The two passwords do not match'));
   } else {
     callback();
   }
@@ -175,16 +175,16 @@ const rules: FormRules = {
 
 const availableTags = computed(() => {
   const tags = new Set<string>();
-  // 添加全局标签
+  // Add global tags
   settingsStore.tags.forEach(tag => tags.add(tag.name));
-  // 添加账号中已使用的标签
+  // Add tags already used in accounts
   accountsStore.accounts.forEach(account => {
     account.tags.forEach(tag => tags.add(tag));
   });
   return Array.from(tags);
 });
 
-// 获取全局标签的颜色
+// Get the color of the global tag
 function getGlobalTagColor(tagName: string): string | undefined {
   const globalTag = settingsStore.tags.find(t => t.name === tagName);
   return globalTag?.color;
@@ -202,7 +202,7 @@ function handleTagsChange(newTags: string[]) {
       }
     }
   });
-  // 移除不存在的标签的颜色
+  // Remove colors for tags that no longer exist
   formData.tagColors = formData.tagColors.filter(tc => newTags.includes(tc.name));
 }
 
@@ -212,7 +212,7 @@ async function handleSubmit() {
   await formRef.value.validate(async (valid) => {
     if (!valid) return;
     
-    // 在回调中再次获取currentAccount以满足TypeScript的类型检查
+    // Re-acquire currentAccount in the callback to satisfy TypeScript's type checking
     const account = currentAccount.value;
     if (!account) return;
     
@@ -236,7 +236,7 @@ async function handleSubmit() {
         }
         updatedAccount.password = trimmedPassword;
       } else {
-        // 不修改密码时，确保不发送password字段
+        // When not changing the password, ensure the password field is not sent
         delete updatedAccount.password;
       }
       
@@ -274,7 +274,7 @@ function handleClose() {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* 深色模式样式 */
+/* Dark mode styles */
 :root.dark .el-form-item__label {
   color: #cfd3dc !important;
 }
@@ -312,4 +312,4 @@ function handleClose() {
   border-color: rgba(64, 158, 255, 0.3) !important;
   color: #409eff !important;
 }
-</style>
+         

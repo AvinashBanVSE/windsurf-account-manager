@@ -1,26 +1,26 @@
 use chrono::{DateTime, Utc, Duration};
 
-/// 格式化日期时间为用户友好的字符串
+/// Format date time as user-friendly string
 pub fn format_datetime(dt: &DateTime<Utc>) -> String {
     dt.format("%Y-%m-%d %H:%M:%S").to_string()
 }
 
-/// 检查token是否过期
+/// Check if token is expired
 pub fn is_token_expired(expires_at: &DateTime<Utc>) -> bool {
     Utc::now() >= *expires_at
 }
 
-/// 检查token是否即将过期（5分钟内）
+/// Check if token is expiring soon (within 5 minutes)
 pub fn is_token_expiring_soon(expires_at: &DateTime<Utc>) -> bool {
     Utc::now() + Duration::minutes(5) >= *expires_at
 }
 
-/// 计算从现在到指定时间的持续时间（秒）
+/// Calculate duration from now to target time (in seconds)
 pub fn seconds_until(target: &DateTime<Utc>) -> i64 {
     (*target - Utc::now()).num_seconds()
 }
 
-/// 解析ISO 8601格式的时间字符串
+/// Parse ISO 8601 format time string
 pub fn parse_iso_datetime(s: &str) -> Result<DateTime<Utc>, chrono::ParseError> {
     s.parse::<DateTime<Utc>>()
 }

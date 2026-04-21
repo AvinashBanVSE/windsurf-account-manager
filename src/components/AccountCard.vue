@@ -49,7 +49,7 @@
     </div>
 
     <div class="card-body">
-      <!-- 配额和套餐信息 -->
+      <!-- Quota and plan information -->
       <div class="quota-section" v-if="hasQuotaData">
         <div class="quota-header">
           <div class="quota-header-left">
@@ -61,7 +61,7 @@
               {{ account.plan_name }}
             </el-tag>
           </div>
-          <!-- CREDITS 模式：显示积分数值 -->
+          <!-- CREDITS mode: display credit value -->
           <div class="quota-header-right" v-if="!isQuotaMode">
             <span class="quota-used">{{ formatQuota(account.used_quota) }}</span>
             <span class="quota-separator">/</span>
@@ -69,7 +69,7 @@
           </div>
         </div>
 
-        <!-- QUOTA 模式：日配额和周配额百分比 -->
+        <!-- QUOTA mode: daily and weekly quota percentage -->
         <template v-if="isQuotaMode">
           <div class="quota-percent-row">
             <span class="quota-percent-label">Daily Quota</span>
@@ -114,7 +114,7 @@
           </div>
         </template>
         
-        <!-- 订阅到期时间（整合在配额区块内） -->
+        <!-- Subscription expiration time (integrated within the quota block) -->
         <div class="quota-expiry" v-if="account.subscription_expires_at">
           <el-icon class="expiry-icon"><Clock /></el-icon>
           <span class="expiry-label">Expiry:</span>
@@ -261,7 +261,7 @@
         </el-tooltip>
       </div>
       
-      <!-- 第二排按钮（5个） -->
+      <!-- Second row of buttons (5) -->
       <div class="action-buttons">
         <el-tooltip content="Edit" placement="top">
           <el-button 
@@ -382,7 +382,7 @@
     :account-id="account.id"
   />
 
-  <!-- 更换订阅对话框 -->
+  <!-- Change Subscription Dialog -->
   <UpdatePlanDialog
     v-model="showUpdatePlanDialog"
     :account-id="account.id"
@@ -390,7 +390,7 @@
     @success="handleUpdatePlanSuccess"
   />
 
-  <!-- Turnstile 验证对话框 -->
+  <!-- Turnstile Verification Dialog -->
   <TurnstileDialog
     :visible="showTurnstileDialog"
     @update:visible="showTurnstileDialog = $event"
@@ -398,7 +398,7 @@
     @cancel="showTurnstileDialog = false"
   />
 
-  <!-- 切号进度弹窗（独立居中 Dialog） -->
+  <!-- Switch Account Progress Popup (Independent Centered Dialog) -->
   <!-- 运行中禁止通过遮罩 / Esc 关闭，强制用户看到全流程；成功/失败时允许关闭 -->
   <el-dialog
     v-model="switchProgress.visible"
@@ -423,7 +423,7 @@
         striped
         :striped-flow="switchProgress.phase === 'running'"
       />
-      <!-- 当前阶段描述 -->
+      <!-- Current stage description -->
       <div
         class="switch-progress-label"
         :class="{ 'is-error': switchProgress.phase === 'error' }"
@@ -538,7 +538,7 @@ const displayEmail = computed(() => {
   return props.account.email;
 });
 
-// 获取标签颜色（优先使用全局标签颜色）
+// Get tag color (priority given to global tag color)
 function getTagColor(tagName: string): string | null {
   // 优先使用全局标签的颜色
   const globalTag = settingsStore.tags.find(t => t.name === tagName);
@@ -551,7 +551,7 @@ function getTagColor(tagName: string): string | null {
   return tagWithColor?.color || null;
 }
 
-// 解析颜色为RGB值
+// Parse color into RGB values
 function parseColor(color: string): { r: number; g: number; b: number; a: number } | null {
   // 解析RGBA格式
   const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
@@ -587,11 +587,11 @@ function parseColor(color: string): { r: number; g: number; b: number; a: number
   return null;
 }
 
-// 获取标签样式
+// Get tag style
 function getTagStyle(tagName: string): Record<string, string> {
   const color = getTagColor(tagName);
   
-  // 如果没有找到颜色，返回默认样式（而不是空对象）
+  // If no color is found, return default style (instead of an empty object)
   if (!color) {
     return {
       backgroundColor: 'rgba(64, 158, 255, 0.1)',
@@ -606,7 +606,7 @@ function getTagStyle(tagName: string): Record<string, string> {
     const { r, g, b, a } = parsed;
     // 背景色使用低透明度
     const bgAlpha = Math.min(a * 0.2, 0.3);
-    // 边框使用稍高透明度
+    // Use slightly higher transparency for the border
     const borderAlpha = Math.min(a * 0.5, 0.6);
     return {
       backgroundColor: `rgba(${r}, ${g}, ${b}, ${bgAlpha})`,
@@ -616,7 +616,7 @@ function getTagStyle(tagName: string): Record<string, string> {
     };
   }
   
-  // 如果颜色解析失败，尝试直接使用颜色值
+  // If color parsing fails, try using the color value directly
   return {
     backgroundColor: color,
     borderColor: color,
@@ -624,9 +624,9 @@ function getTagStyle(tagName: string): Record<string, string> {
   };
 }
 
-// 是否有带颜色的标签
+// Whether there are colored tags
 const hasColoredTag = computed(() => {
-  // 检查账号的任意标签是否有颜色（全局或账号级别）
+  // Check if any of the account's tags have a color (global or account level)
   return props.account.tags.some(tagName => getTagColor(tagName) !== null);
 });
 
@@ -640,7 +640,7 @@ const primaryTagColor = computed(() => {
   return null;
 });
 
-// 卡片边框样式
+// Card border style
 const cardBorderStyle = computed(() => {
   const color = primaryTagColor.value;
   if (!color) return {};
@@ -648,7 +648,7 @@ const cardBorderStyle = computed(() => {
   const parsed = parseColor(color);
   if (parsed) {
     const { r, g, b, a } = parsed;
-    // 边框透明度
+    // Border transparency
     const borderAlpha = Math.min(a * 0.6, 0.8);
     // 发光效果透明度
     const glowAlpha = Math.min(a * 0.2, 0.3);
@@ -701,8 +701,8 @@ const switchProgress = reactive<SwitchProgressState>({
   accountName: '',
 });
 
-// 步骤定义：顺序与后端 emit 的 step key 保持一致
-// 前端按 key 查找当前步骤在序列中的位置来渲染 checklist 状态
+// Step definition: The order is consistent with the step key emitted by the backend
+// The frontend looks up the position of the current step in the sequence by key to render the checklist status
 const SWITCH_STEP_DEFS: ReadonlyArray<{ key: string; label: string }> = [
   { key: 'preparing', label: 'Preparing account info' },
   { key: 'fetch_access', label: 'Fetching access_token' },
@@ -768,7 +768,7 @@ const showTurnstileDialog = ref(false);
 const pendingTurnstileToken = ref('');
 const seatsResultData = ref<any>(null);
 
-// 判断是否为付费计划（非 Free）
+// Determine if it is a paid plan (not Free)
 const isPaidPlan = computed(() => {
   const planName = props.account.plan_name?.toLowerCase();
   return planName && planName !== 'free';
@@ -777,7 +777,7 @@ const isPaidPlan = computed(() => {
 const statusClass = computed(() => {
   // 只有付费计划且 subscription_active 为 false 时才显示未激活
   if (isPaidPlan.value && props.account.subscription_active === false) return 'status-subscription-inactive';
-  // 检查账户禁用状态
+  // Check account disabled status
   if (props.account.is_disabled) return 'status-disabled';
   if (props.account.status === 'active') return 'status-active';
   if (props.account.status === 'inactive') return 'status-inactive';
@@ -787,14 +787,14 @@ const statusClass = computed(() => {
 const statusText = computed(() => {
   // 只有付费计划且 subscription_active 为 false 时才显示未激活
   if (isPaidPlan.value && props.account.subscription_active === false) return 'Inactive';
-  // 检查账户禁用状态
+  // Check account disabled status
   if (props.account.is_disabled) return 'Disabled';
   if (props.account.status === 'active') return 'Active';
   if (props.account.status === 'inactive') return 'Offline';
   return 'Error';
 });
 
-// 是否为配额百分比模式 (billing_strategy === 2 即 QUOTA)
+// Whether it is in quota percentage mode (billing_strategy === 2, i.e., QUOTA)
 const isQuotaMode = computed(() => props.account.billing_strategy === 2);
 
 // 是否有配额数据可展示（QUOTA 模式或 CREDITS 模式）
@@ -828,7 +828,7 @@ const dailyQuotaColor = computed(() => {
   return '#ef4444';
 });
 
-// 周配额剩余百分比的颜色（QUOTA 模式）
+// Color for remaining weekly quota percentage (QUOTA mode)
 const weeklyQuotaColor = computed(() => {
   const remaining = props.account.weekly_quota_remaining_percent ?? 0;
   if (remaining > 50) return '#10b981';
@@ -857,7 +857,7 @@ const formattedExpiryDate = computed(() => {
   return dayjs(props.account.subscription_expires_at).format('YYYY-MM-DD HH:mm');
 });
 
-// 计算距离到期的天数
+// Calculate days until expiry
 const daysUntilExpiry = computed(() => {
   if (!props.account.subscription_expires_at) return null;
   const now = dayjs();
@@ -984,17 +984,17 @@ async function handleRefreshToken() {
     // Firebase 走 refresh_token/sign_in），并统一响应 use_lightweight_api 设置、
     // 写 OperationLog。无需在前端额外区分。
 
-    // 检查Token是否过期
+    // Check if the token is expired
     const isTokenExpired = !props.account.token_expires_at || 
                           dayjs(props.account.token_expires_at).isBefore(dayjs());
     
     if (isTokenExpired) {
-      // Token已过期，执行刷新Token操作
+      // Token has expired, perform token refresh operation
       const result = await apiService.refreshToken(props.account.id);
       if (result.success) {
-        // 显示更详细的成功消息
+        // Show more detailed success message
         const message = result.message || 'Token refreshed successfully';
-        if (result.old_expires_at && result.old_expires_at !== '未知') {
+        if (result.old_expires_at && result.old_expires_at !== 'unknown') {
           ElMessage.success({
             message: `${message}\nOld expiry: ${new Date(result.old_expires_at).toLocaleString()}\nNew expiry: ${result.expires_at ? new Date(result.expires_at).toLocaleString() : 'unknown'}`,
             duration: 3000,
@@ -1074,7 +1074,7 @@ async function handleRefreshToken() {
           updatedAccount.is_disabled = result.user_info.user.disable_codeium;
         }
         
-        // 更新套餐信息
+        // Update plan information
         if (result.user_info.plan?.plan_name) {
           updatedAccount.plan_name = result.user_info.plan.plan_name;
         }
@@ -1142,7 +1142,7 @@ async function handleRefreshToken() {
               duration: 3000,
               showClose: true
             });
-            // 更新账号信息
+// Update account information
             const updatedAccount = { ...props.account, status: 'active' as const };
             if (refreshResult.token) {
               updatedAccount.token = refreshResult.token;
@@ -1214,7 +1214,7 @@ async function handleLogin() {
         }
         updatedAccount.last_quota_update = dayjs().toISOString();
         
-        // 更新 store 中的账号数据
+        // Update account data in the store
         await accountsStore.updateAccount(updatedAccount);
         emit('update', updatedAccount);
       } catch (error) {
@@ -1245,7 +1245,7 @@ function handleEdit() {
 }
 
 function handleAccountInfo() {
-  // 直接打开账户信息对话框
+  // Directly open the account information dialog
   uiStore.openAccountInfoDialog(props.account.id);
 }
 
@@ -1255,7 +1255,7 @@ function handleShowAnalytics() {
 }
 
 function handleTeamSettings() {
-  // 显示团队设置对话框
+  // Show team settings dialog
   showTeamSettingsDialog.value = true;
 }
 
@@ -1264,7 +1264,7 @@ function handleTeamManagement() {
 }
 
 function handleAutoRefill() {
-  // 显示自动充值设置对话框
+  // Show auto-refill settings dialog
   showAutoRefillDialog.value = true;
 }
 
@@ -1272,7 +1272,7 @@ function handleAutoRefill() {
 async function handleBatchResetTeamCredits() {
   isResettingCredits.value = true;
   try {
-    // Step 1: 获取团队成员列表
+    // Step 1: Get team member list
     const membersResult = await invoke<any>('get_team_members', {
       id: props.account.id,
       groupId: null
@@ -1308,7 +1308,7 @@ async function handleBatchResetTeamCredits() {
       const email = user.string_3 || '';
       const teamStatus = user.int_8 || 0;
       
-      // 只添加已批准的成员，并排除自己（当前账号）
+      // Only add approved members and exclude self (current account)
       if (teamStatus !== 1 && email.toLowerCase() !== currentEmail) {
         otherMembers.push({ api_key: apiKey, name, email });
       }
@@ -1319,7 +1319,7 @@ async function handleBatchResetTeamCredits() {
       return;
     }
     
-    // 确认操作
+    // Confirm operation
     try {
       await ElMessageBox.confirm(
         `确定要重置 ${otherMembers.length} 位团队成员的积分吗？\n此操作将移除并重新邀请这些成员。`,
@@ -1352,7 +1352,7 @@ async function handleBatchResetTeamCredits() {
           continue;
         }
         
-        // 重新邀请
+        // Re-invite
         const inviteResult = await invoke<any>('invite_team_members', {
           id: props.account.id,
           users: [{ name: member.name, email: member.email }]
@@ -1378,7 +1378,7 @@ async function handleBatchResetTeamCredits() {
             });
           }
         } catch (e) {
-          console.log(`自动接受邀请失败 (${member.email}):`, e);
+          console.log(`Auto-accept invitation failed (${member.email}):`, e);
         }
         
         successCount++;
@@ -1427,7 +1427,7 @@ function handleGetTrialLink() {
   if (startTrial) {
     showTurnstileDialog.value = true;
   } else {
-    // 直接付费签约，无需 captcha
+    // Direct paid signup, no captcha required
     handleTurnstileSuccess('');
   }
 }
@@ -1439,7 +1439,7 @@ async function handleTurnstileSuccess(turnstileToken: string) {
   
   isGettingTrialLink.value = true;
   try {
-    // 从设置中读取订阅参数
+    // Read subscription parameters from settings
     const teamsTier = settingsStore.settings?.subscriptionPlan ?? 2; // 默认 Pro
     const paymentPeriod = settingsStore.settings?.paymentPeriod ?? 1; // 默认月付
     // 团队/企业类计划需要团队名称，个人计划不设置
@@ -1455,7 +1455,7 @@ async function handleTurnstileSuccess(turnstileToken: string) {
     
     // 如果启用了自动打开，使用增强的API
     if (autoOpen) {
-      // 从store中获取最新的账号数据，确保token是最新的
+      // Get the latest account data from the store to ensure the token is up-to-date
       const latestAccount = accountsStore.accounts.find(a => a.id === props.account.id);
       const account = latestAccount || props.account;
       
@@ -1465,7 +1465,7 @@ async function handleTurnstileSuccess(turnstileToken: string) {
         return;
       }
       
-      // 使用增强的支付API
+      // Use the enhanced payment API
       const { getTrialPaymentLink, autoFillPaymentForm } = await import('@/utils/cardGenerator');
       
       const result = await getTrialPaymentLink(
@@ -1476,7 +1476,7 @@ async function handleTurnstileSuccess(turnstileToken: string) {
         paymentPeriod,
         startTrial,
         teamName,
-        teamTiers.includes(teamsTier) ? seatCount : undefined, // 团队/企业类计划需要席位
+        teamTiers.includes(teamsTier) ? seatCount : undefined, // Team/Enterprise plans require seats
         turnstileToken || undefined // trial 签约时所有计划均需 Turnstile token
       );
       
@@ -1490,12 +1490,12 @@ async function handleTurnstileSuccess(turnstileToken: string) {
             try {
               console.log('开始自动填写表单，窗口标签:', result.window_label);
               
-              // 通过Tauri命令注入表单填写代码
+              // Inject form filling code via Tauri command
               await autoFillPaymentForm(result.window_label, result.virtual_card);
               
               ElMessage.success('Auto-filling virtual card info...');
               
-              // 如果启用了自动提交，注入自动提交脚本
+              // If auto-submit is enabled, inject the auto-submit script
               if (autoSubmit) {
                 console.log('准备自动提交表单...');
                 await invoke('inject_auto_submit_script', { 
@@ -3088,6 +3088,4 @@ async function handleSwitchAccount() {
 }
 
 :root.dark .switch-progress-step.status-pending .step-icon {
-  color: #4b5563;
-}
-</style>
+  color: #4b                       

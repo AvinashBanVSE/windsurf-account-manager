@@ -8,7 +8,7 @@
     @close="handleClose"
   >
     <div class="turnstile-container">
-      <p class="turnstile-tip">请完成验证以获取试用链接</p>
+      <p class="turnstile-tip">Please complete verification to get trial link</p>
       
       <div class="turnstile-wrapper">
         <div 
@@ -19,27 +19,27 @@
       
       <p v-if="status === 'loading'" class="status-text loading">
         <el-icon class="is-loading"><Loading /></el-icon>
-        加载验证中...
+        Loading verification...
       </p>
       <p v-else-if="status === 'success'" class="status-text success">
         <el-icon><CircleCheck /></el-icon>
-        验证成功！
+        Verification successful!
       </p>
       <p v-else-if="status === 'error'" class="status-text error">
         <el-icon><CircleClose /></el-icon>
-        验证失败，请重试
+        Verification failed, please try again
       </p>
     </div>
     
     <template #footer>
-      <el-button @click="handleClose">取消</el-button>
+      <el-button @click="handleClose">Cancel</el-button>
       <el-button 
         type="primary" 
         :disabled="status !== 'success'"
         :loading="isSubmitting"
         @click="handleConfirm"
       >
-        获取链接
+        Get Link
       </el-button>
     </template>
   </el-dialog>
@@ -68,7 +68,7 @@ const status = ref<'idle' | 'loading' | 'success' | 'error'>('loading');
 const isSubmitting = ref(false);
 const widgetId = ref<string | null>(null);
 
-// 同步 visible
+// Sync visible
 watch(() => props.visible, (val) => {
   dialogVisible.value = val;
   if (val) {
@@ -84,7 +84,7 @@ watch(dialogVisible, (val) => {
   emit('update:visible', val);
 });
 
-// 加载 Turnstile 脚本
+// Load Turnstile script
 function loadTurnstileScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if ((window as any).turnstile) {
@@ -111,12 +111,12 @@ function loadTurnstileScript(): Promise<void> {
   });
 }
 
-// 渲染 Turnstile 组件
+// Render Turnstile component
 async function loadTurnstile() {
   try {
     await loadTurnstileScript();
     
-    // 等待 turnstile 对象可用
+    // Wait for turnstile object to be available
     await new Promise<void>((resolve) => {
       const checkTurnstile = () => {
         if ((window as any).turnstile) {
@@ -130,7 +130,7 @@ async function loadTurnstile() {
     
     const turnstile = (window as any).turnstile;
     
-    // 如果已有 widget，先移除
+    // If existing widget, remove first
     if (widgetId.value) {
       try {
         turnstile.remove(widgetId.value);
@@ -139,12 +139,12 @@ async function loadTurnstile() {
       }
     }
     
-    // 清空容器
+    // Clear container
     if (turnstileRef.value) {
       turnstileRef.value.innerHTML = '';
     }
     
-    // 渲染新的 widget
+    // Render new widget
     await nextTick();
     
     if (turnstileRef.value) {
@@ -188,7 +188,7 @@ function handleClose() {
   emit('cancel');
 }
 
-// 清理
+// Cleanup
 onUnmounted(() => {
   if (widgetId.value && (window as any).turnstile) {
     try {

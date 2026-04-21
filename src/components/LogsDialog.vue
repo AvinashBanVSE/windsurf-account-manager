@@ -56,7 +56,7 @@ const settingsStore = useSettingsStore();
 const uiStore = useUIStore();
 
 const logs = computed(() => {
-  // 按时间倒序排列，最新的在前面
+  // Sort by time, newest first
   return [...settingsStore.logs].sort((a, b) => {
     return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
   });
@@ -70,27 +70,27 @@ async function loadLogs() {
   try {
     await settingsStore.loadLogs(100);
   } catch (error) {
-    ElMessage.error(`加载日志失败: ${error}`);
+    ElMessage.error(`Failed to load logs: ${error}`);
   }
 }
 
 async function clearLogs() {
   try {
     await ElMessageBox.confirm(
-      '确定要清空所有日志吗？',
-      '清空日志',
+      'Are you sure you want to clear all logs?',
+      'Clear Logs',
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning',
       }
     );
     
     await settingsStore.clearLogs();
-    ElMessage.success('日志已清空');
+    ElMessage.success('Logs cleared');
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`清空日志失败: ${error}`);
+      ElMessage.error(`Failed to clear logs: ${error}`);
     }
   }
 }
@@ -101,16 +101,16 @@ function formatDate(date: string) {
 
 function formatOperationType(type: string) {
   const typeMap: Record<string, string> = {
-    login: '登录',
-    refresh_token: '刷新Token',
-    reset_credits: '重置积分',
-    update_seats: '更新座位',
-    get_billing: '查询账单',
-    update_plan: '更新计划',
-    add_account: '添加账号',
-    delete_account: '删除账号',
-    edit_account: '编辑账号',
-    batch_operation: '批量操作',
+    login: 'Login',
+    refresh_token: 'Refresh Token',
+    reset_credits: 'Reset Credits',
+    update_seats: 'Update Seats',
+    get_billing: 'Get Billing',
+    update_plan: 'Update Plan',
+    add_account: 'Add Account',
+    delete_account: 'Delete Account',
+    edit_account: 'Edit Account',
+    batch_operation: 'Batch Operation',
   };
   return typeMap[type] || type;
 }

@@ -14,7 +14,7 @@ enum WireType {
     Fixed32 = 5,
 }
 
-/// 简单的Protobuf解析器
+/// Simple Protobuf parser
 pub struct ProtobufParser {
     data: Vec<u8>,
     position: usize,
@@ -25,25 +25,25 @@ impl ProtobufParser {
         Self { data, position: 0 }
     }
 
-    /// 从Base64字符串解析
+    /// Parse from Base64 string
     pub fn from_base64(base64_str: &str) -> Result<Value, String> {
-        // 处理可能的前缀
+        // Handle possible prefix
         let base64_data = if base64_str.starts_with("data:application/proto;base64,") {
             &base64_str[31..]
         } else {
             base64_str
         };
 
-        // Base64解码
+        // Base64 decode
         let decoded = general_purpose::STANDARD.decode(base64_data)
-            .map_err(|e| format!("Base64解码失败: {}", e))?;
+            .map_err(|e| format!("Base64 decode failed: {}", e))?;
 
-        // 解析Protobuf
+        // Parse Protobuf
         let mut parser = Self::new(decoded);
         parser.parse_message()
     }
 
-    /// 解析消息
+    /// Parse message
     pub fn parse_message(&mut self) -> Result<Value, String> {
         let mut message = serde_json::Map::new();
 
@@ -57,7 +57,7 @@ impl ProtobufParser {
                     let value = self.read_field(wire_type)?;
                     let field_name = self.get_field_name(field_number, wire_type, &value);
 
-                    // 处理重复字段
+                    // Handle repeated fields
                     if message.contains_key(&field_name) {
                         let existing = message.get_mut(&field_name).unwrap();
                         if !existing.is_array() {
@@ -78,7 +78,7 @@ impl ProtobufParser {
         Ok(Value::Object(message))
     }
 
-    /// 读取标签（field number和wire type）
+    /// Read tag (field number and wire type)
     fn read_tag(&mut self) -> Result<(u32, WireType), String> {
         if self.position >= self.data.len() {
             return Ok((0, WireType::Varint));
@@ -93,13 +93,13 @@ impl ProtobufParser {
             3 => WireType::StartGroup,
             4 => WireType::EndGroup,
             5 => WireType::Fixed32,
-            _ => return Err(format!("未知的wire type: {}", tag & 0x07)),
+            _ => return Err(format!("Unknown wire type: {}", tag & 0x07)),
         };
 
         Ok((field_number as u32, wire_type))
     }
 
-    /// 读取变长整数
+    /// Read varint
     fn read_varint(&mut self) -> Result<u64, String> {
         let mut result: u64 = 0;
         let mut shift = 0;
@@ -117,17 +117,17 @@ impl ProtobufParser {
             shift += 7;
 
             if shift >= 64 {
-                return Err("Varint过长".to_string());
+                return Err("Varint too long".to_string());
             }
         }
 
-        Err("数据意外结束".to_string())
+        Err("Unexpected end of data".to_string())
     }
 
-    /// 读取固定32位
+    /// Read fixed32
     fn read_fixed32(&mut self) -> Result<f32, String> {
         if self.position + 4 > self.data.len() {
-            return Err("数据不足以读取fixed32".to_string());
+            return Err("Insufficient data to read fixed32".to_string());
         }
 
         let bytes = &self.data[self.position..self.position + 4];
@@ -136,10 +136,10 @@ impl ProtobufParser {
         Ok(f32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
     }
 
-    /// 读取固定64位
+    /// Read fixed64
     fn read_fixed64(&mut self) -> Result<f64, String> {
         if self.position + 8 > self.data.len() {
-            return Err("数据不足以读取fixed64".to_string());
+            return Err("Insufficient data to read fixed64".to_string());
         }
 
         let bytes = &self.data[self.position..self.position + 8];
@@ -150,12 +150,12 @@ impl ProtobufParser {
         Ok(f64::from_le_bytes(arr))
     }
 
-    /// 读取长度分隔的数据
+    /// Read length-delimited data
     fn read_length_delimited(&mut self) -> Result<Vec<u8>, String> {
         let length = self.read_varint()? as usize;
 
         if self.position + length > self.data.len() {
-            return Err(format!("数据不足: 需要{}字节，剩余{}字节", 
+            return Err(format!("Insufficient data: need {} bytes, remaining {} bytes", 
                 length, self.data.len() - self.position));
         }
 
@@ -164,7 +164,7 @@ impl ProtobufParser {
         Ok(value)
     }
 
-    /// 读取字段值
+    /// Read field value
     fn read_field(&mut self, wire_type: WireType) -> Result<Value, String> {
         match wire_type {
             WireType::Varint => {
@@ -178,14 +178,14 @@ impl ProtobufParser {
             WireType::LengthDelimited => {
                 let data = self.read_length_delimited()?;
 
-                // 尝试解析为UTF-8字符串
+                // Try to parse as UTF-8 string
                 if let Ok(text) = String::from_utf8(data.clone()) {
                     if text.chars().all(|c| c.is_ascii_graphic() || c.is_ascii_whitespace()) && !text.is_empty() {
                         return Ok(json!(text));
                     }
                 }
 
-                // 尝试解析为子消息
+                // Try to parse as sub-message
                 let mut parser = ProtobufParser::new(data.clone());
                 if let Ok(sub_message) = parser.parse_message() {
                     if sub_message.as_object().map_or(false, |o| !o.is_empty()) {
@@ -193,7 +193,7 @@ impl ProtobufParser {
                     }
                 }
 
-                // 返回原始字节（如果较短）
+                // Return raw bytes (if short)
                 if data.len() <= 32 {
                     let obj: HashMap<usize, u8> = data.iter()
                         .enumerate()
@@ -208,7 +208,7 @@ impl ProtobufParser {
                 }
             }
             WireType::StartGroup | WireType::EndGroup => {
-                Err("不支持Group类型".to_string())
+                Err("Group type not supported".to_string())
             }
             WireType::Fixed32 => {
                 let value = self.read_fixed32()?;
@@ -217,7 +217,7 @@ impl ProtobufParser {
         }
     }
 
-    /// 获取字段名称
+    /// Get field name
     fn get_field_name(&self, field_number: u32, wire_type: WireType, value: &Value) -> String {
         match wire_type {
             WireType::Varint => format!("int_{}", field_number),
@@ -237,48 +237,48 @@ impl ProtobufParser {
     }
 }
 
-/// 用户信息结构
+/// User information structure
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserInfo {
     pub user: UserBasicInfo,
-    pub roles: Option<String>,           // string_2: 角色字符串 (如 "root.admin")
+    pub roles: Option<String>,           // string_2: Role string (e.g. "root.admin")
     pub subscription: Option<SubscriptionInfo>,
     pub plan: Option<PlanInfo>,
-    pub role: Option<AdminInfo>,         // subMesssage_7: 角色详情
-    pub admin: Option<AdminInfo>,        // 兼容旧代码
+    pub role: Option<AdminInfo>,         // subMesssage_7: Role details
+    pub admin: Option<AdminInfo>,        // Compatible with old code
     pub is_root_admin: bool,
     pub team: Option<TeamInfo>,
-    pub permissions: Option<serde_json::Value>,  // subMesssage_8: 权限对象
-    pub plan_features: Option<serde_json::Value>, // subMesssage_6.subMesssage_24: 功能配置
+    pub permissions: Option<serde_json::Value>,  // subMesssage_8: Permissions object
+    pub plan_features: Option<serde_json::Value>, // subMesssage_6.subMesssage_24: Feature configuration
 }
 
 /// User message (seat_management_pb.User)
-/// 根据官方proto定义：api_key=1, name=2, email=3, signup_time=4, last_update_time=5, id=6, ...
+/// Based on official proto definition: api_key=1, name=2, email=3, signup_time=4, last_update_time=5, id=6, ...
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserBasicInfo {
-    pub api_key: String,         // field 1: API Key (UUID格式)
-    pub name: String,            // field 2: 用户显示名称
-    pub email: String,           // field 3: 邮箱
-    pub id: String,              // field 6: Firebase UID (身份标识)
-    pub team_id: String,         // field 7: 所属团队ID
-    pub team_status: i32,        // field 8: UserTeamStatus (0=未指定,1=待定,2=已批准,3=已拒绝)
-    pub username: String,        // field 9: 用户名 (如 righteously-handsome-kite-82267)
-    pub timezone: String,        // field 10: preferred_time_zone (如 Asia/Shanghai)
-    pub public_profile_enabled: bool,  // field 11: 公开资料
-    pub pro: bool,               // field 13: Pro用户标识
-    pub disable_codeium: bool,   // field 16: 是否禁用Codeium
-    pub newsletter: bool,        // field 19: 订阅邮件
-    pub disabled_telemetry: bool, // field 20: 禁用遥测
-    pub signup_stage: Option<String>,  // field 22: 注册阶段
-    pub used_trial: bool,        // field 25: 已使用试用
-    pub used_prompt_credits: i64, // field 28: 已用Prompt积分
-    pub used_flow_credits: i64,   // field 29: 已用Flow积分
-    pub referral_code: Option<String>,  // field 30: 推荐码
+    pub api_key: String,         // field 1: API Key (UUID format)
+    pub name: String,            // field 2: User display name
+    pub email: String,           // field 3: Email
+    pub id: String,              // field 6: Firebase UID (identity identifier)
+    pub team_id: String,         // field 7: Team ID
+    pub team_status: i32,        // field 8: UserTeamStatus (0=unspecified, 1=pending, 2=approved, 3=rejected)
+    pub username: String,        // field 9: Username (e.g. righteously-handsome-kite-82267)
+    pub timezone: String,        // field 10: preferred_time_zone (e.g. Asia/Shanghai)
+    pub public_profile_enabled: bool,  // field 11: Public profile
+    pub pro: bool,               // field 13: Pro user flag
+    pub disable_codeium: bool,   // field 16: Whether Codeium is disabled
+    pub newsletter: bool,        // field 19: Subscribe to newsletter
+    pub disabled_telemetry: bool, // field 20: Disable telemetry
+    pub signup_stage: Option<String>,  // field 22: Signup stage
+    pub used_trial: bool,        // field 25: Used trial
+    pub used_prompt_credits: i64, // field 28: Used Prompt credits
+    pub used_flow_credits: i64,   // field 29: Used Flow credits
+    pub referral_code: Option<String>,  // field 30: Referral code
     // Timestamp fields
-    pub signup_time: Option<i64>,       // field 4: 注册时间 (Timestamp)
-    pub last_update_time: Option<i64>,  // field 5: 最后更新时间 (Timestamp)
-    pub first_windsurf_use_time: Option<i64>,  // field 26: 首次使用Windsurf时间
-    pub windsurf_pro_trial_end_time: Option<i64>,  // field 27: Pro试用结束时间
+    pub signup_time: Option<i64>,       // field 4: Signup time (Timestamp)
+    pub last_update_time: Option<i64>,  // field 5: Last update time (Timestamp)
+    pub first_windsurf_use_time: Option<i64>,  // field 26: First Windsurf use time
+    pub windsurf_pro_trial_end_time: Option<i64>,  // field 27: Pro trial end time
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -291,100 +291,99 @@ pub struct SubscriptionInfo {
     pub usage: i32,
     pub quota: i32,
     pub used_quota: i32,
-    pub expires_at: Option<i64>, // Unix时间戳（秒）
+    pub expires_at: Option<i64>, // Unix timestamp (seconds)
     pub subscription_active: bool,
     pub on_trial: bool,
 }
 
 /// Team message (seat_management_pb.Team)
-/// 根据官方proto定义的完整字段映射
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TeamInfo {
-    pub id: String,                      // field 1: 团队ID
-    pub name: String,                    // field 2: 团队名称
-    pub signup_time: Option<i64>,        // field 3: 团队创建时间 (Timestamp)
-    pub invite_id: Option<String>,       // field 4: 邀请码ID
-    pub used_trial: bool,                // field 5: 是否已使用试用
-    pub stripe_subscription_id: Option<String>,   // field 6: Stripe订阅ID
-    pub subscription_active: bool,       // field 7: 订阅是否激活
-    pub stripe_customer_id: Option<String>,       // field 8: Stripe客户ID
-    pub current_billing_period_start: Option<i64>, // field 9: 计费周期开始 (Timestamp)
-    pub num_seats_current_billing_period: i32,    // field 10: 当前计费周期席位数
-    pub attribution_enabled: bool,       // field 11: 是否启用归因
-    pub sso_provider_id: Option<String>, // field 12: SSO提供商ID
-    pub offers_enabled: bool,            // field 13: 是否启用优惠
-    pub teams_tier: i32,                 // field 14: TeamsTier枚举 (1=Teams,2=Pro,3=EnterpriseSaaS...)
-    pub flex_credit_quota: i64,          // field 15: Flex积分配额
-    pub used_flow_credits: i64,          // field 16: 已用Flow积分
-    pub used_prompt_credits: i64,        // field 17: 已用Prompt积分
-    pub current_billing_period_end: Option<i64>,  // field 18: 计费周期结束 (Timestamp)
-    pub num_cascade_seats: i32,          // field 19: Cascade席位数
-    pub cascade_usage_month_start: Option<i64>,   // field 20: Cascade使用月开始 (Timestamp)
-    pub cascade_usage_month_end: Option<i64>,     // field 21: Cascade使用月结束 (Timestamp)
-    pub cascade_seat_type: i32,          // field 22: CascadeSeatType枚举
-    pub top_up_enabled: bool,            // field 23: 是否启用充值
-    pub monthly_top_up_amount: i64,      // field 24: 月度充值金额
-    pub top_up_spent: i64,               // field 25: 已花费充值
-    pub top_up_increment: i64,           // field 26: 充值增量
-    pub used_flex_credits: i64,          // field 27: 已用Flex积分
-    pub num_users: i32,                  // 计算字段
+    pub id: String,                      // field 1: Team ID
+    pub name: String,                    // field 2: Team name
+    pub signup_time: Option<i64>,        // field 3: Team creation time (Timestamp)
+    pub invite_id: Option<String>,       // field 4: Invitation code ID
+    pub used_trial: bool,                // field 5: Whether trial has been used
+    pub stripe_subscription_id: Option<String>,   // field 6: Stripe subscription ID
+    pub subscription_active: bool,       // field 7: Whether subscription is active
+    pub stripe_customer_id: Option<String>,       // field 8: Stripe customer ID
+    pub current_billing_period_start: Option<i64>, // field 9: Billing period start (Timestamp)
+    pub num_seats_current_billing_period: i32,    // field 10: Number of seats in current billing period
+    pub attribution_enabled: bool,       // field 11: Whether attribution is enabled
+    pub sso_provider_id: Option<String>, // field 12: SSO provider ID
+    pub offers_enabled: bool,            // field 13: Whether offers are enabled
+    pub teams_tier: i32,                 // field 14: Teams tier (1=Teams,2=Pro,3=EnterpriseSaaS...)
+    pub flex_credit_quota: i64,          // field 15: Flex credit quota
+    pub used_flow_credits: i64,          // field 16: Used Flow credits
+    pub used_prompt_credits: i64,        // field 17: Used Prompt credits
+    pub current_billing_period_end: Option<i64>,  // field 18: Billing period end (Timestamp)
+    pub num_cascade_seats: i32,          // field 19: Number of Cascade seats
+    pub cascade_usage_month_start: Option<i64>,   // field 20: Cascade usage month start (Timestamp)
+    pub cascade_usage_month_end: Option<i64>,     // field 21: Cascade usage month end (Timestamp)
+    pub cascade_seat_type: i32,          // field 22: Cascade seat type
+    pub top_up_enabled: bool,            // field 23: Whether top-up is enabled
+    pub monthly_top_up_amount: i64,      // field 24: Monthly top-up amount
+    pub top_up_spent: i64,               // field 25: Top-up spent
+    pub top_up_increment: i64,           // field 26: Top-up increment
+    pub used_flex_credits: i64,          // field 27: Used Flex credits
+    pub num_users: i32,                  // Calculated field, default 1
 }
 
 /// PlanInfo message (codeium_common_pb.PlanInfo)
-/// 根据官方proto定义的完整字段映射
+/// Complete field mapping based on official proto definition
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PlanInfo {
-    pub teams_tier: i32,             // field 1: TeamsTier枚举
-    pub plan_name: String,           // field 2: 套餐名称 (如 "Teams")
-    pub has_autocomplete_fast_mode: bool,  // field 3: 快速自动补全
-    pub allow_sticky_premium_models: bool, // field 4: 允许使用高级模型
-    pub has_forge_access: bool,      // field 5: Forge访问权限
-    pub max_num_premium_chat_messages: i64, // field 6: 最大高级聊天消息数
-    pub max_num_chat_input_tokens: i64,     // field 7: 最大聊天输入tokens
-    pub max_custom_chat_instruction_characters: i64, // field 8: 最大自定义指令字符
-    pub max_num_pinned_context_items: i64,  // field 9: 最大固定上下文项数
-    pub max_local_index_size: i64,   // field 10: 最大本地索引大小
-    pub disable_code_snippet_telemetry: bool, // field 11: 禁用代码片段遥测
-    pub monthly_prompt_credits: i32, // field 12: 月度Prompt积分
-    pub monthly_flow_credits: i32,   // field 13: 月度Flow积分
-    pub monthly_flex_credit_purchase_amount: i32, // field 14: 月度Flex积分购买额度
-    pub allow_premium_command_models: bool, // field 15: 允许高级命令模型
-    pub is_enterprise: bool,         // field 16: 是否企业版
-    pub is_teams: bool,              // field 17: 是否团队版
-    pub can_buy_more_credits: bool,  // field 18: 是否可购买更多积分
-    pub cascade_web_search_enabled: bool, // field 19: Cascade网络搜索
-    pub can_customize_app_icon: bool, // field 20: 可自定义应用图标
-    pub cascade_can_auto_run_commands: bool, // field 22: Cascade可自动运行命令
-    pub has_tab_to_jump: bool,       // field 23: Tab跳转功能
-    pub can_generate_commit_messages: bool, // field 25: 可生成提交消息
-    pub max_unclaimed_sites: i32,    // field 26: 最大未认领站点数
-    pub knowledge_base_enabled: bool, // field 27: 知识库功能
-    pub can_share_conversations: bool, // field 28: 可分享对话
-    pub can_allow_cascade_in_background: bool, // field 29: 允许Cascade后台运行
-    pub browser_enabled: bool,       // field 31: 浏览器功能
-    pub billing_strategy: i32,       // field 35: 计费策略 (0=UNSPECIFIED, 1=CREDITS, 2=QUOTA, 3=ACU)
+    pub teams_tier: i32,             // field 1: TeamsTier enum
+    pub plan_name: String,           // field 2: Plan name (e.g. "Teams")
+    pub has_autocomplete_fast_mode: bool,  // field 3: Fast autocomplete
+    pub allow_sticky_premium_models: bool, // field 4: Allow using premium models
+    pub has_forge_access: bool,      // field 5: Forge access permission
+    pub max_num_premium_chat_messages: i64, // field 6: Maximum premium chat messages
+    pub max_num_chat_input_tokens: i64,     // field 7: Maximum chat input tokens
+    pub max_custom_chat_instruction_characters: i64, // field 8: Maximum custom instruction characters
+    pub max_num_pinned_context_items: i64,  // field 9: Maximum pinned context items
+    pub max_local_index_size: i64,   // field 10: Maximum local index size
+    pub disable_code_snippet_telemetry: bool, // field 11: Disable code snippet telemetry
+    pub monthly_prompt_credits: i32, // field 12: Monthly Prompt credits
+    pub monthly_flow_credits: i32,   // field 13: Monthly Flow credits
+    pub monthly_flex_credit_purchase_amount: i32, // field 14: Monthly Flex credit purchase amount
+    pub allow_premium_command_models: bool, // field 15: Allow premium command models
+    pub is_enterprise: bool,         // field 16: Whether enterprise version
+    pub is_teams: bool,              // field 17: Whether teams version
+    pub can_buy_more_credits: bool,  // field 18: Whether can buy more credits
+    pub cascade_web_search_enabled: bool, // field 19: Cascade web search
+    pub can_customize_app_icon: bool, // field 20: Can customize app icon
+    pub cascade_can_auto_run_commands: bool, // field 22: Cascade can auto-run commands
+    pub has_tab_to_jump: bool,       // field 23: Tab to jump feature
+    pub can_generate_commit_messages: bool, // field 25: Can generate commit messages
+    pub max_unclaimed_sites: i32,    // field 26: Maximum unclaimed sites
+    pub knowledge_base_enabled: bool, // field 27: Knowledge base feature
+    pub can_share_conversations: bool, // field 28: Can share conversations
+    pub can_allow_cascade_in_background: bool, // field 29: Allow Cascade in background
+    pub browser_enabled: bool,       // field 31: Browser feature
+    pub billing_strategy: i32,       // field 35: Billing strategy (0=UNSPECIFIED, 1=CREDITS, 2=QUOTA, 3=ACU)
 }
 
 /// UserRole message (seat_management_pb.UserRole)
-/// 根据官方proto定义
+/// Based on official proto definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserRole {
     pub api_key: String,         // field 1: API Key
-    pub roles: Vec<String>,      // field 2: 角色列表 (repeated string)
-    pub role_id: String,         // field 3: 角色ID (如 "root.admin")
-    pub role_name: String,       // field 4: 角色名称 (如 "Admin")
+    pub roles: Vec<String>,      // field 2: Role list (repeated string)
+    pub role_id: String,         // field 3: Role ID (e.g. "root.admin")
+    pub role_name: String,       // field 4: Role name (e.g. "Admin")
 }
 
-// 兼容旧代码的别名
+// Alias for compatibility with old code
 pub type AdminInfo = UserRole;
 
-/// 从解析的Protobuf数据中提取用户信息
+/// Extract user information from parsed Protobuf data
 pub fn extract_user_info(parsed_data: &Value) -> Result<UserInfo, String> {
     let obj = parsed_data.as_object()
-        .ok_or("解析数据不是对象")?;
+        .ok_or("Parsed data is not an object")?;
 
-    // 提取User信息 (field 1 = subMesssage_1)
-    // 根据官方proto: api_key=1, name=2, email=3, signup_time=4, last_update_time=5, id=6, team_id=7...
+    // Extract User information (field 1 = subMesssage_1)
+    // Based on official proto: api_key=1, name=2, email=3, signup_time=4, last_update_time=5, id=6, team_id=7...
     let user = if let Some(u) = obj.get("subMesssage_1").and_then(|v| v.as_object()) {
         UserBasicInfo {
             api_key: u.get("string_1").and_then(|v| v.as_str()).unwrap_or("").to_string(),
@@ -412,11 +411,11 @@ pub fn extract_user_info(parsed_data: &Value) -> Result<UserInfo, String> {
             windsurf_pro_trial_end_time: u.get("subMesssage_27").and_then(|v| v.get("int_1")).and_then(|v| v.as_i64()),
         }
     } else {
-        return Err("缺少用户基本信息".to_string());
+        return Err("Missing user basic information".to_string());
     };
 
-    // 提取Team信息 (field 4 = subMesssage_4)
-    // 根据官方proto: id=1, name=2, signup_time=3, invite_id=4, used_trial=5, stripe_subscription_id=6...
+    // Extract Team information (field 4 = subMesssage_4)
+    // Based on official proto: id=1, name=2, signup_time=3, invite_id=4, used_trial=5, stripe_subscription_id=6...
     let team = obj.get("subMesssage_4").and_then(|v| v.as_object()).map(|t| {
         TeamInfo {
             id: t.get("string_1").and_then(|v| v.as_str()).unwrap_or("").to_string(),
@@ -446,27 +445,27 @@ pub fn extract_user_info(parsed_data: &Value) -> Result<UserInfo, String> {
             top_up_spent: t.get("int_25").and_then(|v| v.as_i64()).unwrap_or(0),
             top_up_increment: t.get("int_26").and_then(|v| v.as_i64()).unwrap_or(0),
             used_flex_credits: t.get("int_27").and_then(|v| v.as_i64()).unwrap_or(0),
-            num_users: 1,  // 计算字段，默认1
+            num_users: 1,  // Calculated field, default 1
         }
     });
 
-    // 提取订阅信息 (实际也在Team对象内)
+    // Extract subscription information (actually also in Team object)
     let subscription = obj.get("subMesssage_4").and_then(|sub| {
-        // 获取基础配额（从plan）
+        // Get base quota (from plan)
         let base_quota = obj.get("subMesssage_6")
             .and_then(|plan| plan.get("int_12"))
             .and_then(|v| v.as_i64())
             .unwrap_or(0) as i32;
 
-        // 获取额外配额
+        // Get extra quota
         let extra_quota = sub.get("int_15")
             .and_then(|v| v.as_i64())
             .unwrap_or(0) as i32;
 
-        // 实际总配额 = 基础配额 + 额外配额
+        // Actual total quota = base quota + extra quota
         let total_quota = base_quota + extra_quota;
 
-        // 提取订阅到期时间 (subMesssage_18.int_1)
+        // Extract subscription expiration time (subMesssage_18.int_1)
         let expires_at = sub.get("subMesssage_18")
             .and_then(|v| v.get("int_1"))
             .and_then(|v| v.as_i64());
@@ -491,22 +490,22 @@ pub fn extract_user_info(parsed_data: &Value) -> Result<UserInfo, String> {
             seats: sub.get("int_10")
                 .and_then(|v| v.as_i64())
                 .unwrap_or(sub.get("int_14").and_then(|v| v.as_i64()).unwrap_or(0)) as i32,
-            usage: 1,  // 默认1个用户使用
-            quota: total_quota,  // 使用计算后的总配额
+            usage: 1,  // Default 1 user usage
+            quota: total_quota,  // Use calculated total quota
             used_quota: sub.get("int_17")
                 .and_then(|v| v.as_i64())
                 .unwrap_or(0) as i32,
-            expires_at,  // 订阅到期时间
+            expires_at,  // Subscription expiration time
             subscription_active: sub.get("int_7")
                 .and_then(|v| v.as_i64())
                 .map(|v| v == 1)
                 .unwrap_or(false),
-            on_trial: false,  // 从其他字段判断
+            on_trial: false,  // Determined from other fields
         })
     });
 
-    // 提取PlanInfo (field 6 = subMesssage_6)
-    // 根据官方codeium_common_pb.PlanInfo: teams_tier=1, plan_name=2, has_autocomplete_fast_mode=3...
+    // Extract PlanInfo (field 6 = subMesssage_6)
+    // Based on official codeium_common_pb.PlanInfo: teams_tier=1, plan_name=2, has_autocomplete_fast_mode=3...
     let plan = obj.get("subMesssage_6").and_then(|v| v.as_object()).map(|p| {
         PlanInfo {
             teams_tier: p.get("int_1").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
@@ -541,15 +540,15 @@ pub fn extract_user_info(parsed_data: &Value) -> Result<UserInfo, String> {
         }
     });
 
-    // 提取角色字符串 (string_2: roles)
+    // Extract role string (string_2: roles)
     let roles = obj.get("string_2")
         .and_then(|v| v.as_str())
         .map(|s| s.to_string());
 
-    // 提取UserRole (field 7 = subMesssage_7)
-    // 根据官方proto: api_key=1, roles=2 (repeated), role_id=3, role_name=4
+    // Extract UserRole (field 7 = subMesssage_7)
+    // Based on official proto: api_key=1, roles=2 (repeated), role_id=3, role_name=4
     let role_info = obj.get("subMesssage_7").and_then(|v| v.as_object()).map(|r| {
-        // 提取repeated string roles (field 2)
+        // Extract repeated string roles (field 2)
         let roles_vec: Vec<String> = r.get("string_2")
             .and_then(|v| v.as_str())
             .map(|s| vec![s.to_string()])
@@ -568,17 +567,17 @@ pub fn extract_user_info(parsed_data: &Value) -> Result<UserInfo, String> {
         }
     });
     
-    // 提取权限对象 (Permissions - field 8 / subMesssage_8 或 bytes_8)
+    // Extract permissions object (Permissions - field 8 / subMesssage_8 or bytes_8)
     let permissions = obj.get("subMesssage_8")
         .or_else(|| obj.get("bytes_8"))
         .cloned();
 
-    // 提取套餐功能配置 (subMesssage_6.subMesssage_24)
+    // Extract plan feature configuration (subMesssage_6.subMesssage_24)
     let plan_features = obj.get("subMesssage_6")
         .and_then(|v| v.get("subMesssage_24"))
         .cloned();
 
-    // 检查是否为root admin
+    // Check if root admin
     let is_root_admin = roles.as_ref()
         .map(|s| s == "root.admin")
         .unwrap_or(false);
@@ -597,17 +596,17 @@ pub fn extract_user_info(parsed_data: &Value) -> Result<UserInfo, String> {
     })
 }
 
-/// 解析GetCurrentUser API的响应
+/// Parse GetCurrentUser API response
 pub fn parse_get_current_user_response(response_body: &[u8]) -> Result<Value, String> {
-    // 尝试将响应转换为字符串
+    // Try to convert response to string
     let response_str = String::from_utf8_lossy(response_body);
     
-    // 检查是否是base64编码的响应（带前缀）
+    // Check if it's base64 encoded response (with prefix)
     if response_str.starts_with("data:application/proto;base64,") {
-        // 解析Protobuf（去掉前缀）
+        // Parse Protobuf (remove prefix)
         let base64_data = &response_str[31..];
         let decoded = general_purpose::STANDARD.decode(base64_data)
-            .map_err(|e| format!("Base64解码失败: {}", e))?;
+            .map_err(|e| format!("Base64 decode failed: {}", e))?;
         
         let mut parser = ProtobufParser::new(decoded);
         let parsed = parser.parse_message()?;
@@ -618,43 +617,17 @@ pub fn parse_get_current_user_response(response_body: &[u8]) -> Result<Value, St
             "user_info": user_info
         }))
     } else if response_str.starts_with("AAEAAQ==") || response_str.chars().all(|c| c.is_ascii_alphanumeric() || c == '+' || c == '/' || c == '=') {
-        // 看起来像是没有前缀的Base64编码
+        // Looks like base64 encoding without prefix
         let decoded = general_purpose::STANDARD.decode(response_str.trim())
-            .map_err(|e| format!("Base64解码失败: {}", e))?;
+            .map_err(|e| format!("Base64 decode failed: {}", e))?;
         
         let mut parser = ProtobufParser::new(decoded);
         let parsed = parser.parse_message()?;
         let user_info = extract_user_info(&parsed)?;
         
-        Ok(json!({
-            "parsed_data": parsed,
-            "user_info": user_info
-        }))
-    } else {
-        // 尝试直接解析为二进制Protobuf
-        let mut parser = ProtobufParser::new(response_body.to_vec());
-        match parser.parse_message() {
-            Ok(parsed) => {
-                match extract_user_info(&parsed) {
-                    Ok(user_info) => {
-                        return Ok(json!({
-                            "parsed_data": parsed,
-                            "user_info": user_info
-                        }))
-                    }
-                    Err(_) => {
-                        // 解析成功但无法提取用户信息，可能不是用户数据
-                        Ok(json!({
-                            "parsed_data": parsed,
-                            "error": "无法提取用户信息"
-                        }))
-                    }
-                }
-            }
-            Err(e) => {
-                // 不是有效的Protobuf，返回错误
+                // Not valid Protobuf, return error
                 Ok(json!({
-                    "error": format!("解析失败: {}", e),
+                    "error": format!("Parse failed: {}", e),
                     "raw": response_str.to_string()
                 }))
             }
@@ -664,7 +637,7 @@ pub fn parse_get_current_user_response(response_body: &[u8]) -> Result<Value, St
 
 impl ProtobufParser {
     pub fn parse_update_seats_response(response_body: &[u8]) -> Result<Value, String> {
-        // 检查是否是base64编码的响应
+        // Check if it's base64 encoded response
         let decoded_body = if response_body.starts_with(b"data:application/proto;base64,") {
             let base64_str = std::str::from_utf8(&response_body[30..])
                 .map_err(|e| format!("Invalid UTF-8: {}", e))?;
@@ -677,40 +650,40 @@ impl ProtobufParser {
         let mut parser = ProtobufParser::new(decoded_body);
         let parsed = parser.parse_message().map_err(|e| format!("Parse error: {}", e))?;
         
-        // 解析更新座位响应 (UpdateSeatsResponse)
+        // Parse update seats response (UpdateSeatsResponse)
         let mut result = json!({
             "success": true,
             "raw_data": parsed.clone()
         });
         
-        // 提取BillingUpdate信息 (field 1)
+        // Extract BillingUpdate information (field 1)
         if let Some(billing_update) = parsed.get("subMesssage_1") {
-            // amount_due_immediately (field 1): 立即应付金额
+            // amount_due_immediately (field 1): Amount due immediately
             if let Some(amount_due) = billing_update.get("float_1").and_then(|v: &Value| v.as_f64()) {
                 result["amount_due_immediately"] = json!(amount_due);
             }
             
-            // price_per_seat (field 3): 每座位价格
+            // price_per_seat (field 3): Price per seat
             if let Some(price_per_seat) = billing_update.get("float_3").and_then(|v: &Value| v.as_f64()) {
                 result["price_per_seat"] = json!(price_per_seat);
             }
             
-            // num_seats (field 4): 座位数量
+            // num_seats (field 4): Number of seats
             if let Some(num_seats) = billing_update.get("int_4").and_then(|v: &Value| v.as_i64()) {
                 result["total_seats"] = json!(num_seats);
             }
             
-            // sub_interval (field 5): 订阅周期 (1=月度, 2=年度)
+            // sub_interval (field 5): Subscription period (1=monthly, 2=yearly)
             if let Some(interval) = billing_update.get("int_5").and_then(|v: &Value| v.as_i64()) {
                 result["billing_interval"] = json!(if interval == 1 { "monthly" } else { "yearly" });
             }
             
-            // amount_per_interval (field 6): 每周期金额
+            // amount_per_interval (field 6): Amount per period
             if let Some(total_price) = billing_update.get("float_6").and_then(|v: &Value| v.as_f64()) {
                 result["total_monthly_price"] = json!(total_price);
             }
             
-            // billing_start (field 7): 计费开始时间
+            // billing_start (field 7): Billing start time
             if let Some(timestamp_obj) = billing_update.get("subMesssage_7") {
                 if let Some(timestamp) = timestamp_obj.get("int_1").and_then(|v: &Value| v.as_i64()) {
                     use chrono::DateTime;
@@ -721,7 +694,7 @@ impl ProtobufParser {
                 }
             }
             
-            // billing_end (field 8): 计费结束时间
+            // billing_end (field 8): Billing end time
             if let Some(timestamp_obj) = billing_update.get("subMesssage_8") {
                 if let Some(timestamp) = timestamp_obj.get("int_1").and_then(|v: &Value| v.as_i64()) {
                     use chrono::DateTime;
@@ -746,16 +719,16 @@ impl ProtobufParser {
         Ok(result)
     }
     
-    /// 解析 UpdatePlan API 响应
+    /// Parse UpdatePlan API response
     /// 
-    /// UpdatePlanResponse 结构:
+    /// UpdatePlanResponse structure:
     /// - Field 1: billing_update (BillingUpdate)
     /// - Field 2: applied_changes (bool)
     /// - Field 3: next_action_client_secret (string)
     /// - Field 4: payment_failure_reason (string)
     /// - Field 5: requires_password_reset (bool)
     pub fn parse_update_plan_response(response_body: &[u8]) -> Result<Value, String> {
-        // 检查是否是base64编码的响应
+        // Check if it's base64 encoded response
         let decoded_body = if response_body.starts_with(b"data:application/proto;base64,") {
             let base64_str = std::str::from_utf8(&response_body[30..])
                 .map_err(|e| format!("Invalid UTF-8: {}", e))?;
@@ -792,7 +765,7 @@ impl ProtobufParser {
                 billing["num_seats"] = json!(seats);
             }
             
-            // sub_interval (field 5): 1=月度, 2=年度
+            // sub_interval (field 5): 1=monthly, 2=yearly
             if let Some(interval) = billing_update.get("int_5").and_then(|v: &Value| v.as_i64()) {
                 billing["sub_interval"] = json!(interval);
                 billing["sub_interval_name"] = json!(if interval == 1 { "monthly" } else { "yearly" });
@@ -851,7 +824,7 @@ impl ProtobufParser {
         // Field 4: payment_failure_reason (string)
         if let Some(reason) = parsed.get("string_4").and_then(|v: &Value| v.as_str()) {
             result["payment_failure_reason"] = json!(reason);
-            result["success"] = json!(false); // 有支付失败原因表示失败
+            result["success"] = json!(false); // Payment failure reason indicates failure
         }
         
         // Field 5: requires_password_reset (bool)
@@ -863,7 +836,7 @@ impl ProtobufParser {
     }
     
     pub fn parse_get_team_billing_response(response_body: &[u8]) -> Result<Value, String> {
-        // 检查是否是base64编码的响应
+        // Check if it's base64 encoded response
         let decoded_body = if response_body.starts_with(b"data:application/proto;base64,") {
             let base64_str = std::str::from_utf8(&response_body[30..])
                 .map_err(|e| format!("Invalid UTF-8: {}", e))?;
@@ -876,13 +849,13 @@ impl ProtobufParser {
         let mut parser = ProtobufParser::new(decoded_body);
         let parsed = parser.parse_message().map_err(|e| format!("Parse error: {}", e))?;
         
-        // 解析账单信息
+        // Parse billing information
         let mut billing_info = json!({
             "success": true,
             "raw_data": parsed.clone()
         });
         
-        // 提取基础订阅信息 (fields 1-8)
+        // Extract basic subscription information (fields 1-8)
         if let Some(active) = parsed.get("int_1").and_then(|v: &Value| v.as_i64()) {
             billing_info["subscription_active"] = json!(active == 1);
         }
@@ -903,7 +876,7 @@ impl ProtobufParser {
         }
         if let Some(price) = parsed.get("float_6").and_then(|v: &Value| v.as_f64()) {
             billing_info["plan_unit_amount"] = json!(price);
-            billing_info["monthly_price"] = json!(price); // 兼容性
+            billing_info["monthly_price"] = json!(price); // Compatibility
         }
         if let Some(interval) = parsed.get("int_7").and_then(|v: &Value| v.as_i64()) {
             billing_info["sub_interval"] = json!(if interval == 1 { "monthly" } else { "yearly" });
@@ -912,7 +885,7 @@ impl ProtobufParser {
             billing_info["cancel_at_period_end"] = json!(cancel == 1);
         }
         
-        // 提取用户和席位数 (fields 14-19)
+        // Extract user and seat count (fields 14-19)
         if let Some(num_users) = parsed.get("int_14").and_then(|v: &Value| v.as_i64()) {
             billing_info["num_users"] = json!(num_users);
         }
@@ -932,10 +905,10 @@ impl ProtobufParser {
             billing_info["num_core_seats"] = json!(core_seats);
         }
         
-        // 提取支付失败信息或发票URL (field 20)
+        // Extract payment failure information or invoice URL (field 20)
         if let Some(failed_payment) = parsed.get("subMesssage_20") {
             if let Some(url_or_msg) = failed_payment.get("string_1").and_then(|v: &Value| v.as_str()) {
-                // 判断是否是URL
+                // Check if it's a URL
                 if url_or_msg.starts_with("http") {
                     billing_info["invoice_url"] = json!(url_or_msg);
                 } else {
@@ -944,37 +917,37 @@ impl ProtobufParser {
             }
         }
         
-        // 提取充值错误信息 (field 21)
+        // Extract top-up error information (field 21)
         if let Some(top_up_error) = parsed.get("string_21").and_then(|v: &Value| v.as_str()) {
             billing_info["top_up_error"] = json!(top_up_error);
         }
         
-        // 提取套餐信息
+        // Extract plan information
         if let Some(subscription) = parsed.get("subMesssage_12") {
-            // 提取套餐名称
+            // Extract plan name
             if let Some(plan) = subscription.get("subMesssage_1") {
                 if let Some(plan_name) = plan.get("string_2").and_then(|v: &Value| v.as_str()) {
                     billing_info["plan_name"] = json!(plan_name);
                 }
-                // 从套餐信息中提取基础配额
+                // Extract base quota from plan information
                 if let Some(base_quota) = plan.get("int_12").and_then(|v: &Value| v.as_i64()) {
                     billing_info["base_quota"] = json!(base_quota);
                 }
             }
             
-            // 提取实际额度信息
-            // int_4: 额外积分（赠送或购买的额外额度，可能不存在）
-            // int_6: 使用积分（已使用额度，可能不存在）
-            // int_8: 套餐额度（基础套餐额度）
-            // int_9: 套餐缓存限额
+            // Extract actual quota information
+            // int_4: Extra credits (gifted or purchased extra quota, may not exist)
+            // int_6: Used credits (used quota, may not exist)
+            // int_8: Plan quota (base plan quota)
+            // int_9: Plan cache limit
             
-            // 套餐基础额度（必须存在）
+            // Plan base quota (must exist)
             let base_quota = subscription.get("int_8")
                 .and_then(|v: &Value| v.as_i64())
                 .unwrap_or(0);
             billing_info["base_quota"] = json!(base_quota);
             
-            // 额外积分（可选，默认为0）
+            // Extra credits (optional, default 0)
             let extra_credits = subscription.get("int_4")
                 .and_then(|v: &Value| v.as_i64())
                 .unwrap_or(0);
@@ -982,26 +955,26 @@ impl ProtobufParser {
                 billing_info["extra_credits"] = json!(extra_credits);
             }
             
-            // 总额度 = 套餐额度 + 额外积分
+            // Total quota = plan quota + extra credits
             let total_quota = base_quota + extra_credits;
             billing_info["total_quota"] = json!(total_quota);
             
-            // 已使用额度（可选，默认为0）
+            // Used quota (optional, default 0)
             let used_quota = subscription.get("int_6")
                 .and_then(|v: &Value| v.as_i64())
                 .unwrap_or(0);
             billing_info["used_quota"] = json!(used_quota);
             
-            // 缓存限额（最大缓存额度）
+            // Cache limit (maximum cache quota)
             let cache_limit = subscription.get("int_9")
                 .and_then(|v: &Value| v.as_i64())
-                .unwrap_or(total_quota); // 如果没有缓存限额，默认使用总额度
+                .unwrap_or(total_quota); // If no cache limit, default to total quota
             billing_info["cache_limit"] = json!(cache_limit);
         }
         
-        // 提取支付方式 (field 10)
+        // Extract payment method (field 10)
         if let Some(payment) = parsed.get("subMesssage_10") {
-            // PaymentMethod 嵌套在 subMesssage_2 中
+            // PaymentMethod nested in subMesssage_2
             if let Some(payment_data) = payment.get("subMesssage_2") {
                 let payment_info = json!({
                     "type": payment_data.get("string_1").and_then(|v: &Value| v.as_str()).unwrap_or("unknown"),
@@ -1013,7 +986,7 @@ impl ProtobufParser {
             }
         }
         
-        // 提取发票列表 (field 9) - 取第一个发票的URL
+        // Extract invoice list (field 9) - get first invoice URL
         if let Some(invoices) = parsed.get("subMesssage_9") {
             if let Some(invoice_url) = invoices.get("string_1").and_then(|v: &Value| v.as_str()) {
                 billing_info["invoice_url"] = json!(invoice_url);
@@ -1023,8 +996,8 @@ impl ProtobufParser {
         Ok(billing_info)
     }
     
-    /// 解析GetPlanStatus API响应
-    /// 基于官方 windsurf-grpc proto 定义:
+    /// Parse GetPlanStatus API response
+    /// Based on official windsurf-grpc proto definition:
     /// - GetPlanStatusResponse { PlanStatus plan_status = 1 }
     /// - PlanStatus { PlanInfo=1, plan_start=2, plan_end=3, available_flex_credits=4, 
     ///   used_flow_credits=5, used_prompt_credits=6, used_flex_credits=7, 
@@ -1048,14 +1021,14 @@ impl ProtobufParser {
             "raw_data": parsed.clone()
         });
         
-        // 提取 PlanStatus (field 1)
+        // Extract PlanStatus (field 1)
         if let Some(plan_status) = parsed.get("subMesssage_1") {
-            // 提取 PlanInfo (field 1)
+            // Extract PlanInfo (field 1)
             if let Some(plan_info) = plan_status.get("subMesssage_1") {
-                // field 1: TeamsTier 枚举 (0=UNSPECIFIED, 1=TEAMS, 2=PRO, 3=ENTERPRISE_SAAS, ...)
+                // field 1: TeamsTier enum (0=UNSPECIFIED, 1=TEAMS, 2=PRO, 3=ENTERPRISE_SAAS, ...)
                 if let Some(tier) = plan_info.get("int_1").and_then(|v| v.as_i64()) {
                     result["teams_tier"] = json!(tier);
-                    // 转换为可读名称
+                    // Convert to readable name
                     result["teams_tier_name"] = json!(match tier {
                         0 => "UNSPECIFIED",
                         1 => "TEAMS",
@@ -1181,7 +1154,7 @@ impl ProtobufParser {
                 }
             }
             
-            // 提取计费周期 (Timestamp 类型)
+            // Extract billing period (Timestamp type)
             // field 2: plan_start
             if let Some(start) = plan_status.get("subMesssage_2")
                 .and_then(|v| v.get("int_1"))
@@ -1195,7 +1168,7 @@ impl ProtobufParser {
                 result["plan_end"] = json!(end);
             }
             
-            // 提取积分信息
+            // Extract credit information
             // field 4: available_flex_credits
             if let Some(v) = plan_status.get("int_4").and_then(|v| v.as_i64()) {
                 result["available_flex_credits"] = json!(v);
@@ -1221,7 +1194,7 @@ impl ProtobufParser {
                 result["available_flow_credits"] = json!(v);
             }
             
-            // field 10: TopUpStatus (子消息)
+            // field 10: TopUpStatus (sub-message)
             if let Some(top_up) = plan_status.get("subMesssage_10") {
                 if let Some(status) = top_up.get("int_1").and_then(|v| v.as_i64()) {
                     result["top_up_status"] = json!(status);
@@ -1253,7 +1226,7 @@ impl ProtobufParser {
         Ok(result)
     }
     
-    /// 解析GetUsers API响应
+    /// Parse GetUsers API response
     pub fn parse_get_users_response(response_body: &[u8]) -> Result<Value, String> {
         let decoded_body = if response_body.starts_with(b"data:application/proto;base64,") {
             let base64_str = std::str::from_utf8(&response_body[30..])
@@ -1271,15 +1244,15 @@ impl ProtobufParser {
         let mut roles_list = Vec::new();
         let mut cascade_details = Vec::new();
         
-        // 解析用户数组
-        for i in 1..100 {  // 假设最多100个用户
+        // Parse user array
+        for i in 1..100 {  // Assume max 100 users
             let field_name = format!("subMesssage_{}", i);
             if let Some(item) = parsed.get(&field_name) {
-                // 检查是否是User对象 (包含api_key, name, email等)
+                // Check if it's a User object (contains api_key, name, email, etc.)
                 if item.get("string_1").is_some() && item.get("string_3").is_some() {
                     let mut user = json!({});
                     
-                    // 提取用户基本信息
+                    // Extract user basic information
                     if let Some(api_key) = item.get("string_1").and_then(|v| v.as_str()) {
                         user["api_key"] = json!(api_key);
                     }
@@ -1308,7 +1281,7 @@ impl ProtobufParser {
                         user["referral_code"] = json!(referral);
                     }
                     
-                    // 判断类型
+                    // Determine type
                     if user.get("email").is_some() {
                         users_list.push(user);
                     } else if item.get("string_4").is_some() {  // UserRole
@@ -1339,7 +1312,7 @@ impl ProtobufParser {
         }))
     }
     
-    /// 解析GetTeamCreditEntries API响应
+    /// Parse GetTeamCreditEntries API response
     pub fn parse_get_team_credit_entries_response(response_body: &[u8]) -> Result<Value, String> {
         let decoded_body = if response_body.starts_with(b"data:application/proto;base64,") {
             let base64_str = std::str::from_utf8(&response_body[30..])
@@ -1355,10 +1328,10 @@ impl ProtobufParser {
         
         let mut entries = Vec::new();
         
-        // 解析积分记录数组 (field 1 is repeated FlexCreditChronicleEntry)
-        // 首先尝试作为数组处理
+        // Parse credit record array (field 1 is repeated FlexCreditChronicleEntry)
+        // First try to process as array
         if let Some(entries_value) = parsed.get("subMesssage_1") {
-            // 如果是数组
+            // If it's an array
             if let Value::Array(entries_array) = entries_value {
             for entry_value in entries_array {
                 if let Value::Object(entry) = entry_value {
@@ -1372,7 +1345,7 @@ impl ProtobufParser {
                     // grant_date (field 2) - timestamp with seconds and nanos
                     if let Some(date_msg) = entry.get("subMesssage_2") {
                         if let Some(seconds) = date_msg.get("int_1").and_then(|v| v.as_i64()) {
-                            // 转换为日期字符串
+                            // Convert to date string
                             use chrono::DateTime;
                             if let Some(dt) = DateTime::from_timestamp(seconds, 0) {
                                 credit_entry["grant_date"] = json!(dt.format("%Y-%m-%d %H:%M:%S").to_string());
@@ -1450,7 +1423,7 @@ impl ProtobufParser {
                 }
             }
             }
-            // 如果不是数组，可能是单个对象
+            // If not an array, might be a single object
             else if let Value::Object(entry) = entries_value {
                 let mut credit_entry = json!({});
                 
@@ -1534,7 +1507,7 @@ impl ProtobufParser {
                 }
             }
         }
-        // 处理多个单独的字段（如 subMesssage_1, subMesssage_2, ...)
+        // Handle multiple individual fields (such as subMesssage_1, subMesssage_2, ...)
         else {
             for i in 1..100 {  
                 let field_name = format!("subMesssage_{}", i);
@@ -1609,9 +1582,9 @@ impl ProtobufParser {
     }
 }
 
-/// 解析 GetAnalytics API 响应
+/// Parse GetAnalytics API response
 pub fn parse_get_analytics_response(response_body: &[u8]) -> Result<Value, String> {
-    // 处理 base64 编码的响应
+    // Handle base64 encoded response
     let decoded_body = if response_body.starts_with(b"data:application/proto;base64,") {
         let base64_str = std::str::from_utf8(&response_body[30..])
             .map_err(|e| format!("Invalid UTF-8: {}", e))?;

@@ -7,7 +7,7 @@
     @closed="handleClosed"
   >
     <div class="about-content">
-      <!-- 背景装饰 -->
+      <!-- Background decoration -->
       <div class="bg-decoration">
         <div class="circle circle-1"></div>
         <div class="circle circle-2"></div>
@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <!-- 赞助区域 -->
+      <!-- Sponsor area -->
       <div class="sponsor-section">
         <h3 class="section-title">
           <div class="title-icon-wrapper sponsor-icon">
@@ -101,25 +101,25 @@
         <div class="sponsor-grid">
           <div class="sponsor-item alipay">
             <div class="qr-wrapper">
-              <img src="/支付宝支付.png" alt="支付宝" class="sponsor-qr" />
+              <img src="/alipay-payment.png" alt="Alipay" class="sponsor-qr" />
               <div class="qr-overlay">
                 <span class="qr-text">Alipay QR</span>
               </div>
             </div>
             <div class="sponsor-label">
-              <span class="pay-icon alipay-icon">支</span>
+              <span class="pay-icon alipay-icon">A</span>
               Alipay
             </div>
           </div>
           <div class="sponsor-item wechat">
             <div class="qr-wrapper">
-              <img src="/微信支付.png" alt="微信支付" class="sponsor-qr" />
+              <img src="/wechat-payment.png" alt="WeChat Pay" class="sponsor-qr" />
               <div class="qr-overlay">
                 <span class="qr-text">WeChat QR</span>
               </div>
             </div>
             <div class="sponsor-label">
-              <span class="pay-icon wechat-icon">微</span>
+              <span class="pay-icon wechat-icon">W</span>
               WeChat Pay
             </div>
           </div>
@@ -263,7 +263,7 @@ const visible = computed({
   set: (val) => emit('update:modelValue', val)
 });
 
-// 应用版本号
+// App version
 const appVersion = ref<string>('');
 
 // 获取版本号
@@ -343,7 +343,7 @@ function handleClosed() {
   50% { transform: translate(30px, -30px) scale(1.1); }
 }
 
-/* Logo 部分 */
+/* Logo Section */
 .logo-section {
   text-align: center;
   padding: 30px 0;
@@ -668,7 +668,7 @@ function handleClosed() {
   font-style: italic;
 }
 
-/* 赞助区域 */
+/* Sponsor Area */
 .title-icon-wrapper.sponsor-icon {
   background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
 }
@@ -911,4 +911,4 @@ function handleClosed() {
 :root.dark .feature-card:hover .feature-text {
   color: #a0c4ff;
 }
-</style>
+</sty    
