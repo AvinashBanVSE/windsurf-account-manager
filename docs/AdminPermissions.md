@@ -23,11 +23,11 @@ build_with_admin.bat
 
 This batch file will automatically build and set administrator permissions.
 
-## Method 3: Using Resource Hacker (Manual)
+## Method 3: Using Resource Hacker or [Resource Cracker](https://www.pelock.com/products/resource-cracker) (Manual)
 
 If you don't have Windows SDK, you can use a third-party tool:
 
-1. Download [Resource Hacker](http://www.angusj.com/resourcehacker/)
+1. Download [Resource Hacker](http://www.angusj.com/resourcehacker/) or [Resource Cracker](https://www.pelock.com/products/resource-cracker)
 
 2. Open the built exe file
 
